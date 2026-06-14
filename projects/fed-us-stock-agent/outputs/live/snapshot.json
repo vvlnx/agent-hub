@@ -1,0 +1,28 @@
+{
+  "as_of": "2026-06-14T06:06:12Z",
+  "data_source": "Public market prices aligned with macro-analyst workflow (Nasdaq, VIX, 10Y yield, DXY)",
+  "nasdaq100": {
+    "price": 29635.95,
+    "date": "2026-06-12",
+    "above_ma200": true,
+    "ma200": 25698.49
+  },
+  "sp500": {
+    "price": 7431.46,
+    "date": "2026-06-12"
+  },
+  "vix": {
+    "price": 17.68,
+    "date": "2026-06-12",
+    "interpretation": "Moderate — not stressed, not euphoric"
+  },
+  "us10y_yield_pct": {
+    "value": 4.487,
+    "date": "2026-06-12",
+    "change_4w_bp": 2.6
+  },
+  "dxy": 99.75,
+  "regime": "MIXED",
+  "equity_weight": 0.5,
+  "cash_weight": 0.5
+}

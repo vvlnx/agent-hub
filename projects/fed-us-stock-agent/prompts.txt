@@ -1,0 +1,30 @@
+# Copy one prompt at a time into Cursor Agent (Cmd+L / Agent mode)
+
+## Prompt 1 — Macro snapshot (L1)
+Use macro-analyst: full macro snapshot with Fed funds, yield curve, and Nasdaq 100. End with RISK-ON / MIXED / RISK-OFF for tokenized US tech.
+
+## Prompt 2 — Macro + sentiment allocation (L1)
+Combine macro-analyst and sentiment-analyst. Should I increase or reduce tokenized US tech exposure today? Give target allocation percentages.
+
+## Prompt 3 — Fed rebalance table (L1 only)
+Read latest Fed context via market-data. Apply strategy/rules.md Layer 1. Output rebalance table: regime, equity %, cash %, action.
+
+## Prompt 4 — Chokepoint chain (L2 basic)
+Read strategy/chokepoint-chain-theory.md and strategy/industry-map-us-tech.md. Apply Layer 2. Output using templates/chokepoint-report.md.
+
+## Prompt 5 — Full stack L1 + L2
+Run Layer 1 then Layer 2. Final rebalance table with NVDA/MSFT/AAPL/AMZN/META weights and cash %.
+
+## Prompt 6 — Terminal-up deep screening (核心方法论)
+Read strategy/chokepoint-chain-theory.md and strategy/chokepoint-screening-checklist.md.
+
+From **terminal demand** (enterprise AI / cloud capex), decompose the chain **layer by layer upward**.
+
+Screen nodes for hard chokepoint traits: 难替代、扩产慢、认证周期长、供应商少、产能/地缘瓶颈、市场关注度低.
+
+For each tokenized candidate (NVDA MSFT AAPL AMZN META), verify all ten dimensions: 产业链真实位置、收入占比、客户订单、产能认证、供需缺口、定价权、竞争格局、替代技术、政策风险、估值是否透支.
+
+Mark non-tokenizable upstream bottlenecks and proxies. Output full report per templates/chokepoint-report.md §0–§5. Cap weights when B10=valuation exhausted even if bottleneck is real.
+
+## Prompt 7 — Single symbol deep dive
+Pick [SYMBOL]. Start from terminal demand, walk upstream to locate its **real** chokepoint position. Complete A1–A6 and B1–B10 from chokepoint-screening-checklist.md. Conclude: Core / Watch / Reject and max portfolio weight.
