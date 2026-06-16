@@ -25,6 +25,19 @@ export interface Company {
   throat_role: ThroatRole;
   chain_position: string;
   why_bottleneck_or_not: WhyBottleneckOrNot;
+  bitget_market?: import("./bitgetStocks").BitgetStockMarketEvidence;
+  event_adjustment?: import("./eventIntelligence").CompanyEventAdjustment;
+  selection_insight?: {
+    supply_role: string;
+    supply_role_label: string;
+    why_selected: string;
+    why_not_others: string;
+    depends_on: string;
+    match_confidence: number;
+    constraints_met: string[];
+    uncertainty_confidence?: "HIGH" | "MEDIUM" | "LOW";
+    uncertainty_reason?: string;
+  };
 }
 
 export interface ThroatScanConclusion {
@@ -93,6 +106,9 @@ export function normalizeCompany(partial?: Partial<Company> | null): Company {
     throat_role: partial?.throat_role ?? DEFAULT_THROAT_ROLE,
     chain_position: partial?.chain_position ?? "",
     why_bottleneck_or_not: normalizeWhy(partial?.why_bottleneck_or_not),
+    bitget_market: partial?.bitget_market,
+    event_adjustment: partial?.event_adjustment,
+    selection_insight: partial?.selection_insight,
   };
 }
 

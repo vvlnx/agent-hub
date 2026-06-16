@@ -1,15 +1,15 @@
 import type { Company, ThroatScanConclusion } from "./types";
 import { isCoreBottleneck, normalizeCompany } from "./types";
-import type { IndustryPreset } from "./mockData";
+import type { IndustryProfile } from "./mockData";
 
 export function buildThroatScanConclusion(
-  preset: IndustryPreset,
+  profile: IndustryProfile,
   companies: Company[],
 ): ThroatScanConclusion {
   const normalizedCompanies = companies.map((company) => normalizeCompany(company));
 
-  const primaryFromPreset = normalizedCompanies.find(
-    (company) => company.ticker === preset.primary_bottleneck_ticker,
+  const primaryFromProfile = normalizedCompanies.find(
+    (company) => company.ticker === profile.primary_bottleneck_ticker,
   );
 
   const primaryFromRole = normalizedCompanies
@@ -17,7 +17,7 @@ export function buildThroatScanConclusion(
     .sort((a, b) => b.score - a.score)[0];
 
   const primary_bottleneck = normalizeCompany(
-    primaryFromPreset ?? primaryFromRole ?? normalizedCompanies[0],
+    primaryFromProfile ?? primaryFromRole ?? normalizedCompanies[0],
   );
 
   const topRanked = normalizedCompanies.slice(0, 5);
@@ -35,13 +35,14 @@ export function buildThroatScanConclusion(
       : "None in the current top-ranked set";
 
   const narrative = [
-    `Primary bottleneck node: ${preset.bottleneck_location}.`,
+    `Primary bottleneck node: ${profile.bottleneck_location}.`,
     `True choke point: ${primary_bottleneck.ticker} — ${primary_bottleneck.name} (${primary_bottleneck.throat_role}).`,
+    `Sector mapping: ${profile.interpretation.sector_tags.join(" + ")}.`,
     `High-ranked but not choke points: ${nonBottleneckNames}.`,
   ].join(" ");
 
   return {
-    bottleneck_location: preset.bottleneck_location,
+    bottleneck_location: profile.bottleneck_location,
     primary_bottleneck,
     high_score_non_bottlenecks,
     narrative,
