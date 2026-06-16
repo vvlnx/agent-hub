@@ -31,6 +31,70 @@ const SECTOR_TAG_ZH: Record<string, string> = {
   "Digital Infrastructure": "数字基础设施",
   "Regulated Workflow": "监管型工作流",
   "Open-domain Industry": "开放域行业",
+  "AI Infrastructure": "AI 基础设施",
+  Automotive: "汽车",
+  Aerospace: "航空航天",
+  "Cloud Software": "云软件",
+  "Data Centers": "数据中心",
+  "Defense Tech": "国防科技",
+  Energy: "能源",
+  "Energy Storage": "储能",
+  "EV Batteries": "电动车电池",
+  Fintech: "金融科技",
+  "Healthcare AI": "医疗 AI",
+  "Industrial Automation": "工业自动化",
+  "Life Sciences": "生命科学",
+  Materials: "材料",
+  "Nuclear Energy": "核能",
+  "Oil & Gas": "油气",
+  Robotics: "机器人",
+  Semiconductors: "半导体",
+};
+
+const COMPANY_NAME_ZH: Record<string, string> = {
+  NVIDIA: "英伟达公司",
+  "Advanced Micro Devices": "超威半导体公司",
+  "Applied Materials": "应用材料公司",
+  "Lam Research": "泛林集团",
+  Broadcom: "博通公司",
+  "Arista Networks": "Arista 网络公司",
+  Vertiv: "维谛技术",
+  Equinix: "易昆尼克斯",
+  Microsoft: "微软公司",
+  Salesforce: "赛富时",
+  CrowdStrike: "CrowdStrike 网络安全",
+  Snowflake: "Snowflake 数据云",
+  Albemarle: "雅保公司",
+  Tesla: "特斯拉",
+  Cameco: "卡梅科",
+  "NextEra Energy": "新纪元能源",
+  "Lockheed Martin": "洛克希德·马丁",
+  "RTX Corporation": "RTX 公司",
+  Palantir: "Palantir 数据平台",
+  "Intuitive Surgical": "直觉外科公司",
+  "Rockwell Automation": "罗克韦尔自动化",
+  Teradyne: "泰瑞达",
+  "UnitedHealth Group": "联合健康集团",
+  "Veeva Systems": "Veeva Systems 生命科学云",
+  Visa: "维萨",
+  Mastercard: "万事达",
+  Coinbase: "Coinbase 加密交易平台",
+  Oracle: "甲骨文公司",
+  "Super Micro Computer": "超微电脑",
+  "Taiwan Semiconductor": "台积电",
+  "ASML Holding": "阿斯麦控股",
+  Amazon: "亚马逊",
+  Alphabet: "Alphabet（谷歌母公司）",
+  "Eli Lilly": "礼来公司",
+  Pfizer: "辉瑞",
+  Merck: "默沙东",
+  "Exxon Mobil": "埃克森美孚",
+  Chevron: "雪佛龙",
+  "SLB (Schlumberger)": "SLB（斯伦贝谢）",
+  "BYD (ADR)": "比亚迪 ADR",
+  "General Motors": "通用汽车",
+  "Ford Motor": "福特汽车",
+  Aptiv: "安波福",
 };
 
 const CONSTRAINT_ZH: Record<string, string> = {
@@ -48,6 +112,48 @@ const CONSTRAINT_ZH: Record<string, string> = {
 };
 
 const PHRASE_RULES: Array<[RegExp, string]> = [
+  [/AI Compute — accelerator allocation and CUDA stack/g, "AI 算力 — 加速器配额与 CUDA 软件栈"],
+  [/AI Compute — secondary GPU\/CPU path/g, "AI 算力 — 次级 GPU/CPU 路径"],
+  [/Wafer Fab Equipment — deposition and materials/g, "晶圆制造设备 — 薄膜沉积与材料"],
+  [/Wafer Fab Equipment — etch systems/g, "晶圆制造设备 — 刻蚀系统"],
+  [/Custom silicon and networking/g, "定制芯片与网络"],
+  [/Networking fabric — AI cluster switching/g, "网络架构 — AI 集群交换设备"],
+  [/Power & thermal — liquid cooling and rack PDUs/g, "电力与散热 — 液冷和机柜配电"],
+  [/Colocation & interconnection/g, "托管数据中心与互联"],
+  [/Cloud control plane — Azure, identity, Copilot/g, "云控制平面 — Azure、身份系统与 Copilot"],
+  [/Workflow applications — CRM data gravity/g, "工作流应用 — CRM 数据粘性"],
+  [/Security platform — endpoint and identity layer/g, "安全平台 — 终端与身份层"],
+  [/Data platform — warehouse gravity/g, "数据平台 — 数据仓库粘性"],
+  [/Lithium & specialty materials — battery inputs/g, "锂与特种材料 — 电池输入"],
+  [/Battery integration — cells, packs, and EV platform/g, "电池集成 — 电芯、电池包与电动车平台"],
+  [/Nuclear fuel — uranium supply/g, "核燃料 — 铀供应"],
+  [/Utility-scale deployment — grid and project execution/g, "公用事业级部署 — 电网与项目执行"],
+  [/Defense platforms — aerospace and mission systems/g, "国防平台 — 航空航天与任务系统"],
+  [/Aerospace engines and defense subsystems/g, "航空航天发动机与国防子系统"],
+  [/Defense & enterprise AI platforms/g, "国防与企业 AI 平台"],
+  [/Surgical robotics systems/g, "外科手术机器人系统"],
+  [/Industrial automation and factory control/g, "工业自动化与工厂控制"],
+  [/Robotics & test — cobots and automation hardware/g, "机器人与测试 — 协作机器人和自动化硬件"],
+  [/Healthcare platform — payer and care delivery scale/g, "医疗平台 — 支付方与护理交付规模"],
+  [/Life sciences cloud — regulated workflow software/g, "生命科学云 — 监管型工作流软件"],
+  [/Payments network — transaction rails/g, "支付网络 — 交易通道"],
+  [/Payments network — cross-border rails/g, "支付网络 — 跨境通道"],
+  [/Crypto exchange & custody — digital asset rails/g, "加密交易所与托管 — 数字资产通道"],
+  [/Database & cloud infrastructure anchor/g, "数据库与云基础设施锚点"],
+  [/AI rack integration — ODM supply/g, "AI 机柜集成 — ODM 供应"],
+  [/Lithography — EUV systems/g, "光刻 — EUV 系统"],
+  [/Hyperscale cloud — AWS and AI workloads/g, "超大规模云 — AWS 与 AI 工作负载"],
+  [/Hyperscale cloud — GCP and Gemini stack/g, "超大规模云 — GCP 与 Gemini 技术栈"],
+  [/Large-cap pharma — GLP-1 and pipeline scale/g, "大型制药 — GLP-1 与管线规模"],
+  [/Large-cap pharma — global commercialization/g, "大型制药 — 全球商业化"],
+  [/Large-cap pharma — oncology and vaccines/g, "大型制药 — 肿瘤与疫苗"],
+  [/Integrated major — upstream and refining/g, "综合油气巨头 — 上游与炼化"],
+  [/Integrated major — upstream production/g, "综合油气巨头 — 上游生产"],
+  [/Oilfield services — drilling and reservoir/g, "油田服务 — 钻井与油藏"],
+  [/EV OEM — cells, packs, and CATL-chain exposure/g, "电动车整车厂 — 电芯、电池包与 CATL 链条暴露"],
+  [/OEM assembly — North America vehicle platforms/g, "整车组装 — 北美汽车平台"],
+  [/OEM assembly — trucks and EV transition/g, "整车组装 — 皮卡与电动车转型"],
+  [/Tier-1 — automotive electronics and wiring/g, "一级供应商 — 汽车电子与线束"],
   [/Constrained generative ThroatScan \[HIGH\]/g, "约束式生成式 ThroatScan【高置信度】"],
   [/Constrained generative ThroatScan \[LOW\]/g, "约束式生成式 ThroatScan【低置信度】"],
   [/Open-world generative ThroatScan/g, "开放域生成式 ThroatScan"],
@@ -199,6 +305,18 @@ const PHRASE_RULES: Array<[RegExp, string]> = [
   [/AI Compute — accelerator allocation and CUDA stack/g, "AI 算力 — 加速器配额与 CUDA 软件栈"],
   [/Foundry — advanced-node wafer starts/g, "晶圆代工 — 先进制程投片"],
   [/Custom silicon and networking/g, "定制芯片与网络"],
+  [/Company is part of the industry research map, but no online Bitget stock-token market is available\./g, "该公司属于行业研究地图，但当前没有在线 Bitget 股票代币市场。"],
+  [/Bitget daily candles verify the displayed stock-token trend\./g, "Bitget 日线 K 线验证了当前展示的股票代币走势。"],
+  [/Fetched for industry-map stock trend/g, "为行业地图股票走势抓取"],
+  [/Reused from strategy validation evidence/g, "复用策略验证证据"],
+  [/insufficient Bitget daily candles\./g, "Bitget 日线 K 线不足。"],
+  [/Bitget market exists, but daily candle history could not be fetched for the industry map\./g, "Bitget 市场存在，但无法为行业地图获取日线历史。"],
+  [/Break (.+) into upstream, midstream, and downstream public-company exposures before selecting tradable Bitget stock tokens\./g, "先把 $1 拆成上游、中游、下游上市公司暴露，再筛选可交易的 Bitget 股票代币。"],
+  [/The map covers public-company candidates selected by the reasoning engine\. Bitget tradability is a separate execution gate\./g, "该地图覆盖推理引擎筛出的上市公司候选；Bitget 可交易性是独立执行门槛。"],
+  [/Stock trend uses Bitget public stock-token candles only when an online Bitget symbol exists; otherwise the company remains research-only\./g, "只有存在在线 Bitget 股票代币交易对时才使用 Bitget 公开 K 线；否则该公司仅作为研究标的。"],
+  [/Find the qualified inputs, equipment, and capacity that the industry cannot scale without\./g, "识别行业规模化离不开的合格输入、设备与产能。"],
+  [/Find the conversion layer that turns scarce inputs into usable products or platforms\./g, "识别把稀缺输入转化为可用产品或平台的中游转化层。"],
+  [/Find the end-market demand layer and companies exposed to adoption or distribution\./g, "识别终端需求层，以及暴露于采用和分销的公司。"],
 ];
 
 const CLEANUP_RULES: Array<[RegExp, string]> = [
@@ -240,6 +358,17 @@ export function translateLayer(label: string): string {
 
 export function translateSectorTag(tag: string): string {
   return SECTOR_TAG_ZH[tag] ?? translateEngineText(tag);
+}
+
+export function translateCompanyName(name: string): string {
+  return COMPANY_NAME_ZH[name] ?? name;
+}
+
+export function translateCompanyNamesInText(text: string): string {
+  if (!text) return text;
+  return Object.entries(COMPANY_NAME_ZH)
+    .sort(([a], [b]) => b.length - a.length)
+    .reduce((out, [en, zh]) => out.replaceAll(en, zh), text);
 }
 
 export function translateConstraint(label: string): string {

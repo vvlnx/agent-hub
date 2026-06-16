@@ -20,6 +20,7 @@ export interface CompanyBreakdown {
 export interface Company {
   name: string;
   ticker: string;
+  sector_tags: string[];
   score: number;
   breakdown: CompanyBreakdown;
   throat_role: ThroatRole;
@@ -101,6 +102,7 @@ export function normalizeCompany(partial?: Partial<Company> | null): Company {
   return {
     name: partial?.name ?? "",
     ticker: partial?.ticker ?? "",
+    sector_tags: partial?.sector_tags ?? [],
     score: partial?.score ?? 0,
     breakdown: normalizeBreakdown(partial?.breakdown),
     throat_role: partial?.throat_role ?? DEFAULT_THROAT_ROLE,

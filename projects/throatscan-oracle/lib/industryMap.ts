@@ -27,6 +27,7 @@ export interface CompanyStockTrend {
 export interface IndustryMapCompany {
   ticker: string;
   name: string;
+  sector_tags: string[];
   stage: IndustryMapStage;
   chain_position: string;
   throat_role: ThroatRole;
@@ -197,6 +198,7 @@ function seedToResearchCompany(seed: CompanySeed, profile: IndustryProfile, rele
   return normalizeCompany({
     name: seed.name,
     ticker: seed.ticker,
+    sector_tags: seed.sector_tags,
     score,
     breakdown: normalizeBreakdown(seed.breakdown),
     throat_role: seed.throat_role,
@@ -399,6 +401,7 @@ export async function buildIndustryMap(
       return {
         ticker: company.ticker,
         name: company.name,
+        sector_tags: company.sector_tags,
         stage,
         chain_position: company.chain_position,
         throat_role: company.throat_role,

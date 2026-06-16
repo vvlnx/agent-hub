@@ -427,17 +427,42 @@ export default function HomePage() {
     if (!baseResult) return new Map<string, Company>();
     return new Map(baseResult.companies.map((company) => [company.ticker, company]));
   }, [baseResult]);
+  const baseIndustryCompanyByTicker = useMemo(() => {
+    if (!baseResult) return new Map<string, string>();
+    return new Map(
+      baseResult.industry_map.layers
+        .flatMap((layer) => layer.companies)
+        .map((company) => [company.ticker, company.name]),
+    );
+  }, [baseResult]);
 
   const terminalLabels =
     locale === "zh"
       ? {
           desk: "Oracle 智能交易台",
+          stockTokens: "美股代币",
+          regime: "宏观环境",
+          waitingRegime: "等待",
+          publicMarketData: "Bitget 公开市场数据",
           markets: "市场",
           research: "情报研究",
           strategy: "策略验证",
           evidence: "证据中心",
           systemOnline: "系统在线",
           workspace: "工作区",
+          connections: "连接状态",
+          agentHub: "Agent Hub",
+          bitgetApi: "Bitget API",
+          llm: "LLM",
+          llmOn: "启用",
+          llmRules: "规则模式",
+          mode: "模式",
+          constrained: "约束式",
+          venue: "交易场所",
+          type: "类型",
+          sim: "模拟",
+          news: "新闻",
+          macro: "宏观",
           overview: "决策总览",
           eventFlow: "事件信号",
           chain: "供应链",
@@ -473,6 +498,8 @@ export default function HomePage() {
           industryMapSubtitle: "先把行业拆成上游、中游、下游上市公司，再看每家公司是否有 Bitget 股票代币走势。",
           publicCompanies: "上市公司",
           bitgetOnline: "Bitget 在线",
+          relatedIndustries: "涉及行业",
+          englishFullName: "英文全称",
           stockTrendTitle: "股票走势快照",
           stage: "产业链位置",
           company: "公司",
@@ -495,12 +522,29 @@ export default function HomePage() {
         }
       : {
           desk: "Oracle Intelligence Desk",
+          stockTokens: "US STOCK TOKENS",
+          regime: "REGIME",
+          waitingRegime: "WAITING",
+          publicMarketData: "BITGET PUBLIC MARKET DATA",
           markets: "Markets",
           research: "Research",
           strategy: "Strategy Lab",
           evidence: "Evidence",
           systemOnline: "System Online",
           workspace: "Workspace",
+          connections: "Connections",
+          agentHub: "Agent Hub",
+          bitgetApi: "Bitget API",
+          llm: "LLM",
+          llmOn: "ON",
+          llmRules: "RULES",
+          mode: "MODE",
+          constrained: "CONSTRAINED",
+          venue: "VENUE",
+          type: "TYPE",
+          sim: "SIM",
+          news: "News",
+          macro: "Macro",
           overview: "Decision Overview",
           eventFlow: "Event Signals",
           chain: "Supply Chain",
@@ -536,6 +580,8 @@ export default function HomePage() {
           industryMapSubtitle: "Break the industry into upstream, midstream, and downstream public companies before checking Bitget stock-token trends.",
           publicCompanies: "Public companies",
           bitgetOnline: "Bitget online",
+          relatedIndustries: "Related industries",
+          englishFullName: "English full name",
           stockTrendTitle: "Stock Trend Snapshot",
           stage: "Value-chain stage",
           company: "Company",
@@ -556,7 +602,12 @@ export default function HomePage() {
           nextChecks: "Next Checks",
           limitations: "Boundaries",
         };
-  const quickIndustries = ["AI chips", "Semiconductor", "Nuclear Energy", "EV Battery"];
+  const quickIndustries = [
+    { value: "AI chips", label: locale === "zh" ? "AI 芯片" : "AI chips" },
+    { value: "Semiconductor", label: locale === "zh" ? "半导体" : "Semiconductor" },
+    { value: "Nuclear Energy", label: locale === "zh" ? "核能" : "Nuclear Energy" },
+    { value: "EV Battery", label: locale === "zh" ? "电动车电池" : "EV Battery" },
+  ];
   const selectedTradeTickers = result?.event_intelligence.simulated_decision.selected_tickers ?? [];
   const onlineCandidateCount =
     result?.companies.filter(
@@ -581,7 +632,9 @@ export default function HomePage() {
             </div>
             <div>
               <p className="text-sm font-semibold tracking-tight">ThroatScan</p>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">Oracle Desk</p>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                {terminalLabels.desk}
+              </p>
             </div>
           </div>
           <nav className="hidden h-full items-center gap-1 lg:flex">
@@ -629,13 +682,20 @@ export default function HomePage() {
           </div>
         </div>
         <div className="terminal-ticker flex h-9 items-center gap-8 overflow-x-auto border-t border-[#18212b] px-4 font-mono text-[11px] lg:px-6">
-          <span className="shrink-0 text-zinc-500">US STOCK TOKENS</span>
+          <span className="shrink-0 text-zinc-500">{terminalLabels.stockTokens}</span>
           <span className="shrink-0 text-zinc-300">NVDAONUSDT <b className="terminal-green">+19.66%</b></span>
           <span className="shrink-0 text-zinc-300">SPYONUSDT <b className="terminal-green">+15.37%</b></span>
           <span className="shrink-0 text-zinc-300">VIX <b className="terminal-amber">{formatResearchValue(result?.market_research.macro.market_prices.vix?.value)}</b></span>
           <span className="shrink-0 text-zinc-300">US10Y <b className="terminal-amber">{formatResearchValue(result?.market_research.macro.rates.t10y?.value, "%")}</b></span>
-          <span className="shrink-0 text-zinc-300">REGIME <b className="terminal-amber">{result?.market_research.macro.verdict ?? "WAITING"}</b></span>
-          <span className="ml-auto shrink-0 text-zinc-500">BITGET PUBLIC MARKET DATA</span>
+          <span className="shrink-0 text-zinc-300">
+            {terminalLabels.regime}{" "}
+            <b className="terminal-amber">
+              {result
+                ? macroVerdictLabel(result.market_research.macro.verdict, copy)
+                : terminalLabels.waitingRegime}
+            </b>
+          </span>
+          <span className="ml-auto shrink-0 text-zinc-500">{terminalLabels.publicMarketData}</span>
         </div>
       </header>
 
@@ -667,16 +727,21 @@ export default function HomePage() {
             ))}
           </div>
           <div className="mt-6 border-t border-[#202a36] pt-4">
-            <p className="px-2 text-[10px] uppercase tracking-[0.16em] text-zinc-600">Connections</p>
+            <p className="px-2 text-[10px] uppercase tracking-[0.16em] text-zinc-600">
+              {terminalLabels.connections}
+            </p>
             <div className="mt-3 space-y-3 px-2 text-xs">
               <div className="flex items-center justify-between text-zinc-400">
-                <span>Agent Hub</span><span className="terminal-green">LIVE</span>
+                <span>{terminalLabels.agentHub}</span><span className="terminal-green">{terminalLabels.live}</span>
               </div>
               <div className="flex items-center justify-between text-zinc-400">
-                <span>Bitget API</span><span className="terminal-green">LIVE</span>
+                <span>{terminalLabels.bitgetApi}</span><span className="terminal-green">{terminalLabels.live}</span>
               </div>
               <div className="flex items-center justify-between text-zinc-400">
-                <span>LLM</span><span className="terminal-amber">{result?.meta?.llm_enabled ? "ON" : "RULES"}</span>
+                <span>{terminalLabels.llm}</span>
+                <span className="terminal-amber">
+                  {result?.meta?.llm_enabled ? terminalLabels.llmOn : terminalLabels.llmRules}
+                </span>
               </div>
             </div>
           </div>
@@ -694,9 +759,9 @@ export default function HomePage() {
                   <p className="mt-1 text-xs text-zinc-500">{terminalLabels.scannerHint}</p>
                 </div>
                 <div className="flex gap-5 font-mono text-[10px] text-zinc-500">
-                  <span>MODE <b className="text-zinc-300">CONSTRAINED</b></span>
-                  <span>VENUE <b className="text-zinc-300">BITGET</b></span>
-                  <span>TYPE <b className="text-zinc-300">SIM</b></span>
+                  <span>{terminalLabels.mode} <b className="text-zinc-300">{terminalLabels.constrained}</b></span>
+                  <span>{terminalLabels.venue} <b className="text-zinc-300">BITGET</b></span>
+                  <span>{terminalLabels.type} <b className="text-zinc-300">{terminalLabels.sim}</b></span>
                 </div>
               </div>
               <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(280px,1fr)_auto]">
@@ -728,15 +793,15 @@ export default function HomePage() {
                 {quickIndustries.map((item) => (
                   <button
                     type="button"
-                    key={item}
-                    onClick={() => setIndustry(item)}
+                    key={item.value}
+                    onClick={() => setIndustry(item.value)}
                     className={`rounded border px-2 py-1 text-[11px] ${
-                      industry === item
+                      industry === item.value
                         ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
                         : "border-[#273240] bg-[#0a0f15] text-zinc-500 hover:text-zinc-200"
                     }`}
                   >
-                    {item}
+                    {item.label}
                   </button>
                 ))}
               </div>
@@ -824,8 +889,8 @@ export default function HomePage() {
                     {evidenceReady ? terminalLabels.verified : terminalLabels.marketStatus}
                   </p>
                   <ul className="mt-2 space-y-1 text-xs text-zinc-400">
-                    <li>News: {researchStatusLabel(result.market_research.news.status, copy)}</li>
-                    <li>Macro: {researchStatusLabel(result.market_research.macro.status, copy)}</li>
+                    <li>{terminalLabels.news}: {researchStatusLabel(result.market_research.news.status, copy)}</li>
+                    <li>{terminalLabels.macro}: {researchStatusLabel(result.market_research.macro.status, copy)}</li>
                     <li>Bitget: {result.backtest.status === "verified" ? terminalLabels.live : terminalLabels.waiting}</li>
                   </ul>
                   <p className="mt-2 text-xs text-zinc-500">
@@ -898,7 +963,9 @@ export default function HomePage() {
                           {terminalLabels.noMappedCompanies}
                         </li>
                       ) : (
-                        layer.companies.map((company) => (
+                        layer.companies.map((company) => {
+                          const englishCompanyName = baseIndustryCompanyByTicker.get(company.ticker);
+                          return (
                           <li
                             key={company.ticker}
                             className="rounded-lg border border-[#263241] bg-[#080d13] p-3"
@@ -915,6 +982,26 @@ export default function HomePage() {
                               </span>
                             </div>
                             <p className="mt-1 text-sm text-zinc-300">{company.name}</p>
+                            {locale === "zh" && englishCompanyName ? (
+                              <p className="mt-1 text-[11px] text-zinc-500">
+                                {terminalLabels.englishFullName}: {englishCompanyName}
+                              </p>
+                            ) : null}
+                            {company.sector_tags?.length > 0 ? (
+                              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                                <span className="text-[11px] text-zinc-500">
+                                  {terminalLabels.relatedIndustries}
+                                </span>
+                                {company.sector_tags.slice(0, 4).map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="rounded-full bg-[#141b24] px-2 py-0.5 text-[11px] text-zinc-300"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : null}
                             <p className="mt-1 text-xs leading-5 text-zinc-500">
                               {company.chain_position}
                             </p>
@@ -937,7 +1024,8 @@ export default function HomePage() {
                               </span>
                             </div>
                           </li>
-                        ))
+                          );
+                        })
                       )}
                     </ul>
                   </div>
@@ -974,6 +1062,11 @@ export default function HomePage() {
                             {company.ticker}
                           </span>
                           <span className="ml-2 text-zinc-400">{company.name}</span>
+                          {company.sector_tags?.length > 0 ? (
+                            <span className="ml-2 text-xs text-zinc-500">
+                              {company.sector_tags.slice(0, 3).join(" / ")}
+                            </span>
+                          ) : null}
                         </td>
                         <td className="px-3 py-2 font-mono text-xs text-zinc-400">
                           {company.bitget_symbol ?? terminalLabels.researchOnly}
@@ -2103,6 +2196,26 @@ export default function HomePage() {
                           </span>
                         </div>
                         <p className="mt-1 text-zinc-600 dark:text-zinc-300">{company.name}</p>
+                        {locale === "zh" && baseCompany?.name ? (
+                          <p className="mt-1 text-xs text-zinc-500">
+                            {terminalLabels.englishFullName}: {baseCompany.name}
+                          </p>
+                        ) : null}
+                        {company.sector_tags?.length > 0 ? (
+                          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span className="text-xs text-zinc-500">
+                              {terminalLabels.relatedIndustries}
+                            </span>
+                            {company.sector_tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
                         <p className="mt-1 text-xs text-zinc-500">
                           <BilingualText
                             locale={locale}

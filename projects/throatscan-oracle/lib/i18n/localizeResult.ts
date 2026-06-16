@@ -6,6 +6,8 @@ import type { StructuredReasoningReport } from "../reasoning/structuredReport";
 import type { Company } from "../types";
 import type { IndustryMap } from "../industryMap";
 import {
+  translateCompanyName,
+  translateCompanyNamesInText,
   translateConstraint,
   translateEngineText,
   translateLayer,
@@ -34,6 +36,8 @@ function translateBacktestText(text: string): string {
 function translateCompany(company: Company): Company {
   return {
     ...company,
+    name: translateCompanyName(company.name),
+    sector_tags: (company.sector_tags ?? []).map(translateSectorTag),
     chain_position: translateEngineText(company.chain_position),
     why_bottleneck_or_not: {
       scarce_resource: translateEngineText(company.why_bottleneck_or_not.scarce_resource),
@@ -112,11 +116,13 @@ function translateFinalDecision(decision: FinalDecisionLayer): FinalDecisionLaye
   const translatedIndustry = translateEngineText(decision.final_result_card.industry);
   const mapCompany = (c: FinalDecisionLayer["primary_bottleneck"]) => ({
     ...c,
+    name: translateCompanyName(c.name),
     supply_role_label: c.supply_role_label
       ? translateSupplyRole(c.supply_role_label)
       : undefined,
-    reason: translateEngineText(c.reason),
+    reason: translateCompanyNamesInText(translateEngineText(c.reason)),
   });
+  const translatedPrimaryName = translateCompanyName(decision.primary_bottleneck.name);
 
   return {
     ...decision,
@@ -125,7 +131,7 @@ function translateFinalDecision(decision: FinalDecisionLayer): FinalDecisionLaye
     non_bottleneck_companies: decision.non_bottleneck_companies.map(mapCompany),
     decision_summary: {
       ...decision.decision_summary,
-      one_line_conclusion: `在 ${translatedIndustry} 中，真正的控制点是 ${decision.primary_bottleneck.ticker}（${decision.primary_bottleneck.name}），原因是${translateEngineText(decision.primary_bottleneck.reason)}。`,
+      one_line_conclusion: `在 ${translatedIndustry} 中，真正的控制点是 ${decision.primary_bottleneck.ticker}（${translatedPrimaryName}），原因是${translateCompanyNamesInText(translateEngineText(decision.primary_bottleneck.reason))}。`,
     },
     traditional_vs_throatscan: {
       traditional: {
@@ -149,7 +155,8 @@ function translateFinalDecision(decision: FinalDecisionLayer): FinalDecisionLaye
     final_result_card: {
       ...decision.final_result_card,
       industry: translatedIndustry,
-      reason: translateEngineText(decision.final_result_card.reason),
+      core_bottleneck: translateCompanyNamesInText(decision.final_result_card.core_bottleneck),
+      reason: translateCompanyNamesInText(translateEngineText(decision.final_result_card.reason)),
       confidence: translateEngineText(decision.final_result_card.confidence),
     },
   };
@@ -222,6 +229,8 @@ function translateIndustryMap(map: IndustryMap): IndustryMap {
       purpose: translateEngineText(layer.purpose),
       companies: layer.companies.map((company) => ({
         ...company,
+        name: translateCompanyName(company.name),
+        sector_tags: (company.sector_tags ?? []).map(translateSectorTag),
         chain_position: translateEngineText(company.chain_position),
         supply_role_label: company.supply_role_label
           ? translateSupplyRole(company.supply_role_label)
@@ -232,6 +241,34 @@ function translateIndustryMap(map: IndustryMap): IndustryMap {
         },
       })),
     })),
+  };
+}
+
+function translateThesisAudit(audit: AnalysisResult["thesis_audit"]): AnalysisResult["thesis_audit"] {
+  return {
+    ...audit,
+    summary_zh: translateCompanyNamesInText(translateEngineText(audit.summary_zh)),
+    project_role_zh: translateEngineText(audit.project_role_zh),
+    layer_priorities: audit.layer_priorities.map((layer) => ({
+      ...layer,
+      label_zh: translateEngineText(layer.label_zh),
+      scarce_layer_reason_zh: translateCompanyNamesInText(
+        translateEngineText(layer.scarce_layer_reason_zh),
+      ),
+    })),
+    candidate_reviews: audit.candidate_reviews.map((review) => ({
+      ...review,
+      name: translateCompanyName(review.name),
+      chain_position: translateEngineText(review.chain_position),
+      reason_zh: translateCompanyNamesInText(translateEngineText(review.reason_zh)),
+      failure_condition_zh: translateCompanyNamesInText(
+        translateEngineText(review.failure_condition_zh),
+      ),
+    })),
+    next_checks_zh: audit.next_checks_zh.map((item) =>
+      translateCompanyNamesInText(translateEngineText(item)),
+    ),
+    limitations_zh: audit.limitations_zh.map(translateEngineText),
   };
 }
 
@@ -283,6 +320,7 @@ export function translateAnalysisContent(
       ? translateIntelligence(result.reasoning_intelligence)
       : result.reasoning_intelligence,
     industry_map: translateIndustryMap(result.industry_map),
+    thesis_audit: translateThesisAudit(result.thesis_audit),
     backtest: {
       ...result.backtest,
       period: translateBacktestText(result.backtest.period),

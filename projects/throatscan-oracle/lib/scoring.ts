@@ -51,6 +51,7 @@ export function scoreCompany(seed: CompanySeed, context: ReasoningScoreContext):
   return normalizeCompany({
     name: seed.name,
     ticker: seed.ticker,
+    sector_tags: seed.sector_tags,
     score,
     breakdown,
     throat_role: seed.throat_role,
