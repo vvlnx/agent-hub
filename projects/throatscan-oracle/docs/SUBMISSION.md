@@ -41,7 +41,7 @@ after each run, plus the same data inside exported evidence JSON under
 | **Thesis depth** | Bottleneck thesis, audit, primary SEC/IR links, coverage banner |
 | **Runnability** | Public URL, backtest, local paper, `/api/health`, one-click demo |
 | **Completeness** | End-to-end pipeline with partial/skipped states; tradability guide for research-only runs |
-| **Novelty** | Agent Hub MCP + constrained engine; LLM cannot bypass hard gates |
+| **Novelty** | Agent Workflow UI, hard constraints, rebalance agent plan, growth roadmap, MCP tools_used |
 
 ## Three-Minute Demo Script
 

@@ -541,6 +541,13 @@ export default function HomePage() {
       },
       completeness: baseResult.completeness,
       submission_rubric_self_assessment: baseResult.completeness.judge_self_assessment,
+      agent_workflow: baseResult.completeness.novelty.agent_workflow,
+      novelty_pitch: {
+        why_agent_only_en: baseResult.completeness.novelty.why_agent_only_en,
+        why_agent_only_zh: baseResult.completeness.novelty.why_agent_only_zh,
+        growth_roadmap: baseResult.completeness.novelty.growth_roadmap,
+        rebalance_agent: baseResult.completeness.novelty.rebalance_agent,
+      },
       thesis_audit: baseResult.thesis_audit,
       backtest: baseResult.backtest,
       disclosure:
@@ -905,6 +912,9 @@ export default function HomePage() {
         <a href="#professional-analysis" className="cursor-tab">
           {terminalLabels.evidence}
         </a>
+        <a href="#agent-workflow" className="cursor-tab">
+          {locale === "zh" ? "Agent 工作流" : "Agent workflow"}
+        </a>
       </div>
 
       <div className="flex min-h-0 flex-1">
@@ -936,6 +946,7 @@ export default function HomePage() {
               ["03", terminalLabels.chain, "#industry-map"],
               ["04", terminalLabels.candidates, "#industry-map"],
               ["05", terminalLabels.backtest, "#professional-analysis"],
+              ["06", locale === "zh" ? "Agent 工作流" : "Agent workflow", "#agent-workflow"],
             ].map(([number, label, href], index) => (
               <a
                 href={href}
@@ -1372,6 +1383,215 @@ export default function HomePage() {
                   <p className="mt-3 text-xs leading-5 text-emerald-300">{paperMessage}</p>
                 ) : null}
               </div>
+
+              <section
+                id="agent-workflow"
+                className="mt-4 scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold">{copy.agentWorkflow}</h3>
+                    <p className="mt-1 text-xs text-[var(--cursor-fg-muted)]">{copy.agentWorkflowHint}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {result.completeness.novelty.mcp_tools_used.map((tool) => (
+                      <span
+                        key={tool}
+                        className="rounded-full border border-[var(--cursor-accent)]/25 bg-[var(--cursor-accent-dim)] px-2 py-0.5 font-mono text-[10px] text-[var(--cursor-accent)]"
+                      >
+                        {tool}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--cursor-fg-subtle)]">
+                    {copy.whyAgentOnly}
+                  </p>
+                  <p className="mt-2 text-sm leading-6">
+                    {locale === "zh"
+                      ? result.completeness.novelty.why_agent_only_zh
+                      : result.completeness.novelty.why_agent_only_en}
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-[var(--cursor-fg-muted)]">
+                    {(locale === "zh"
+                      ? result.completeness.novelty.vs_traditional_screener_zh
+                      : result.completeness.novelty.vs_traditional_screener_en
+                    ).map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <ol className="mt-4 space-y-2">
+                  {result.completeness.novelty.agent_workflow.map((step, index) => (
+                    <li
+                      key={step.id}
+                      className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-mono text-[var(--cursor-fg-subtle)]">
+                            {copy.workflowStep} {String(index + 1).padStart(2, "0")}
+                          </p>
+                          <p className="mt-0.5 text-sm font-semibold">
+                            {locale === "zh" ? step.agent_zh : step.agent_en}
+                          </p>
+                          <p className="mt-1 font-mono text-[10px] text-[var(--cursor-accent)]">
+                            {step.skill}
+                          </p>
+                        </div>
+                        <span
+                          className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+                            step.status === "complete"
+                              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-600"
+                              : step.status === "partial"
+                                ? "border-amber-400/30 bg-amber-400/10 text-amber-700"
+                                : "border-zinc-400/30 bg-zinc-100 text-zinc-600"
+                          }`}
+                        >
+                          {step.status === "complete"
+                            ? copy.stageComplete
+                            : step.status === "partial"
+                              ? copy.stagePartial
+                              : copy.stageSkipped}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs leading-5 text-[var(--cursor-fg-muted)]">
+                        {locale === "zh" ? step.detail_zh : step.detail_en}
+                      </p>
+                      {step.tools_used.length > 0 ? (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {step.tools_used.map((tool) => (
+                            <span
+                              key={`${step.id}-${tool}`}
+                              className="rounded border border-[var(--cursor-border)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--cursor-fg-subtle)]"
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                      {step.fetched_at ? (
+                        <p className="mt-2 text-[10px] text-[var(--cursor-fg-subtle)]">
+                          {copy.fetchedAt}: {step.fetched_at}
+                          {step.source_url ? (
+                            <>
+                              {" · "}
+                              <a
+                                href={step.source_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[var(--cursor-accent)] underline"
+                              >
+                                MCP
+                              </a>
+                            </>
+                          ) : null}
+                        </p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ol>
+
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  <div className="rounded-lg border border-[var(--cursor-border)] p-3">
+                    <p className="text-xs font-semibold">{copy.hardConstraints}</p>
+                    <ul className="mt-2 space-y-2">
+                      {result.completeness.novelty.hard_constraints.map((rule) => (
+                        <li key={rule.id} className="text-xs">
+                          <p className="font-medium">
+                            {locale === "zh" ? rule.label_zh : rule.label_en}
+                          </p>
+                          <p className="mt-0.5 text-[var(--cursor-fg-muted)]">
+                            {locale === "zh" ? rule.enforced_zh : rule.enforced_en}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="rounded-lg border border-[var(--cursor-border)] p-3">
+                    <p className="text-xs font-semibold">{copy.rebalanceAgent}</p>
+                    <p className="mt-1 font-mono text-[10px] text-[var(--cursor-fg-subtle)]">
+                      {result.completeness.novelty.rebalance_agent.agent_id}
+                    </p>
+                    <p className="mt-2 text-xs leading-5 text-[var(--cursor-fg-muted)]">
+                      {locale === "zh"
+                        ? result.completeness.novelty.rebalance_agent.policy_zh
+                        : result.completeness.novelty.rebalance_agent.policy_en}
+                    </p>
+                    <ul className="mt-2 space-y-1 text-xs text-[var(--cursor-fg-muted)]">
+                      {(locale === "zh"
+                        ? result.completeness.novelty.rebalance_agent.triggers_zh
+                        : result.completeness.novelty.rebalance_agent.triggers_en
+                      ).map((trigger) => (
+                        <li key={trigger}>• {trigger}</li>
+                      ))}
+                    </ul>
+                    <p className="mt-3 text-xs font-medium">
+                      {locale === "zh"
+                        ? result.completeness.novelty.rebalance_agent.next_action_zh
+                        : result.completeness.novelty.rebalance_agent.next_action_en}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <p className="text-xs font-semibold">{copy.growthRoadmap}</p>
+                  <div className="mt-3 grid gap-3 lg:grid-cols-3">
+                    {result.completeness.novelty.growth_roadmap.map((phase) => (
+                      <div
+                        key={phase.phase}
+                        className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-semibold">
+                            Phase {phase.phase}
+                          </p>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                              phase.status === "live"
+                                ? "bg-emerald-400/10 text-emerald-700"
+                                : phase.status === "partial"
+                                  ? "bg-amber-400/10 text-amber-700"
+                                  : "bg-zinc-200 text-zinc-600"
+                            }`}
+                          >
+                            {phase.status === "live"
+                              ? copy.phaseLive
+                              : phase.status === "partial"
+                                ? copy.phasePartial
+                                : copy.phasePlanned}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs font-medium">
+                          {locale === "zh" ? phase.title_zh : phase.title_en}
+                        </p>
+                        <ul className="mt-2 space-y-1 text-[11px] leading-5 text-[var(--cursor-fg-muted)]">
+                          {(locale === "zh" ? phase.items_zh : phase.items_en).map((item) => (
+                            <li key={item}>• {item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {result.completeness.github_repo_url ? (
+                  <p className="mt-4 text-xs text-[var(--cursor-fg-muted)]">
+                    GitHub:{" "}
+                    <a
+                      href={result.completeness.github_repo_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--cursor-accent)] underline"
+                    >
+                      {result.completeness.github_repo_url}
+                    </a>
+                  </p>
+                ) : null}
+              </section>
 
               <section className="mt-4 rounded-lg border border-[#263241] bg-[#080d13] p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">

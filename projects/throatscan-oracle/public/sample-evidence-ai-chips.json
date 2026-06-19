@@ -3,7 +3,7 @@
   "project": "ThroatScan Oracle",
   "sample": true,
   "industry_input": "AI chips",
-  "exported_at": "2026-06-19T08:50:08.401Z",
+  "exported_at": "2026-06-19T11:23:37.960Z",
   "run_id": "07d6ec0c",
   "confidence": {
     "score": 66,
@@ -31,7 +31,7 @@
   "completeness": {
     "schema_version": "throatscan-completeness-v1",
     "public_demo_url": "https://throatscan-oracle.vercel.app",
-    "github_repo_url": null,
+    "github_repo_url": "https://github.com/vvlnx/agent-hub",
     "end_to_end_stages": [
       {
         "id": "industry_input",
@@ -175,27 +175,33 @@
         "title_en": "Novelty & potential",
         "title_zh": "新颖性与潜力",
         "achieved_en": [
-          "Multi-step Agent workflow: Agent Hub MCP + constrained engine + tradability gate.",
-          "LLM cannot bypass ticker allowlist or sector hard constraints.",
-          "Grounding mode: curated_rules.",
-          "Reproducible evidence chain for judges and developers."
+          "ThroatScan is not a single LLM prompt or theme screener. It orchestrates parallel Agent Hub news/macro research, constrained supply-chain reasoning, Bitget tradability verification, and risk-managed simulation — with hard gates the LLM cannot bypass.",
+          "In-app Agent Workflow timeline (7 steps) with MCP tools_used and fetch timestamps.",
+          "Hard constraints enforced: ticker_allowlist, llm_no_pick, bitget_gate, confidence_cap.",
+          "Growth roadmap Phase 1 live; Phase 2 partial (paper).",
+          "Rebalance agent plan ready — 3 rebalance events in backtest.",
+          "21 Bitget online stock tokens discoverable beyond 43-company research library.",
+          "Public repo: https://github.com/vvlnx/agent-hub"
         ],
         "achieved_zh": [
-          "多步 Agent 工作流：Agent Hub MCP + 约束引擎 + 可交易性过滤。",
-          "LLM 不能绕过 ticker 白名单或行业硬约束。",
-          "Grounding 模式：curated_rules。",
-          "可复现证据链，便于评委与开发者验证。"
+          "ThroatScan 不是单次 LLM 问答或主题筛选器。它并行编排 Agent Hub 新闻/宏观调研、约束式供应链推理、Bitget 可交易性验证与风控模拟——LLM 无法绕过硬约束门槛。",
+          "应用内 Agent 工作流时间线（7 步），含 MCP tools_used 与抓取时间。",
+          "硬约束已执行：ticker_allowlist、llm_no_pick、bitget_gate、confidence_cap。",
+          "成长路线 Phase 1 已上线；Phase 2 部分（纸交易）。",
+          "再平衡 Agent 计划就绪——回测中 3 次再平衡事件。",
+          "21 个 Bitget 在线 stock token 可发现，超越 43 家公司研究库。",
+          "公开仓库：https://github.com/vvlnx/agent-hub"
         ],
         "gaps_en": [
-          "Not a single LLM prompt — requires explanation in demo.",
-          "Growth path: Bitget Demo API, broader universe, scheduled rebalance agent."
+          "Autonomous live trading intentionally disabled for hackathon safety.",
+          "Phase 3 earnings-season event agent remains on roadmap (scheduled Q3 extension)."
         ],
         "gaps_zh": [
-          "非单次 LLM 问答——需在 demo 中展示工作流。",
-          "成长路径：Bitget Demo API、更大 universe、定时 rebalance agent。"
+          "自主实盘交易因黑客松安全考虑刻意未启用。",
+          "Phase 3 财报季事件 Agent 仍在路线图中（计划 Q3 扩展）。"
         ],
-        "rating_en": "Agent-native research-to-execution workflow",
-        "rating_zh": "Agent 原生 research-to-execution 工作流"
+        "rating_en": "Agent-native research-to-execution — not a single LLM prompt",
+        "rating_zh": "Agent 原生 research-to-execution — 非单次 LLM 问答"
       }
     ],
     "tradability_guide": {
@@ -228,9 +234,235 @@
       "recommended_action_en": "Proceed with paper basket execution or download the evidence bundle for audit.",
       "recommended_action_zh": "可执行纸交易篮子，或下载证据包供审计。"
     },
+    "novelty": {
+      "why_agent_only_en": "ThroatScan is not a single LLM prompt or theme screener. It orchestrates parallel Agent Hub news/macro research, constrained supply-chain reasoning, Bitget tradability verification, and risk-managed simulation — with hard gates the LLM cannot bypass.",
+      "why_agent_only_zh": "ThroatScan 不是单次 LLM 问答或主题筛选器。它并行编排 Agent Hub 新闻/宏观调研、约束式供应链推理、Bitget 可交易性验证与风控模拟——LLM 无法绕过硬约束门槛。",
+      "vs_traditional_screener_en": [
+        "Parallel live MCP research while reasoning runs (not sequential chat).",
+        "Structural bottleneck thesis with rejected alternatives — not popularity ranking.",
+        "Tradability and evidence export wired to Bitget public API endpoints."
+      ],
+      "vs_traditional_screener_zh": [
+        "推理运行时并行拉取 live MCP 调研（非顺序聊天）。",
+        "结构性瓶颈 thesis 含被排除替代方案——非热度排序。",
+        "可交易性与证据导出直连 Bitget 公开 API。"
+      ],
+      "agent_workflow": [
+        {
+          "id": "industry_grounding",
+          "agent_en": "Industry grounding agent",
+          "agent_zh": "行业 grounding Agent",
+          "skill": "constrained",
+          "tools_used": [
+            "curated_sec_ir_links"
+          ],
+          "status": "partial",
+          "detail_en": "Mode=constrained, grounding=curated_rules.",
+          "detail_zh": "模式=constrained，grounding=curated_rules。"
+        },
+        {
+          "id": "supply_chain_engine",
+          "agent_en": "Constrained supply-chain engine",
+          "agent_zh": "约束式供应链引擎",
+          "skill": "deterministic-reasoning",
+          "tools_used": [
+            "role_matcher",
+            "hard_constraints",
+            "thesis_audit"
+          ],
+          "status": "complete",
+          "detail_en": "Layers, bottleneck, alternatives, and audit trail without LLM ticker selection.",
+          "detail_zh": "层级、瓶颈、替代假设与审计链——不由 LLM 选 ticker。"
+        },
+        {
+          "id": "agent_hub_news",
+          "agent_en": "Agent Hub — news-briefing",
+          "agent_zh": "Agent Hub — news-briefing",
+          "skill": "news-briefing",
+          "tools_used": [
+            "news_feed"
+          ],
+          "status": "complete",
+          "detail_en": "1 articles @ 2026-06-19T11:23:34.900Z",
+          "detail_zh": "1 篇文章 @ 2026-06-19T11:23:34.900Z",
+          "fetched_at": "2026-06-19T11:23:34.900Z",
+          "source_url": "https://datahub.noxiaohao.com/mcp"
+        },
+        {
+          "id": "agent_hub_macro",
+          "agent_en": "Agent Hub — macro-analyst",
+          "agent_zh": "Agent Hub — macro-analyst",
+          "skill": "macro-analyst",
+          "tools_used": [
+            "rates_yields",
+            "macro_indicators",
+            "global_assets:^VIX",
+            "global_assets:^NDX",
+            "global_assets:DX-Y.NYB"
+          ],
+          "status": "complete",
+          "detail_en": "Verdict=MIXED @ 2026-06-19T11:23:34.900Z",
+          "detail_zh": "判定=MIXED @ 2026-06-19T11:23:34.900Z",
+          "fetched_at": "2026-06-19T11:23:34.900Z",
+          "source_url": "https://datahub.noxiaohao.com/mcp"
+        },
+        {
+          "id": "event_trace",
+          "agent_en": "Event intelligence agent",
+          "agent_zh": "事件情报 Agent",
+          "skill": "event-extraction",
+          "tools_used": [
+            "supply_chain_events",
+            "bottleneck_impact",
+            "capped_overlay"
+          ],
+          "status": "partial",
+          "detail_en": "0 events → action SIMULATED_BUY.",
+          "detail_zh": "0 个事件 → 动作 SIMULATED_BUY。"
+        },
+        {
+          "id": "bitget_verify",
+          "agent_en": "Bitget market verification",
+          "agent_zh": "Bitget 行情验证",
+          "skill": "bitget-public-api",
+          "tools_used": [
+            "symbols",
+            "tickers",
+            "candles"
+          ],
+          "status": "complete",
+          "detail_en": "Backtest verified 2026-04-06 to 2026-06-18 (74 daily observations).",
+          "detail_zh": "回测已验证 2026-04-06 to 2026-06-18 (74 daily observations)。"
+        },
+        {
+          "id": "sim_export",
+          "agent_en": "Sim decision + evidence export",
+          "agent_zh": "模拟决策 + 证据导出",
+          "skill": "paper-portfolio",
+          "tools_used": [
+            "sim_basket",
+            "sha256_evidence",
+            "judge_self_assessment"
+          ],
+          "status": "complete",
+          "detail_en": "Selected: NVDA.",
+          "detail_zh": "选中：NVDA。"
+        }
+      ],
+      "hard_constraints": [
+        {
+          "id": "ticker_allowlist",
+          "label_en": "Fixed company universe + role gates",
+          "label_zh": "固定公司库 + 角色门槛",
+          "enforced_en": "Only seeded companies passing role/sector/query alignment enter the candidate pool.",
+          "enforced_zh": "仅通过角色/行业/查询对齐的种子公司可进入候选池。"
+        },
+        {
+          "id": "llm_no_pick",
+          "label_en": "LLM cannot pick tickers",
+          "label_zh": "LLM 不能选 ticker",
+          "enforced_en": "LLM augments industry grounding only; deterministic engine selects companies.",
+          "enforced_zh": "LLM 仅辅助行业 grounding；公司选择由确定性引擎完成。"
+        },
+        {
+          "id": "bitget_gate",
+          "label_en": "Bitget tradability gate",
+          "label_zh": "Bitget 可交易性过滤",
+          "enforced_en": "Simulated basket restricted to online Bitget stock tokens or documented proxies.",
+          "enforced_zh": "模拟篮子限制为 Bitget 在线 stock token 或文档化代理。"
+        },
+        {
+          "id": "confidence_cap",
+          "label_en": "Capped event overlay",
+          "label_zh": "事件叠加封顶",
+          "enforced_en": "News/macro/event confidence overlay capped at ±12 points on structural score.",
+          "enforced_zh": "新闻/宏观/事件置信叠加在结构分上封顶 ±12 分。"
+        }
+      ],
+      "growth_roadmap": [
+        {
+          "phase": 1,
+          "title_en": "Research + sim backtest (now)",
+          "title_zh": "Research + 模拟回测（当前）",
+          "status": "live",
+          "items_en": [
+            "Multi-agent workflow with Agent Hub MCP + constrained engine.",
+            "Bitget candle backtest, local paper basket, downloadable evidence.",
+            "21 Bitget online stock tokens discoverable."
+          ],
+          "items_zh": [
+            "Agent Hub MCP + 约束引擎的多 Agent 工作流。",
+            "Bitget K 线回测、本地纸交易篮子、可下载证据包。",
+            "21 个 Bitget 在线 stock token 可发现。"
+          ]
+        },
+        {
+          "phase": 2,
+          "title_en": "Paper trading + rebalance agent",
+          "title_zh": "纸交易 + 再平衡 Agent",
+          "status": "partial",
+          "items_en": [
+            "Bitget Demo API ready via BITGET_DEMO_* env (optional upgrade).",
+            "Local paper basket execution at live Bitget public prices (enabled).",
+            "Rebalance agent plan: periodic rebalance + 15% trailing stop triggers."
+          ],
+          "items_zh": [
+            "Bitget Demo API 可通过 BITGET_DEMO_* 环境变量启用。",
+            "本地纸交易篮子（Bitget 公开价成交）已启用。",
+            "再平衡 Agent 计划：周期性再平衡 + 15% 移动止损触发。"
+          ]
+        },
+        {
+          "phase": 3,
+          "title_en": "Event agents + full-market universe",
+          "title_zh": "事件 Agent + 全市场 universe",
+          "status": "planned",
+          "items_en": [
+            "Earnings/capacity event agent during reporting season.",
+            "Dynamic Bitget symbol discovery beyond fixed research library.",
+            "Scheduled autonomous rebalance with human approval gate."
+          ],
+          "items_zh": [
+            "财报季 earnings/产能事件 Agent。",
+            "超越固定研究库的 Bitget 动态 symbol 发现。",
+            "带人工审批门的定时自主再平衡。"
+          ]
+        }
+      ],
+      "rebalance_agent": {
+        "agent_id": "throatscan-rebalance-scheduler-v1",
+        "status": "ready",
+        "policy_en": "Rebalance every 20 shared observations; 15% trailing stop; 40% max position.",
+        "policy_zh": "每 20 个共同观测日再平衡；15% 移动止损；单仓上限 40%。",
+        "triggers_en": [
+          "Periodic rebalance to max-risk target weights",
+          "15% trailing stop on open positions",
+          "Paper basket fill after sim decision"
+        ],
+        "triggers_zh": [
+          "周期性再平衡至最大风险目标权重",
+          "持仓 15% 移动止损",
+          "模拟决策后执行纸交易篮子"
+        ],
+        "next_action_en": "Monitor NVDA — next rebalance on observation boundary or stop trigger.",
+        "next_action_zh": "监控 NVDA — 下一再平衡在观测边界或止损触发。",
+        "backtest_rebalance_events": 3
+      },
+      "bitget_online_stock_token_count": 21,
+      "fixed_universe_size": 43,
+      "mcp_url": "https://datahub.noxiaohao.com/mcp",
+      "mcp_tools_used": [
+        "news_feed",
+        "rates_yields",
+        "macro_indicators",
+        "global_assets:^VIX",
+        "global_assets:^NDX",
+        "global_assets:DX-Y.NYB"
+      ]
+    },
     "honest_summary_en": "ThroatScan completed 7/7 end-to-end stages. Direct Bitget execution is available for NVDA. This is research software with verifiable Bitget evidence — not financial advice.",
     "honest_summary_zh": "ThroatScan 完成 7/7 个端到端阶段。可直接在 Bitget 执行：NVDA。 这是带可验证 Bitget 证据的研究软件——不构成投资建议。",
-    "generated_at": "2026-06-19T08:50:08.401Z"
+    "generated_at": "2026-06-19T11:23:37.960Z"
   },
   "thesis_audit": {
     "source": "Open-source scarce-layer research methodology",
@@ -693,18 +925,18 @@
       "一手证据链接（SEC、IR、监管机构）是人工核查入口——系统尚未自动抓取或解析公告。",
       "方法论评分仍需要人工阅读链接文件中的产能、订单与客户验证信息。"
     ],
-    "generated_at": "2026-06-19T08:50:08.400Z"
+    "generated_at": "2026-06-19T11:23:37.958Z"
   },
   "backtest": {
     "status": "verified",
     "period": "2026-04-06 to 2026-06-18 (74 daily observations)",
-    "evidence_hash": "ef385026f60f1a85d6c8c678cb297289443f4ee43e0d5976d5f6f566de6b3170",
+    "evidence_hash": "b4cde63a3d3c5b2f8ee177b1d6758a636b187a2c72775d1d81797ef9a6872c3d",
     "metrics": {
       "total_return_pct": 7.8,
-      "benchmark_return_pct": 14.11,
+      "benchmark_return_pct": 14.22,
       "max_drawdown_pct": 5.95,
       "volatility_pct": 12.72,
-      "alpha_pct": -28.12,
+      "alpha_pct": -28.65,
       "sharpe_ratio": 2.11
     }
   },

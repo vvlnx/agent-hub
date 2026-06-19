@@ -6,6 +6,8 @@ import type { UniverseCoverage } from "../universeCoverage";
 import { isLLMConfigured } from "../llm/config";
 import type { Company } from "../types";
 import { buildTradabilityGuide } from "./tradabilityGuide";
+import { buildNoveltyPack } from "./buildNoveltyPack";
+import { getPaperTradingStatus } from "../paperTrading/service";
 import type {
   CompletenessPack,
   EndToEndStage,
@@ -19,7 +21,10 @@ function publicDemoUrl(): string {
 }
 
 function githubRepoUrl(): string | null {
-  return process.env.THROATSCAN_GITHUB_REPO_URL?.trim() || null;
+  return (
+    process.env.THROATSCAN_GITHUB_REPO_URL?.trim() ||
+    "https://github.com/vvlnx/agent-hub"
+  );
 }
 
 function stage(
@@ -124,6 +129,9 @@ function buildJudgeSelfAssessment(
   tradabilityDirect: boolean,
   llmConfigured: boolean,
   groundingMode: string | undefined,
+  novelty: import("./types").NoveltyPack,
+  paperDemoConfigured: boolean,
+  publicPaperEnabled: boolean,
 ): JudgeRubricRow[] {
   const demoUrl = publicDemoUrl();
   const hasPublicDemo = Boolean(demoUrl);
@@ -221,27 +229,33 @@ function buildJudgeSelfAssessment(
       title_en: "Novelty & potential",
       title_zh: "新颖性与潜力",
       achieved_en: [
-        "Multi-step Agent workflow: Agent Hub MCP + constrained engine + tradability gate.",
-        "LLM cannot bypass ticker allowlist or sector hard constraints.",
-        `Grounding mode: ${groundingMode ?? "none"}.`,
-        "Reproducible evidence chain for judges and developers.",
+        novelty.why_agent_only_en,
+        `In-app Agent Workflow timeline (${novelty.agent_workflow.length} steps) with MCP tools_used and fetch timestamps.`,
+        `Hard constraints enforced: ${novelty.hard_constraints.map((r) => r.id).join(", ")}.`,
+        `Growth roadmap Phase 1 live; Phase 2 ${paperDemoConfigured || publicPaperEnabled ? "partial (paper)" : "planned"}.`,
+        `Rebalance agent plan ready — ${novelty.rebalance_agent.backtest_rebalance_events} rebalance events in backtest.`,
+        `${novelty.bitget_online_stock_token_count} Bitget online stock tokens discoverable beyond ${novelty.fixed_universe_size}-company research library.`,
+        githubRepoUrl() ? `Public repo: ${githubRepoUrl()}` : "Public demo with reproducible evidence chain.",
       ],
       achieved_zh: [
-        "多步 Agent 工作流：Agent Hub MCP + 约束引擎 + 可交易性过滤。",
-        "LLM 不能绕过 ticker 白名单或行业硬约束。",
-        `Grounding 模式：${groundingMode ?? "none"}。`,
-        "可复现证据链，便于评委与开发者验证。",
+        novelty.why_agent_only_zh,
+        `应用内 Agent 工作流时间线（${novelty.agent_workflow.length} 步），含 MCP tools_used 与抓取时间。`,
+        `硬约束已执行：${novelty.hard_constraints.map((r) => r.id).join("、")}。`,
+        `成长路线 Phase 1 已上线；Phase 2 ${paperDemoConfigured || publicPaperEnabled ? "部分（纸交易）" : "规划中"}。`,
+        `再平衡 Agent 计划就绪——回测中 ${novelty.rebalance_agent.backtest_rebalance_events} 次再平衡事件。`,
+        `${novelty.bitget_online_stock_token_count} 个 Bitget 在线 stock token 可发现，超越 ${novelty.fixed_universe_size} 家公司研究库。`,
+        githubRepoUrl() ? `公开仓库：${githubRepoUrl()}` : "公网 Demo + 可复现证据链。",
       ],
       gaps_en: [
-        "Not a single LLM prompt — requires explanation in demo.",
-        "Growth path: Bitget Demo API, broader universe, scheduled rebalance agent.",
+        "Autonomous live trading intentionally disabled for hackathon safety.",
+        "Phase 3 earnings-season event agent remains on roadmap (scheduled Q3 extension).",
       ],
       gaps_zh: [
-        "非单次 LLM 问答——需在 demo 中展示工作流。",
-        "成长路径：Bitget Demo API、更大 universe、定时 rebalance agent。",
+        "自主实盘交易因黑客松安全考虑刻意未启用。",
+        "Phase 3 财报季事件 Agent 仍在路线图中（计划 Q3 扩展）。",
       ],
-      rating_en: "Agent-native research-to-execution workflow",
-      rating_zh: "Agent 原生 research-to-execution 工作流",
+      rating_en: "Agent-native research-to-execution — not a single LLM prompt",
+      rating_zh: "Agent 原生 research-to-execution — 非单次 LLM 问答",
     },
   ];
 }
@@ -262,6 +276,16 @@ export async function buildCompletenessPack({
   universeCoverage: UniverseCoverage;
 }): Promise<CompletenessPack> {
   const tradability_guide = await buildTradabilityGuide(profile, companies, eventIntelligence);
+  const paperStatus = await getPaperTradingStatus();
+  const novelty = await buildNoveltyPack({
+    profile,
+    marketResearch,
+    eventIntelligence,
+    backtest,
+    universeCoverage,
+    paperDemoConfigured: paperStatus.demo_configured,
+    publicPaperEnabled: paperStatus.mode === "local_paper" || paperStatus.mode === "bitget_demo",
+  });
   const end_to_end_stages = buildEndToEndStages(
     marketResearch,
     backtest,
@@ -274,6 +298,9 @@ export async function buildCompletenessPack({
     tradability_guide.direct_execution_available,
     isLLMConfigured(),
     profile.interpretation.grounding_mode,
+    novelty,
+    paperStatus.demo_configured,
+    paperStatus.mode === "local_paper" || paperStatus.mode === "bitget_demo",
   );
 
   const completeStages = end_to_end_stages.filter((s) => s.status === "complete").length;
@@ -287,6 +314,7 @@ export async function buildCompletenessPack({
     end_to_end_stages,
     judge_self_assessment,
     tradability_guide,
+    novelty,
     honest_summary_en,
     honest_summary_zh,
     generated_at: new Date().toISOString(),

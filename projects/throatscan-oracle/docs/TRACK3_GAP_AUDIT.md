@@ -15,6 +15,18 @@ Audit date: June 19, 2026
 - All-track baseline: the demo must actually run and include verifiable usage
   evidence.
 
+## Dimension 4 — Novelty & potential
+
+| Gap (previously) | Status | Evidence |
+| --- | --- | --- |
+| «Only Agent can do» narrative not visible | **Fixed** | In-app Agent Workflow panel + `docs/NOVELTY.md` |
+| MCP orchestration hidden in backend | **Fixed** | `tools_used`, skill names, fetch timestamps per step |
+| Growth story too abstract | **Fixed** | 3-phase roadmap + rebalance agent plan in UI |
+| Not a single LLM prompt — needs demo explanation | **Fixed** | 7-step workflow timeline visible without video |
+| Bitget Demo / rebalance agent on roadmap only | **Fixed** | Phase 2 partial: local paper + Demo API env path + rebalance plan |
+| Autonomous live trading | Pending (by design) | Hackathon safety — honest gap in self-assessment |
+| Phase 3 earnings event agent | Pending | Roadmap Q3 extension |
+
 ## Four-Dimension Completeness (Dimension 3 focus)
 
 | Gap (previously) | Status | Evidence |
