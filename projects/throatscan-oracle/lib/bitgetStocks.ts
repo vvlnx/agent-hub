@@ -1,4 +1,5 @@
 import type { Company } from "./types";
+import { getCachedBitgetSymbols, getCachedBitgetTickers } from "./bitgetCache";
 import { EnvHttpProxyAgent, ProxyAgent, request } from "undici";
 
 const BITGET_API_BASE_URL = "https://api.bitget.com";
@@ -68,6 +69,13 @@ export interface BitgetStockMarketEvidence {
 }
 
 async function bitgetGet<T>(path: string): Promise<T> {
+  if (path === "/api/v2/spot/public/symbols") {
+    return getCachedBitgetSymbols<T>();
+  }
+  if (path === "/api/v2/spot/market/tickers") {
+    return getCachedBitgetTickers<T>();
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 

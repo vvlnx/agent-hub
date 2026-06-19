@@ -2,6 +2,9 @@ import type { ChainNode, CompanySeed } from "../mockData";
 import type { CompanyAuditRecord } from "./auditTrail";
 import type { SelectionConstraint } from "./constraints";
 import type { StructuredReasoningReport, FinalRankingEntry } from "./structuredReport";
+import type { LLMResearchSource } from "../llm/types";
+import type { GroundingMode } from "../rulesModeGrounding";
+import type { UniverseCoverage } from "../universeCoverage";
 
 export type SupplyLayerId = "demand" | "infrastructure" | "core_technology" | "materials";
 
@@ -27,6 +30,10 @@ export interface IndustryIntent {
   physical_intensity: number;
   regulation_intensity: number;
   confidence?: number;
+  research_sources?: LLMResearchSource[];
+  research_queries?: string[];
+  web_search_used?: boolean;
+  grounding_mode?: GroundingMode;
 }
 
 export interface SupplyChainLayer {
@@ -84,6 +91,7 @@ export interface ReasoningResult {
   uncertain_mapping: boolean;
   uncertainty_message?: string;
   inference_mode: "constrained" | "constrained_llm";
+  universe_coverage: UniverseCoverage;
   reasoning_intelligence?: import("./intelligenceLayer").ReasoningIntelligence;
 }
 

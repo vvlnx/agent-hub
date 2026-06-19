@@ -9,9 +9,10 @@ const cases = [
   { input: "Biotech", forbidden: ["NVDA", "ASML", "XOM"] },
   { input: "Oil and Gas", forbidden: ["NVDA", "MSFT", "LLY"] },
   { input: "Nuclear Energy", forbidden: ["NVDA", "MSFT", "LLY"] },
+  { input: "quantum computing", forbidden: [], expectCoverage: "out_of_scope" },
 ];
 
-async function profileSummary({ input, forbidden }) {
+async function profileSummary({ input, forbidden, expectCoverage }) {
   const profile = await buildIndustryProfile(input);
   const scored = scoreCompaniesFromReasoning(
     profile.companies,
@@ -45,6 +46,10 @@ async function profileSummary({ input, forbidden }) {
       .map((company) => company.ticker)
       .filter((ticker) => forbidden.includes(ticker))
       .join(","),
+    coverage: profile.reasoning.universe_coverage.level,
+    coverage_ok: expectCoverage ? profile.reasoning.universe_coverage.level === expectCoverage : true,
+    grounding: profile.interpretation.grounding_mode ?? "none",
+    source_count: profile.interpretation.research_sources?.length ?? 0,
   };
 }
 
@@ -61,6 +66,8 @@ async function main() {
   console.log(`All audit fields present: ${rows.every((row) => row.audit_fields)}`);
   console.log(`All pass constraint gate: ${rows.every((row) => row.all_constrained)}`);
   console.log(`No obvious cross-sector picks: ${rows.every((row) => !row.forbidden_hits)}`);
+  console.log(`Coverage expectations met: ${rows.every((row) => row.coverage_ok)}`);
+  console.log(`Rules grounding available for canonical demos: ${rows.filter((row) => row.grounding === "curated_rules").length >= 3}`);
 
   const repeat = await runReasoningEngine("Semiconductor");
   const repeat2 = await runReasoningEngine("Semiconductor");
@@ -78,7 +85,7 @@ async function main() {
 
   const ok =
     unique.size >= 4 &&
-    rows.every((row) => row.audit_fields && row.all_constrained && !row.forbidden_hits) &&
+    rows.every((row) => row.audit_fields && row.all_constrained && !row.forbidden_hits && row.coverage_ok) &&
     layerMatch &&
     bottleneckMatch &&
     rankingMatch;

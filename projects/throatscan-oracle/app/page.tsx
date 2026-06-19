@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { AnalysisResult } from "@/lib/mockData";
+import type { PaperOrder, PaperTradingStatus } from "@/lib/paperTrading/types";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
 import {
   formatBacktestMeta,
@@ -324,13 +325,89 @@ function thesisAuditSignalStyles(signal: ThesisAuditCandidateSignal): string {
   return "bg-amber-400/10 text-amber-300";
 }
 
+function universeCoverageLabel(
+  level: AnalysisResult["universe_coverage"]["level"],
+  copy: ReturnType<typeof t>,
+): string {
+  if (level === "full") return copy.universeCoverageFull;
+  if (level === "partial") return copy.universeCoveragePartial;
+  return copy.universeCoverageOut;
+}
+
+function universeCoverageStyles(level: AnalysisResult["universe_coverage"]["level"]): string {
+  if (level === "full") return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
+  if (level === "partial") return "border-amber-400/30 bg-amber-400/10 text-amber-100";
+  return "border-red-400/30 bg-red-400/10 text-red-100";
+}
+
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
   const [industry, setIndustry] = useState("AI chips");
   const [baseResult, setBaseResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showBitgetSetup, setShowBitgetSetup] = useState(false);
+  const [paperStatus, setPaperStatus] = useState<PaperTradingStatus | null>(null);
+  const [recentPaperOrders, setRecentPaperOrders] = useState<PaperOrder[]>([]);
+  const [paperSubmitting, setPaperSubmitting] = useState(false);
+  const [paperMessage, setPaperMessage] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState(0);
   const copy = t(locale);
+
+  const analysisSteps = useMemo(
+    () =>
+      locale === "zh"
+        ? [
+            "解析行业与供应链层级…",
+            "匹配上市公司与硬约束…",
+            "拉取 Bitget 公开行情…",
+            "并行请求 Agent Hub 新闻/宏观…",
+            "生成事件信号与模拟决策…",
+            "运行 Bitget 回测与证据包…",
+          ]
+        : [
+            "Parsing industry and supply-chain layers…",
+            "Matching public companies and hard constraints…",
+            "Fetching Bitget public market data…",
+            "Running Agent Hub news/macro research in parallel…",
+            "Building event signals and simulated decision…",
+            "Running Bitget backtest and evidence bundle…",
+          ],
+    [locale],
+  );
+
+  async function refreshPaperStatus() {
+    try {
+      const response = await fetch("/api/paper/status", { cache: "no-store" });
+      if (!response.ok) return;
+      const payload = (await response.json()) as PaperTradingStatus & {
+        recent_orders?: PaperOrder[];
+      };
+      setPaperStatus(payload);
+      setRecentPaperOrders(payload.recent_orders ?? []);
+    } catch {
+      /* ignore transient status failures */
+    }
+  }
+
+  useEffect(() => {
+    void fetch("/api/warmup", { cache: "no-store" }).catch(() => undefined);
+    void refreshPaperStatus();
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStep(0);
+      return;
+    }
+    let step = 0;
+    setLoadingStep(0);
+    const timer = setInterval(() => {
+      step = Math.min(step + 1, analysisSteps.length - 1);
+      setLoadingStep(step);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, [loading, analysisSteps.length]);
 
   const result = useMemo(() => {
     if (!baseResult) return null;
@@ -341,14 +418,21 @@ export default function HomePage() {
     }
   }, [baseResult, locale]);
 
-  async function handleRunAnalysis() {
+  async function handleRunAnalysis(nextIndustry?: string) {
+    if (nextIndustry) {
+      setIndustry(nextIndustry);
+    }
+    const query = (nextIndustry ?? industry).trim();
+    if (!query) return;
+
     setLoading(true);
     setError(null);
+    setPaperMessage(null);
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ industry }),
+        body: JSON.stringify({ industry: query }),
       });
 
       const payload = (await response.json()) as AnalysisResult & { error?: string };
@@ -361,7 +445,8 @@ export default function HomePage() {
         !payload.structured_report ||
         !payload.event_intelligence ||
         !payload.industry_map ||
-        !payload.thesis_audit
+        !payload.thesis_audit ||
+        !payload.completeness
       ) {
         throw new Error(copy.analysisFailed);
       }
@@ -375,11 +460,55 @@ export default function HomePage() {
     }
   }
 
+  async function handlePaperExecute() {
+    if (!baseResult) return;
+    const tickers = baseResult.event_intelligence.simulated_decision.selected_tickers;
+    if (tickers.length === 0) {
+      setPaperMessage(
+        locale === "zh"
+          ? "当前没有 Bitget 可执行的模拟篮子标的。"
+          : "No Bitget-tradable tickers in the current simulated basket.",
+      );
+      return;
+    }
+
+    setPaperSubmitting(true);
+    setPaperMessage(null);
+    try {
+      const response = await fetch("/api/paper/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          run_id: baseResult.structured_report.run_id,
+          industry: baseResult.industry,
+          tickers,
+          rationale:
+            baseResult.event_intelligence.simulated_decision.rationale_en ??
+            "ThroatScan simulated basket",
+        }),
+      });
+      const payload = (await response.json()) as {
+        summary_en?: string;
+        summary_zh?: string;
+        error?: string;
+      };
+      if (!response.ok) {
+        throw new Error(payload.error ?? copy.analysisFailed);
+      }
+      setPaperMessage(locale === "zh" ? payload.summary_zh ?? "" : payload.summary_en ?? "");
+      await refreshPaperStatus();
+    } catch (err) {
+      setPaperMessage(err instanceof Error ? err.message : copy.analysisFailed);
+    } finally {
+      setPaperSubmitting(false);
+    }
+  }
+
   function handleDownloadEvidence() {
     if (!baseResult) return;
 
     const payload = {
-      schema_version: "throatscan-run-evidence-v1",
+      schema_version: "throatscan-run-evidence-v2",
       project: "ThroatScan Oracle",
       exported_at: new Date().toISOString(),
       run_id: baseResult.structured_report.run_id,
@@ -387,6 +516,15 @@ export default function HomePage() {
       confidence: {
         score: baseResult.confidence,
         level: baseResult.confidence_level,
+      },
+      llm_industry_research: {
+        api: baseResult.meta?.llm_api ?? "responses",
+        model: baseResult.meta?.llm_model,
+        inference_mode: baseResult.interpretation.inference_mode,
+        grounding_mode: baseResult.interpretation.grounding_mode ?? "none",
+        web_search_used: baseResult.interpretation.web_search_used ?? false,
+        queries: baseResult.interpretation.research_queries ?? [],
+        sources: baseResult.interpretation.research_sources ?? [],
       },
       bitget_market_evidence: baseResult.companies.map((company) => ({
         ticker: company.ticker,
@@ -396,6 +534,13 @@ export default function HomePage() {
       event_intelligence: baseResult.event_intelligence,
       final_decision: baseResult.final_decision,
       industry_map: baseResult.industry_map,
+      universe_coverage: baseResult.universe_coverage,
+      paper_trading: {
+        status: paperStatus,
+        recent_orders: recentPaperOrders,
+      },
+      completeness: baseResult.completeness,
+      submission_rubric_self_assessment: baseResult.completeness.judge_self_assessment,
       thesis_audit: baseResult.thesis_audit,
       backtest: baseResult.backtest,
       disclosure:
@@ -519,6 +664,48 @@ export default function HomePage() {
           candidateCrossCheck: "候选公司复核",
           nextChecks: "下一步验证",
           limitations: "边界说明",
+          productLabel: "BITGET 智能研究终端",
+          researchDesk: "研究台",
+          portfolio: "模拟篮子",
+          activity: "执行记录",
+          publicDataConnected: "公开行情已连接",
+          tradingNotConnected: "交易账户未连接",
+          connectBitget: "连接 Bitget",
+          executionConsole: "Bitget 执行连接台",
+          executionHint: "研究数据已接入；账户、余额和下单能力需单独授权。",
+          publicMarket: "公开市场数据",
+          tradingApi: "交易 API",
+          accountBalance: "账户余额",
+          notConnected: "未连接",
+          paperMode: "模拟模式",
+          liveLocked: "实盘锁定",
+          runnabilityLevel: "可运行层级",
+          runnabilityBacktest: "回测 + 证据",
+          runnabilityLocalPaper: "本地纸交易",
+          runnabilityBitgetDemo: "Bitget Demo",
+          executePaperBasket: "执行纸交易篮子",
+          executingPaper: "提交纸交易中…",
+          demoRunAiChips: "一键演示：AI chips",
+          loadingPipeline: "分析流水线",
+          paperOrders: "纸交易记录",
+          testPaperConnection: "检测纸交易连接",
+          configureConnection: "配置连接",
+          workflow: "研究到执行流程",
+          workflowResearch: "行业研究",
+          workflowMap: "标的映射",
+          workflowVerify: "行情验证",
+          workflowSimulate: "模拟决策",
+          setupTitle: "连接 Bitget 交易账户",
+          setupSubtitle: "当前页面仅使用公开行情。交易凭证应只保存在服务端。",
+          permissions: "建议权限",
+          permissionValue: "只读 + 交易，不启用提现",
+          setupStepOne: "在 Bitget 创建独立 API Key，并绑定服务器 IP。",
+          setupStepTwo: "仅开启读取与交易权限，保持提现权限关闭。",
+          setupStepThree: "通过服务端环境变量保存密钥，再运行连接测试。",
+          secretWarning: "不要在浏览器或前端代码中保存 API Secret 与 Passphrase。",
+          close: "关闭",
+          emptyTitle: "选择一个行业，生成第一份执行研究",
+          emptyHint: "系统会先识别产业链瓶颈，再核对 Bitget 可交易标的，最后生成模拟篮子。",
         }
       : {
           desk: "Oracle Intelligence Desk",
@@ -601,6 +788,48 @@ export default function HomePage() {
           candidateCrossCheck: "Candidate Cross-check",
           nextChecks: "Next Checks",
           limitations: "Boundaries",
+          productLabel: "BITGET INTELLIGENCE TERMINAL",
+          researchDesk: "Research Desk",
+          portfolio: "Sim Basket",
+          activity: "Execution Log",
+          publicDataConnected: "Public data connected",
+          tradingNotConnected: "Trading account not connected",
+          connectBitget: "Connect Bitget",
+          executionConsole: "Bitget Execution Console",
+          executionHint: "Research data is live. Account, balance, and order access require separate authorization.",
+          publicMarket: "Public market data",
+          tradingApi: "Trading API",
+          accountBalance: "Account balance",
+          notConnected: "Not connected",
+          paperMode: "Paper mode",
+          liveLocked: "Live locked",
+          runnabilityLevel: "Runnability level",
+          runnabilityBacktest: "Backtest + evidence",
+          runnabilityLocalPaper: "Local paper",
+          runnabilityBitgetDemo: "Bitget Demo",
+          executePaperBasket: "Execute paper basket",
+          executingPaper: "Submitting paper orders…",
+          demoRunAiChips: "One-click demo: AI chips",
+          loadingPipeline: "Analysis pipeline",
+          paperOrders: "Paper orders",
+          testPaperConnection: "Test paper connection",
+          configureConnection: "Configure connection",
+          workflow: "Research-to-execution flow",
+          workflowResearch: "Industry research",
+          workflowMap: "Symbol mapping",
+          workflowVerify: "Market verify",
+          workflowSimulate: "Sim decision",
+          setupTitle: "Connect a Bitget trading account",
+          setupSubtitle: "This page currently uses public market data only. Trading credentials belong on the server.",
+          permissions: "Recommended scope",
+          permissionValue: "Read + trade, withdrawals disabled",
+          setupStepOne: "Create a dedicated API key in Bitget and bind the server IP.",
+          setupStepTwo: "Enable read and trade only; keep withdrawal access disabled.",
+          setupStepThree: "Store credentials in server environment variables, then run a connection test.",
+          secretWarning: "Never store the API secret or passphrase in browser or frontend code.",
+          close: "Close",
+          emptyTitle: "Choose an industry to create an execution-ready research brief",
+          emptyHint: "The system finds the bottleneck, verifies Bitget-listed symbols, then builds a simulated basket.",
         };
   const quickIndustries = [
     { value: "AI chips", label: locale === "zh" ? "AI 芯片" : "AI chips" },
@@ -623,206 +852,390 @@ export default function HomePage() {
   const industryMapCompanies = result?.industry_map.layers.flatMap((layer) => layer.companies) ?? [];
 
   return (
-    <div className="exchange-terminal min-h-screen text-zinc-100">
-      <header className="terminal-topbar sticky top-0 z-50">
-        <div className="flex h-14 items-center gap-6 px-4 lg:px-6">
-          <div className="flex min-w-fit items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-400 text-sm font-black text-[#06120d]">
-              TS
-            </div>
-            <div>
-              <p className="text-sm font-semibold tracking-tight">ThroatScan</p>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-                {terminalLabels.desk}
-              </p>
-            </div>
+    <div className="cursor-workbench flex h-screen flex-col overflow-hidden">
+      <header className="cursor-titlebar shrink-0">
+        <div className="flex items-center gap-2.5">
+          <div className="hidden gap-1.5 sm:flex" aria-hidden="true">
+            <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+            <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+            <span className="h-3 w-3 rounded-full bg-[#28c840]" />
           </div>
-          <nav className="hidden h-full items-center gap-1 lg:flex">
-            {[terminalLabels.markets, terminalLabels.research, terminalLabels.strategy, terminalLabels.evidence].map(
-              (item, index) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={`h-full border-b-2 px-3 text-xs font-medium ${
-                    index === 1
-                      ? "border-emerald-400 text-white"
-                      : "border-transparent text-zinc-500 hover:text-zinc-200"
-                  }`}
-                >
-                  {item}
-                </button>
-              ),
-            )}
-          </nav>
-          <div className="ml-auto flex items-center gap-3">
-            <div className="hidden items-center gap-2 text-xs text-zinc-400 sm:flex">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#0ecb81]" />
-              {terminalLabels.systemOnline}
-            </div>
-            <div className="flex rounded-md border border-[#273240] bg-[#0b1118] p-0.5">
-              <button
-                type="button"
-                onClick={() => setLocale("en")}
-                className={`rounded px-2.5 py-1 text-xs font-semibold ${
-                  locale === "en" ? "bg-[#273240] text-white" : "text-zinc-500"
-                }`}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLocale("zh")}
-                className={`rounded px-2.5 py-1 text-xs font-semibold ${
-                  locale === "zh" ? "bg-[#273240] text-white" : "text-zinc-500"
-                }`}
-              >
-                中文
-              </button>
-            </div>
-          </div>
+          <div className="brand-mark flex h-6 w-6 items-center justify-center text-[10px] font-bold">TS</div>
+          <span className="text-xs font-medium">ThroatScan Oracle</span>
         </div>
-        <div className="terminal-ticker flex h-9 items-center gap-8 overflow-x-auto border-t border-[#18212b] px-4 font-mono text-[11px] lg:px-6">
-          <span className="shrink-0 text-zinc-500">{terminalLabels.stockTokens}</span>
-          <span className="shrink-0 text-zinc-300">NVDAONUSDT <b className="terminal-green">+19.66%</b></span>
-          <span className="shrink-0 text-zinc-300">SPYONUSDT <b className="terminal-green">+15.37%</b></span>
-          <span className="shrink-0 text-zinc-300">VIX <b className="terminal-amber">{formatResearchValue(result?.market_research.macro.market_prices.vix?.value)}</b></span>
-          <span className="shrink-0 text-zinc-300">US10Y <b className="terminal-amber">{formatResearchValue(result?.market_research.macro.rates.t10y?.value, "%")}</b></span>
-          <span className="shrink-0 text-zinc-300">
-            {terminalLabels.regime}{" "}
-            <b className="terminal-amber">
-              {result
-                ? macroVerdictLabel(result.market_research.macro.verdict, copy)
-                : terminalLabels.waitingRegime}
-            </b>
-          </span>
-          <span className="ml-auto shrink-0 text-zinc-500">{terminalLabels.publicMarketData}</span>
+        <div className="cursor-titlebar-title">{terminalLabels.productLabel}</div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowBitgetSetup(true)}
+            className="cursor-btn-ghost hidden px-2.5 py-1 text-[11px] sm:block"
+          >
+            {terminalLabels.connectBitget}
+          </button>
+          <div className="flex rounded border border-[var(--cursor-border-strong)] bg-[var(--cursor-panel)] p-0.5">
+            <button
+              type="button"
+              onClick={() => setLocale("en")}
+              className={`rounded px-2 py-0.5 text-[11px] font-medium ${
+                locale === "en" ? "bg-[var(--cursor-selection)] text-[var(--cursor-fg)]" : "text-[var(--cursor-fg-muted)]"
+              }`}
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLocale("zh")}
+              className={`rounded px-2 py-0.5 text-[11px] font-medium ${
+                locale === "zh" ? "bg-[var(--cursor-selection)] text-[var(--cursor-fg)]" : "text-[var(--cursor-fg-muted)]"
+              }`}
+            >
+              中文
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="grid min-h-[calc(100vh-5.75rem)] lg:grid-cols-[204px_minmax(0,1fr)]">
-        <aside className="terminal-sidebar sticky top-[5.75rem] h-[calc(100vh-5.75rem)] p-3">
-          <p className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
-            {terminalLabels.workspace}
-          </p>
-          <div className="space-y-1">
+      <div className="cursor-tabstrip shrink-0" aria-label="Primary navigation">
+        <a href="#scanner" className="cursor-tab active">
+          {terminalLabels.researchDesk}
+        </a>
+        <a href="#decision-overview" className="cursor-tab">
+          {terminalLabels.portfolio}
+        </a>
+        <a href="#professional-analysis" className="cursor-tab">
+          {terminalLabels.evidence}
+        </a>
+      </div>
+
+      <div className="flex min-h-0 flex-1">
+        <nav className="cursor-activity-bar shrink-0" aria-label="Views">
+          <button type="button" className="cursor-activity-btn active" title={terminalLabels.workspace} aria-label={terminalLabels.workspace}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+          </button>
+          <a href="#decision-overview" className="cursor-activity-btn" title={terminalLabels.portfolio} aria-label={terminalLabels.portfolio}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M3 3v18h18M7 16l4-4 4 4 5-6" />
+            </svg>
+          </a>
+          <a href="#professional-analysis" className="cursor-activity-btn" title={terminalLabels.evidence} aria-label={terminalLabels.evidence}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+            </svg>
+          </a>
+        </nav>
+
+        <aside className="cursor-sidebar terminal-sidebar shrink-0 p-2">
+          <p className="cursor-sidebar-section">{terminalLabels.workspace}</p>
+          <div>
             {[
-              ["01", terminalLabels.overview],
-              ["02", terminalLabels.eventFlow],
-              ["03", terminalLabels.chain],
-              ["04", terminalLabels.candidates],
-              ["05", terminalLabels.backtest],
-            ].map(([number, label], index) => (
-              <button
-                type="button"
+              ["01", terminalLabels.overview, "#decision-overview"],
+              ["02", terminalLabels.eventFlow, "#professional-analysis"],
+              ["03", terminalLabels.chain, "#industry-map"],
+              ["04", terminalLabels.candidates, "#industry-map"],
+              ["05", terminalLabels.backtest, "#professional-analysis"],
+            ].map(([number, label, href], index) => (
+              <a
+                href={href}
                 key={label}
-                className={`flex w-full items-center gap-3 rounded-md border px-2.5 py-2 text-left text-xs ${
-                  index === 0
-                    ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-300"
-                    : "border-transparent text-zinc-500"
-                }`}
+                className={`cursor-sidebar-item ${index === 0 ? "active" : ""}`}
               >
-                <span className="font-mono text-[10px] opacity-60">{number}</span>
+                <span className="font-mono text-[10px] opacity-50">{number}</span>
                 {label}
-              </button>
+              </a>
             ))}
           </div>
-          <div className="mt-6 border-t border-[#202a36] pt-4">
-            <p className="px-2 text-[10px] uppercase tracking-[0.16em] text-zinc-600">
-              {terminalLabels.connections}
-            </p>
-            <div className="mt-3 space-y-3 px-2 text-xs">
-              <div className="flex items-center justify-between text-zinc-400">
-                <span>{terminalLabels.agentHub}</span><span className="terminal-green">{terminalLabels.live}</span>
+          <div className="sidebar-connection mx-1.5 mt-4 p-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--cursor-fg-muted)]">Bitget</p>
+              <span className="rounded bg-[var(--cursor-accent-dim)] px-1.5 py-0.5 text-[9px] font-semibold uppercase text-[var(--cursor-accent)]">
+                {terminalLabels.paperMode}
+              </span>
+            </div>
+            <div className="mt-3 space-y-2 text-xs">
+              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
+                <span>{terminalLabels.publicMarket}</span>
+                <span className="terminal-green">LIVE</span>
               </div>
-              <div className="flex items-center justify-between text-zinc-400">
-                <span>{terminalLabels.bitgetApi}</span><span className="terminal-green">{terminalLabels.live}</span>
+              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
+                <span>{terminalLabels.tradingApi}</span>
+                <span className={paperStatus?.demo_configured ? "terminal-green" : paperStatus?.mode === "local_paper" ? "terminal-amber" : "text-[var(--cursor-fg-subtle)]"}>
+                  {paperStatus?.demo_configured ? "DEMO" : paperStatus?.mode === "local_paper" ? "PAPER" : "OFF"}
+                </span>
               </div>
-              <div className="flex items-center justify-between text-zinc-400">
-                <span>{terminalLabels.llm}</span>
-                <span className="terminal-amber">
-                  {result?.meta?.llm_enabled ? terminalLabels.llmOn : terminalLabels.llmRules}
+              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
+                <span>{terminalLabels.accountBalance}</span>
+                <span className="font-mono text-[var(--cursor-fg)]">
+                  {paperStatus?.balance_usdt !== undefined
+                    ? `${paperStatus.balance_usdt.toFixed(2)} USDT`
+                    : paperStatus?.mode === "local_paper"
+                      ? locale === "zh"
+                        ? "本地纸交易"
+                        : "Local paper"
+                      : "-- USDT"}
                 </span>
               </div>
             </div>
+            <button type="button" onClick={() => setShowBitgetSetup(true)} className="cursor-btn-ghost mt-3 w-full px-2 py-1.5 text-xs">
+              {terminalLabels.configureConnection}
+            </button>
+            {recentPaperOrders.length > 0 ? (
+              <div className="mt-3 border-t border-[var(--cursor-border)] pt-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--cursor-fg-subtle)]">
+                  {terminalLabels.paperOrders}
+                </p>
+                <ul className="mt-2 space-y-1 text-[10px] text-[var(--cursor-fg-muted)]">
+                  {recentPaperOrders.slice(0, 3).map((order) => (
+                    <li key={order.order_id} className="font-mono">
+                      {order.symbol} · {order.venue} · {order.status}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         </aside>
 
-        <main className="min-w-0 px-3 py-4 sm:px-5 lg:px-6">
-          <section className="terminal-panel overflow-hidden rounded-lg">
-            <div className="border-b border-[#202a36] p-4 lg:p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                    <h1 className="text-lg font-semibold tracking-tight">{terminalLabels.scanner}</h1>
+        <main className="cursor-editor flex min-w-0 flex-col">
+          <section id="scanner" className="cursor-composer shrink-0">
+            <div className="scanner-hero p-4 sm:p-5">
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--cursor-fg-muted)]">
+                        Research → Verify → Execute
+                      </p>
+                      <h1 className="mt-1 text-lg font-semibold tracking-tight text-[var(--cursor-fg)]">
+                        {terminalLabels.scanner}
+                      </h1>
+                      <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--cursor-fg-muted)]">{terminalLabels.scannerHint}</p>
+                    </div>
+                    <div className="flex rounded-md border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-0.5 text-[10px] font-medium">
+                      <span className="rounded px-2.5 py-1 text-[var(--cursor-accent)]">{terminalLabels.paperMode}</span>
+                      <span className="px-2.5 py-1 text-[var(--cursor-fg-subtle)]">{terminalLabels.liveLocked}</span>
+                    </div>
                   </div>
-                  <p className="mt-1 text-xs text-zinc-500">{terminalLabels.scannerHint}</p>
+
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end">
+                    <label className="block flex-1">
+                      <span className="mb-1.5 block text-[10px] font-medium uppercase tracking-wide text-[var(--cursor-fg-muted)]">
+                        {copy.industry}
+                      </span>
+                      <div className="cursor-composer-input-wrap">
+                        <input
+                          type="text"
+                          value={industry}
+                          onChange={(event) => setIndustry(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" && !loading) void handleRunAnalysis();
+                          }}
+                          className="terminal-input w-full border-0 bg-transparent px-3 py-2.5 text-sm outline-none"
+                          placeholder={copy.industryPlaceholder}
+                        />
+                      </div>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => void handleRunAnalysis()}
+                      disabled={loading}
+                      className="cursor-btn-primary shrink-0 px-5 py-2.5 text-sm disabled:opacity-60"
+                    >
+                      {loading ? copy.running : copy.runAnalysis}
+                    </button>
+                  </div>
+                  {loading ? (
+                    <div className="mt-3 rounded-lg border border-[#273240] bg-[#0a0f15] px-4 py-3">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-600">
+                        {terminalLabels.loadingPipeline}
+                      </p>
+                      <p className="mt-1 text-sm text-emerald-300">{analysisSteps[loadingStep]}</p>
+                      <div className="mt-2 h-1 overflow-hidden rounded bg-[#1a2430]">
+                        <div
+                          className="h-full bg-emerald-400 transition-all duration-500"
+                          style={{
+                            width: `${Math.round(((loadingStep + 1) / analysisSteps.length) * 100)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void handleRunAnalysis("AI chips")}
+                      disabled={loading}
+                      className="rounded-md border border-emerald-400/35 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-semibold text-emerald-300 transition hover:bg-emerald-400/15 disabled:opacity-60"
+                    >
+                      {terminalLabels.demoRunAiChips}
+                    </button>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <span className="mr-1 text-[10px] uppercase tracking-[0.14em] text-zinc-600">
+                      {terminalLabels.hotSectors}
+                    </span>
+                    {quickIndustries.map((item) => (
+                      <button
+                        type="button"
+                        key={item.value}
+                        onClick={() => setIndustry(item.value)}
+                        className={`rounded-md border px-2.5 py-1.5 text-[11px] transition ${
+                          industry === item.value
+                            ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
+                            : "border-[#273240] bg-[#0a0f15] text-zinc-500 hover:text-zinc-200"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mt-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">{terminalLabels.workflow}</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
+                      {[terminalLabels.workflowResearch, terminalLabels.workflowMap, terminalLabels.workflowVerify, terminalLabels.workflowSimulate].map((label, index) => (
+                        <div key={label} className="workflow-step rounded-lg border border-[#202a36] bg-[#0a0f15]/80 p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-5 w-5 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 font-mono text-[9px] text-emerald-300">0{index + 1}</span>
+                            <span className="text-xs font-medium text-zinc-300">{label}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex gap-5 font-mono text-[10px] text-zinc-500">
-                  <span>{terminalLabels.mode} <b className="text-zinc-300">{terminalLabels.constrained}</b></span>
-                  <span>{terminalLabels.venue} <b className="text-zinc-300">BITGET</b></span>
-                  <span>{terminalLabels.type} <b className="text-zinc-300">{terminalLabels.sim}</b></span>
-                </div>
-              </div>
-              <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(280px,1fr)_auto]">
-                <label className="block">
-                  <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">
-                    {copy.industry}
-                  </span>
-                  <input
-                    type="text"
-                    value={industry}
-                    onChange={(event) => setIndustry(event.target.value)}
-                    className="terminal-input w-full rounded-md px-3 py-2.5 text-sm"
-                    placeholder={copy.industryPlaceholder}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => void handleRunAnalysis()}
-                  disabled={loading}
-                  className="terminal-run self-end rounded-md px-7 py-2.5 text-sm font-bold disabled:opacity-60"
-                >
-                  {loading ? copy.running : copy.runAnalysis}
-                </button>
-              </div>
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="mr-1 text-[10px] uppercase tracking-[0.14em] text-zinc-600">
-                  {terminalLabels.hotSectors}
-                </span>
-                {quickIndustries.map((item) => (
-                  <button
-                    type="button"
-                    key={item.value}
-                    onClick={() => setIndustry(item.value)}
-                    className={`rounded border px-2 py-1 text-[11px] ${
-                      industry === item.value
-                        ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
-                        : "border-[#273240] bg-[#0a0f15] text-zinc-500 hover:text-zinc-200"
-                    }`}
-                  >
-                    {item.label}
+
+                <aside className="execution-card rounded-xl border border-[#2a3745] bg-[#080d13]/95 p-4 sm:p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-white">{terminalLabels.executionConsole}</p>
+                      <p className="mt-1 text-xs leading-5 text-zinc-500">{terminalLabels.executionHint}</p>
+                    </div>
+                    <span className="relative mt-1 flex h-2 w-2 shrink-0">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                    </span>
+                  </div>
+                  <div className="mt-5 space-y-1 rounded-lg border border-[#202a36] bg-[#0b1118] p-1">
+                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
+                      <span className="text-zinc-500">{terminalLabels.publicMarket}</span>
+                      <span className="font-mono font-semibold text-emerald-300">LIVE</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
+                      <span className="text-zinc-500">{terminalLabels.tradingApi}</span>
+                      <span
+                        className={`font-mono font-semibold ${
+                          paperStatus?.demo_configured
+                            ? "text-emerald-300"
+                            : paperStatus?.mode === "local_paper"
+                              ? "text-amber-300"
+                              : "text-zinc-600"
+                        }`}
+                      >
+                        {paperStatus?.demo_configured
+                          ? "DEMO LIVE"
+                          : paperStatus?.mode === "local_paper"
+                            ? "PAPER LIVE"
+                            : "OFFLINE"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
+                      <span className="text-zinc-500">{terminalLabels.accountBalance}</span>
+                      <span className="font-mono text-zinc-300">
+                        {paperStatus?.balance_usdt !== undefined
+                          ? `${paperStatus.balance_usdt.toFixed(2)} USDT`
+                          : paperStatus?.mode === "local_paper"
+                            ? locale === "zh"
+                              ? "本地纸交易"
+                              : "Local paper"
+                            : "-- USDT"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
+                      <span className="text-zinc-500">{terminalLabels.runnabilityLevel}</span>
+                      <span className="font-mono text-sky-300">
+                        {paperStatus?.runnability_level === "bitget_demo"
+                          ? terminalLabels.runnabilityBitgetDemo
+                          : paperStatus?.runnability_level === "local_paper"
+                            ? terminalLabels.runnabilityLocalPaper
+                            : terminalLabels.runnabilityBacktest}
+                      </span>
+                    </div>
+                  </div>
+                  {result && selectedTradeTickers.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => void handlePaperExecute()}
+                      disabled={paperSubmitting}
+                      className="mt-4 w-full rounded-lg bg-emerald-400 px-3 py-2.5 text-xs font-bold text-[#03130d] transition hover:brightness-110 disabled:opacity-60"
+                    >
+                      {paperSubmitting
+                        ? terminalLabels.executingPaper
+                        : terminalLabels.executePaperBasket}
+                    </button>
+                  ) : null}
+                  <button type="button" onClick={() => setShowBitgetSetup(true)} className="mt-3 w-full rounded-lg border border-emerald-400/35 bg-emerald-400/10 px-3 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-400/15">
+                    {terminalLabels.configureConnection}
                   </button>
-                ))}
+                  {paperMessage ? (
+                    <p className="mt-3 text-xs leading-5 text-emerald-200/90">{paperMessage}</p>
+                  ) : null}
+                  <p className="mt-3 text-center text-[10px] leading-4 text-zinc-600">{terminalLabels.permissionValue}</p>
+                </aside>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 border-b border-[#202a36] sm:grid-cols-4">
+            <div className="status-grid grid grid-cols-2 border-t border-[var(--cursor-border)] sm:grid-cols-4">
               {[
-                [terminalLabels.marketStatus, result ? terminalLabels.verified : terminalLabels.waiting, result ? "terminal-green" : "text-zinc-500"],
-                [terminalLabels.bitgetStatus, result?.backtest.status === "verified" ? terminalLabels.live : terminalLabels.waiting, result?.backtest.status === "verified" ? "terminal-green" : "text-zinc-500"],
-                [terminalLabels.decisionStatus, result ? simulatedActionLabel(result.event_intelligence.simulated_decision.action, copy) : terminalLabels.waiting, result ? "terminal-amber" : "text-zinc-500"],
-                [terminalLabels.confidence, result ? `${result.confidence}/100` : "—", result ? "text-white" : "text-zinc-500"],
+                [terminalLabels.marketStatus, result ? terminalLabels.verified : terminalLabels.waiting, result ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
+                [terminalLabels.bitgetStatus, result?.backtest.status === "verified" ? terminalLabels.live : terminalLabels.waiting, result?.backtest.status === "verified" ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
+                [terminalLabels.decisionStatus, result ? simulatedActionLabel(result.event_intelligence.simulated_decision.action, copy) : terminalLabels.waiting, result ? "terminal-amber" : "text-[var(--cursor-fg-muted)]"],
+                [terminalLabels.confidence, result ? `${result.confidence}/100` : "—", result ? "text-[var(--cursor-fg)]" : "text-[var(--cursor-fg-muted)]"],
               ].map(([label, value, valueClass]) => (
-                <div key={label} className="border-r border-[#202a36] px-4 py-3 last:border-r-0">
-                  <p className="text-[10px] uppercase tracking-[0.12em] text-zinc-600">{label}</p>
-                  <p className={`mt-1 font-mono text-sm font-semibold ${valueClass}`}>{value}</p>
+                <div key={label} className="status-cell border-r border-[var(--cursor-border)] px-4 py-3 last:border-r-0">
+                  <p className="text-[10px] uppercase tracking-wide text-[var(--cursor-fg-subtle)]">{label}</p>
+                  <p className={`mt-0.5 font-mono text-sm font-medium ${valueClass}`}>{value}</p>
                 </div>
               ))}
             </div>
+          </section>
 
+          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
         {error ? (
           <p className="m-4 rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{error}</p>
+        ) : null}
+
+        {!result && !loading && !error ? (
+          <div className="empty-workspace m-4 rounded-xl border border-dashed border-[#2a3745] px-5 py-10 text-center sm:m-5">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/10 font-mono text-xs font-bold text-emerald-300">TS</div>
+            <h2 className="mt-4 text-base font-semibold text-white">{terminalLabels.emptyTitle}</h2>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-zinc-500">{terminalLabels.emptyHint}</p>
+            <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-2">
+              <a
+                href="https://throatscan-oracle.vercel.app"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md border border-sky-400/35 bg-sky-400/10 px-3 py-2 text-xs font-semibold text-sky-300"
+              >
+                {copy.tryPublicDemo}
+              </a>
+              <a
+                href="/sample-evidence-ai-chips.json"
+                className="rounded-md border border-[#273240] bg-[#0a0f15] px-3 py-2 text-xs font-semibold text-zinc-300"
+              >
+                {copy.sampleEvidence}
+              </a>
+              <button
+                type="button"
+                onClick={() => void handleRunAnalysis("AI chips")}
+                className="rounded-md border border-emerald-400/35 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-300"
+              >
+                {terminalLabels.demoRunAiChips}
+              </button>
+            </div>
+          </div>
         ) : null}
 
         {result && baseResult ? (
@@ -832,7 +1245,7 @@ export default function HomePage() {
                 {copy.engineFootnote}
               </p>
             ) : null}
-            <section className="rounded-lg border border-emerald-400/25 bg-[#0b1118] p-4">
+            <section id="decision-overview" className="scroll-mt-28 rounded-lg border border-emerald-400/25 bg-[#0b1118] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">{terminalLabels.simpleTitle}</h2>
@@ -841,6 +1254,40 @@ export default function HomePage() {
                 <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
                   {terminalLabels.judgePitch}
                 </span>
+              </div>
+              <div
+                className={`mt-4 rounded-lg border px-4 py-3 ${universeCoverageStyles(result.universe_coverage.level)}`}
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] opacity-80">
+                      {copy.universeCoverage}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {universeCoverageLabel(result.universe_coverage.level, copy)} ·{" "}
+                      {result.universe_coverage.matched_count}/{result.universe_coverage.universe_size}{" "}
+                      {locale === "zh" ? "匹配" : "matched"} ·{" "}
+                      {locale === "zh" ? "对齐" : "alignment"}{" "}
+                      {result.universe_coverage.avg_query_alignment}/100
+                    </p>
+                    <p className="mt-2 text-xs leading-5 opacity-90">
+                      {locale === "zh"
+                        ? result.universe_coverage.summary_zh
+                        : result.universe_coverage.summary_en}
+                    </p>
+                    <p className="mt-1 text-xs opacity-75">{copy.universeCoverageHint}</p>
+                  </div>
+                  {result.universe_coverage.level !== "full" ? (
+                    <div className="min-w-[12rem] rounded-md border border-white/10 bg-black/20 px-3 py-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] opacity-70">
+                        {copy.recommendedDemoInputs}
+                      </p>
+                      <p className="mt-1 text-xs leading-5">
+                        {result.universe_coverage.recommended_demo_inputs.slice(0, 4).join(" · ")}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <div className="mt-4 grid gap-3 lg:grid-cols-4">
                 <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
@@ -909,10 +1356,130 @@ export default function HomePage() {
                       : result.event_intelligence.simulated_decision.rationale_en
                     : terminalLabels.proxyNote}
                 </p>
+                {selectedTradeTickers.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => void handlePaperExecute()}
+                    disabled={paperSubmitting}
+                    className="mt-4 rounded-lg bg-emerald-400 px-4 py-2.5 text-sm font-bold text-[#03130d] transition hover:brightness-110 disabled:opacity-60"
+                  >
+                    {paperSubmitting
+                      ? terminalLabels.executingPaper
+                      : terminalLabels.executePaperBasket}
+                  </button>
+                ) : null}
+                {paperMessage ? (
+                  <p className="mt-3 text-xs leading-5 text-emerald-300">{paperMessage}</p>
+                ) : null}
               </div>
+
+              <section className="mt-4 rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">{copy.judgeSelfAssessment}</h3>
+                    <p className="mt-1 text-xs text-zinc-500">{copy.judgeSelfAssessmentHint}</p>
+                  </div>
+                  <a
+                    href={result.completeness.public_demo_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-1 text-xs font-semibold text-sky-300"
+                  >
+                    {copy.publicDemo}
+                  </a>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-zinc-300">
+                  {locale === "zh"
+                    ? result.completeness.honest_summary_zh
+                    : result.completeness.honest_summary_en}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {result.completeness.end_to_end_stages.map((pipeStage) => (
+                    <span
+                      key={pipeStage.id}
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold ${
+                        pipeStage.status === "complete"
+                          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+                          : pipeStage.status === "partial"
+                            ? "border-amber-400/30 bg-amber-400/10 text-amber-300"
+                            : "border-zinc-600 bg-zinc-800 text-zinc-400"
+                      }`}
+                    >
+                      {locale === "zh" ? pipeStage.label_zh : pipeStage.label_en}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-4 grid gap-3 lg:grid-cols-2">
+                  {result.completeness.judge_self_assessment.map((row) => (
+                    <div
+                      key={row.id}
+                      className="rounded-lg border border-[#263241] bg-[#0f151d] p-4"
+                    >
+                      <p className="text-sm font-semibold text-white">
+                        {locale === "zh" ? row.title_zh : row.title_en}
+                      </p>
+                      <p className="mt-1 text-xs text-violet-300">
+                        {locale === "zh" ? row.rating_zh : row.rating_en}
+                      </p>
+                      <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                        {copy.achieved}
+                      </p>
+                      <ul className="mt-1 space-y-1 text-xs leading-5 text-zinc-400">
+                        {(locale === "zh" ? row.achieved_zh : row.achieved_en).map((item) => (
+                          <li key={item}>- {item}</li>
+                        ))}
+                      </ul>
+                      <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
+                        {copy.gaps}
+                      </p>
+                      <ul className="mt-1 space-y-1 text-xs leading-5 text-zinc-500">
+                        {(locale === "zh" ? row.gaps_zh : row.gaps_en).map((item) => (
+                          <li key={item}>- {item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {!result.completeness.tradability_guide.direct_execution_available ? (
+                <section className="mt-4 rounded-lg border border-amber-400/25 bg-amber-400/5 p-4">
+                  <h3 className="text-sm font-semibold text-amber-100">{copy.tradabilityGuide}</h3>
+                  <p className="mt-2 text-sm leading-6 text-amber-50/90">
+                    {locale === "zh"
+                      ? result.completeness.tradability_guide.summary_zh
+                      : result.completeness.tradability_guide.summary_en}
+                  </p>
+                  {result.completeness.tradability_guide.research_only_tickers.length > 0 ? (
+                    <p className="mt-3 text-xs text-amber-100/80">
+                      {copy.researchOnlyNames}:{" "}
+                      {result.completeness.tradability_guide.research_only_tickers.join(", ")}
+                    </p>
+                  ) : null}
+                  {result.completeness.tradability_guide.online_proxy_options.length > 0 ? (
+                    <div className="mt-3">
+                      <p className="text-xs font-semibold text-amber-100/90">{copy.proxyOptions}</p>
+                      <ul className="mt-2 space-y-1 text-xs text-amber-50/90">
+                        {result.completeness.tradability_guide.online_proxy_options.map((option) => (
+                          <li key={option.bitget_symbol}>
+                            <span className="font-mono font-semibold">{option.bitget_symbol}</span> —{" "}
+                            {locale === "zh" ? option.role_zh : option.role_en}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  <p className="mt-3 text-sm font-medium text-amber-100">
+                    {copy.tradabilityNextStep}:{" "}
+                    {locale === "zh"
+                      ? result.completeness.tradability_guide.recommended_action_zh
+                      : result.completeness.tradability_guide.recommended_action_en}
+                  </p>
+                </section>
+              ) : null}
             </section>
 
-            <section className="rounded-lg border border-[#263241] bg-[#0b1118] p-4">
+            <section id="industry-map" className="scroll-mt-28 rounded-lg border border-[#263241] bg-[#0b1118] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">
@@ -1221,6 +1788,22 @@ export default function HomePage() {
                             ? review.failure_condition_zh
                             : review.failure_condition_en}
                         </p>
+                        {review.primary_evidence.length > 0 ? (
+                          <ul className="mt-2 space-y-1">
+                            {review.primary_evidence.slice(0, 2).map((link) => (
+                              <li key={`${review.ticker}-${link.url}`}>
+                                <a
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs text-sky-300 underline decoration-sky-700 underline-offset-2 hover:text-sky-200"
+                                >
+                                  {locale === "zh" ? link.label_zh : link.label_en}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
                       </div>
                     ))}
                   </div>
@@ -1230,17 +1813,56 @@ export default function HomePage() {
               <div className="mt-4 grid gap-3 lg:grid-cols-2">
                 <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
                   <h3 className="text-sm font-semibold text-white">
-                    {terminalLabels.nextChecks}
+                    {copy.primaryEvidence}
                   </h3>
-                  <ul className="mt-2 space-y-1 text-xs leading-5 text-zinc-400">
-                    {(locale === "zh"
-                      ? result.thesis_audit.next_checks_zh
-                      : result.thesis_audit.next_checks_en
-                    ).map((item) => (
-                      <li key={item}>- {item}</li>
+                  <p className="mt-1 text-xs text-zinc-500">{copy.primaryEvidenceHint}</p>
+                  <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto text-xs leading-5 text-zinc-400">
+                    {result.thesis_audit.primary_evidence.slice(0, 8).map((link) => (
+                      <li key={`${link.ticker}-${link.url}`}>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-sky-300 underline decoration-sky-700 underline-offset-2 hover:text-sky-200"
+                        >
+                          {link.ticker} · {locale === "zh" ? link.label_zh : link.label_en}
+                        </a>
+                        <p className="mt-0.5 text-zinc-500">
+                          {locale === "zh" ? link.check_hint_zh : link.check_hint_en}
+                        </p>
+                      </li>
                     ))}
                   </ul>
                 </div>
+                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                  <h3 className="text-sm font-semibold text-white">
+                    {terminalLabels.nextChecks}
+                  </h3>
+                  <ul className="mt-2 space-y-2 text-xs leading-5 text-zinc-400">
+                    {result.thesis_audit.next_checks.map((check, index) => (
+                      <li key={`${check.text_en}-${index}`}>
+                        <p>
+                          {locale === "zh" ? check.text_zh : check.text_en}
+                        </p>
+                        {check.url ? (
+                          <a
+                            href={check.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-1 inline-block text-sky-300 underline decoration-sky-700 underline-offset-2 hover:text-sky-200"
+                          >
+                            {locale === "zh"
+                              ? check.url_label_zh ?? copy.openPrimarySource
+                              : check.url_label_en ?? copy.openPrimarySource}
+                          </a>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3 lg:grid-cols-1">
                 <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.limitations}
@@ -1301,7 +1923,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <details className="rounded-lg border border-[#263241] bg-[#0b1118] p-4">
+            <details id="professional-analysis" className="scroll-mt-28 rounded-lg border border-[#263241] bg-[#0b1118] p-4">
               <summary className="cursor-pointer list-none">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -2072,6 +2694,55 @@ export default function HomePage() {
               <p className="mt-2 text-sm text-zinc-500">
                 <BilingualText locale={locale} en={baseResult.summary} zh={result.summary} />
               </p>
+              {result.interpretation.research_sources?.length ? (
+                <div className="mt-3 border-t border-[#202a36] pt-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium text-zinc-200">
+                        {result.interpretation.grounding_mode === "curated_rules"
+                          ? copy.rulesGroundingSources
+                          : result.interpretation.grounding_mode === "live_web_search"
+                            ? copy.liveWebGroundingSources
+                            : copy.llmWebSources}
+                      </p>
+                      <p className="mt-1 text-xs text-zinc-500">
+                        {result.interpretation.grounding_mode === "curated_rules"
+                          ? copy.rulesGroundingDescription
+                          : copy.llmWebSourcesDescription}
+                      </p>
+                    </div>
+                    <span className="rounded border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 font-mono text-[10px] text-emerald-300">
+                      {result.interpretation.research_sources.length} URLs
+                    </span>
+                  </div>
+                  {result.interpretation.research_queries?.length ? (
+                    <p className="mt-2 text-xs text-zinc-500">
+                      <span className="font-medium text-zinc-400">{copy.llmSearchQueries}:</span>{" "}
+                      {result.interpretation.research_queries.join(" · ")}
+                    </p>
+                  ) : null}
+                  <ul className="mt-2 max-h-56 space-y-1 overflow-y-auto pr-1 text-xs">
+                    {result.interpretation.research_sources.map((source) => (
+                      <li key={source.url} className="flex min-w-0 items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="min-w-0 break-all text-sky-300 underline decoration-sky-700 underline-offset-2 hover:text-sky-200"
+                        >
+                          {source.title || source.url}
+                        </a>
+                        {source.cited ? (
+                          <span className="shrink-0 font-mono text-[10px] text-emerald-400">
+                            {copy.citedSource}
+                          </span>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               <div className="mt-3 rounded-lg border border-indigo-200 bg-indigo-50 p-3 dark:border-indigo-900 dark:bg-indigo-950/40">
                 <p className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
                   {copy.structuredReport}
@@ -2692,9 +3363,112 @@ export default function HomePage() {
             </details>
           </div>
         ) : null}
-          </section>
+          </div>
         </main>
       </div>
+
+      <footer className="cursor-statusbar shrink-0">
+        <span className="cursor-statusbar-item">{terminalLabels.publicDataConnected}</span>
+        <span className="cursor-statusbar-item hidden sm:inline">
+          VIX {formatResearchValue(result?.market_research.macro.market_prices.vix?.value)}
+        </span>
+        <span className="cursor-statusbar-item hidden md:inline">
+          US10Y {formatResearchValue(result?.market_research.macro.rates.t10y?.value, "%")}
+        </span>
+        <span className="cursor-statusbar-item hidden lg:inline">
+          {terminalLabels.regime}{" "}
+          {result
+            ? macroVerdictLabel(result.market_research.macro.verdict, copy)
+            : terminalLabels.waitingRegime}
+        </span>
+        <span className="ml-auto cursor-statusbar-item">
+          {paperStatus?.demo_configured ? "Bitget Demo" : paperStatus?.mode === "local_paper" ? "Local Paper" : terminalLabels.paperMode}
+        </span>
+      </footer>
+
+      {showBitgetSetup ? (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" role="presentation">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bitget-setup-title"
+            className="connection-dialog w-full max-w-lg rounded-2xl border border-[#2a3745] bg-[#0d1219] p-5 shadow-2xl sm:p-6"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Server-side connection
+                </div>
+                <h2 id="bitget-setup-title" className="text-xl font-semibold text-white">{terminalLabels.setupTitle}</h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">{terminalLabels.setupSubtitle}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowBitgetSetup(false)}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#2a3745] text-lg text-zinc-500 transition hover:text-white"
+                aria-label={terminalLabels.close}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-[#202a36] bg-[#090e14] p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span className="text-zinc-500">{terminalLabels.permissions}</span>
+                <span className="font-semibold text-emerald-300">{terminalLabels.permissionValue}</span>
+              </div>
+              <ol className="mt-4 space-y-3">
+                {[terminalLabels.setupStepOne, terminalLabels.setupStepTwo, terminalLabels.setupStepThree].map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-5 text-zinc-300">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#304052] bg-[#111923] font-mono text-[10px] text-emerald-300">{index + 1}</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="mt-4 flex gap-3 rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 text-xs leading-5 text-amber-200/80">
+              <span className="font-bold text-amber-300">!</span>
+              <p>{terminalLabels.secretWarning}</p>
+            </div>
+
+            <div className="mt-4 rounded-xl border border-[#202a36] bg-[#090e14] p-4 text-xs leading-5 text-zinc-400">
+              <p className="font-semibold text-zinc-200">
+                {locale === "zh" ? "纸交易层级（无需密钥也可用）" : "Paper trading tiers (no key required for tier 1)"}
+              </p>
+              <ul className="mt-2 list-disc space-y-1 pl-4">
+                <li>
+                  {locale === "zh"
+                    ? "Tier 1：本地纸交易 — 使用 Bitget 公开价格记录模拟成交（默认启用）"
+                    : "Tier 1: Local paper — records fills at live Bitget public prices (enabled by default)"}
+                </li>
+                <li>
+                  {locale === "zh"
+                    ? "Tier 2：Bitget Demo API — 配置 BITGET_DEMO_* 后提交 demo 市价单（paptrading=1）"
+                    : "Tier 2: Bitget Demo API — set BITGET_DEMO_* env vars to submit demo market orders (paptrading=1)"}
+                </li>
+              </ul>
+              {paperStatus ? (
+                <p className="mt-3 text-zinc-500">
+                  {locale === "zh" ? paperStatus.message_zh : paperStatus.message_en}
+                </p>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void refreshPaperStatus()}
+              className="mt-4 w-full rounded-lg border border-[#304052] bg-[#111923] px-4 py-3 text-sm font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:text-emerald-300"
+            >
+              {terminalLabels.testPaperConnection}
+            </button>
+            <button type="button" onClick={() => setShowBitgetSetup(false)} className="mt-3 w-full rounded-lg bg-emerald-400 px-4 py-3 text-sm font-bold text-[#03130d] transition hover:brightness-110">
+              {terminalLabels.close}
+            </button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

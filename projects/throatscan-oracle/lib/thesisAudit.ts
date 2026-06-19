@@ -1,3 +1,5 @@
+import type { PrimaryEvidenceLink } from "./primaryEvidence";
+import { getPrimaryEvidenceForTicker } from "./primaryEvidence";
 import type { BacktestValidation } from "./backtest";
 import type { EventIntelligence } from "./eventIntelligence";
 import type { IndustryMap, IndustryMapCompany, IndustryMapStage } from "./industryMap";
@@ -18,6 +20,14 @@ export interface ThesisAuditLayerPriority {
   scarce_layer_reason_zh: string;
 }
 
+export interface ThesisAuditNextCheck {
+  text_en: string;
+  text_zh: string;
+  url?: string;
+  url_label_en?: string;
+  url_label_zh?: string;
+}
+
 export interface ThesisAuditCandidateReview {
   ticker: string;
   name: string;
@@ -31,6 +41,7 @@ export interface ThesisAuditCandidateReview {
   reason_zh: string;
   failure_condition_en: string;
   failure_condition_zh: string;
+  primary_evidence: PrimaryEvidenceLink[];
 }
 
 export interface ThesisAudit {
@@ -48,6 +59,8 @@ export interface ThesisAudit {
   project_role_zh: string;
   layer_priorities: ThesisAuditLayerPriority[];
   candidate_reviews: ThesisAuditCandidateReview[];
+  next_checks: ThesisAuditNextCheck[];
+  primary_evidence: PrimaryEvidenceLink[];
   next_checks_en: string[];
   next_checks_zh: string[];
   limitations_en: string[];
@@ -115,6 +128,7 @@ function evidenceScoreForCompany(
   if (coreCompany?.event_adjustment?.event_signal === "NEGATIVE") score -= 8;
   if (coreCompany?.throat_role === "CORE BOTTLENECK") score += 10;
   if (coreCompany?.throat_role === "STRATEGIC ENABLER") score += 6;
+  if (getPrimaryEvidenceForTicker(company.ticker, company.name).length >= 2) score += 6;
   return clampScore(score);
 }
 
@@ -215,6 +229,7 @@ function candidateReview(
   const bitgetNoteZh = company.bitget_symbol
     ? ` 已有 Bitget 执行证据：${company.bitget_symbol}。`
     : " 在 Bitget 未上线前，只能作为研究标的。";
+  const primary_evidence = getPrimaryEvidenceForTicker(company.ticker, company.name);
 
   return {
     ticker: company.ticker,
@@ -229,6 +244,7 @@ function candidateReview(
     reason_zh: `${company.ticker} 位于${stageLabelZh(company.stage)}，稀缺层得分 ${round(scarcityScore)}/100。${bitgetNoteZh}`,
     failure_condition_en: failure.en,
     failure_condition_zh: failure.zh,
+    primary_evidence,
   };
 }
 
@@ -242,20 +258,36 @@ function verdictLabel(verdict: ThesisAuditVerdict): { en: string; zh: string } {
   return { en: "Neutral, needs more evidence", zh: "中性，需要更多证据" };
 }
 
-function nextChecks(profile: IndustryProfile, topStage: IndustryMapStage): { en: string[]; zh: string[] } {
+function buildStructuredNextChecks(
+  profile: IndustryProfile,
+  topStage: IndustryMapStage,
+  primaryTicker: string,
+  primaryName: string,
+): ThesisAuditNextCheck[] {
   const topic = profile.label;
-  return {
-    en: [
-      `Verify ${stageLabelEn(topStage).toLowerCase()} with filings, capacity data, lead times, and customer qualification evidence.`,
-      `Check whether the top public companies actually control scarcity or only benefit from the ${topic} narrative.`,
-      "Compare Bitget-listed proxies against stronger research-only names before presenting a simulated trade basket.",
-    ],
-    zh: [
-      `用公告、产能、交期和客户认证证据验证${stageLabelZh(topStage)}。`,
-      `确认排名靠前的上市公司是真正控制稀缺性，还是只是在受益于 ${topic} 叙事。`,
-      "在展示模拟交易篮子前，把 Bitget 已上线代理标的与更强但未上线的研究标的分开比较。",
-    ],
-  };
+  const primaryLinks = getPrimaryEvidenceForTicker(primaryTicker, primaryName);
+  const filingLink = primaryLinks.find((link) => link.category === "sec_filings");
+
+  return [
+    {
+      text_en: `Verify ${stageLabelEn(topStage).toLowerCase()} with the latest SEC filings, capacity disclosures, lead times, and customer qualification evidence.`,
+      text_zh: `用最新 SEC 公告、产能披露、交期和客户认证证据验证${stageLabelZh(topStage)}。`,
+      url: filingLink?.url,
+      url_label_en: filingLink ? `${primaryTicker} SEC filings` : undefined,
+      url_label_zh: filingLink ? `${primaryTicker} SEC 公告` : undefined,
+    },
+    {
+      text_en: `Check whether ${primaryTicker} and peers actually control scarcity in ${topic}, or only benefit from narrative exposure.`,
+      text_zh: `确认 ${primaryTicker} 及同类公司是在 ${topic} 中真正控制稀缺性，还是仅受益于叙事暴露。`,
+      url: filingLink?.url,
+      url_label_en: filingLink ? "Open primary filing search" : undefined,
+      url_label_zh: filingLink ? "打开一手公告检索" : undefined,
+    },
+    {
+      text_en: "Compare Bitget-listed proxies against stronger research-only names before presenting a simulated trade basket.",
+      text_zh: "在展示模拟交易篮子前，把 Bitget 已上线代理标的与更强但未上线的研究标的分开比较。",
+    },
+  ];
 }
 
 export function buildThesisAudit({
@@ -312,7 +344,17 @@ export function buildThesisAudit({
           ? "CHALLENGE"
           : "NEUTRAL";
   const labels = verdictLabel(verdict);
-  const checks = nextChecks(profile, topLayer?.stage ?? "midstream");
+  const primaryName =
+    companyByTicker.get(primaryTicker)?.name ??
+    reviews.find((review) => review.ticker === primaryTicker)?.name ??
+    primaryTicker;
+  const next_checks = buildStructuredNextChecks(
+    profile,
+    topLayer?.stage ?? "midstream",
+    primaryTicker,
+    primaryName,
+  );
+  const primary_evidence = reviews.flatMap((review) => review.primary_evidence).slice(0, 12);
 
   return {
     source: "Open-source scarce-layer research methodology",
@@ -331,17 +373,21 @@ export function buildThesisAudit({
       "这一层把开源稀缺层研究流程转成 ThroatScan 的审计层：先排稀缺层，再挑战结论，最后把研究标的和 Bitget 可执行标的分开。",
     layer_priorities: layerPriorities,
     candidate_reviews: reviews,
-    next_checks_en: checks.en,
-    next_checks_zh: checks.zh,
+    next_checks,
+    primary_evidence,
+    next_checks_en: next_checks.map((check) => check.text_en),
+    next_checks_zh: next_checks.map((check) => check.text_zh),
     limitations_en: [
       "The thesis audit is research support, not trade execution.",
       "It does not override Bitget listing status or verified candle availability.",
-      "It uses public-methodology scoring and should be strengthened with primary-source filings before submission claims.",
+      "Primary-source links (SEC, IR, regulators) are entry points for manual verification — the app does not scrape or auto-parse filings yet.",
+      "Methodology scoring still requires human review of capacity, orders, and customer proof inside linked documents.",
     ],
     limitations_zh: [
       "论证复核只提供研究支持，不执行交易。",
       "它不会覆盖 Bitget 上线状态或已验证 K 线数据。",
-      "当前为公开方法论评分，正式提交前应继续补充公告、财报、订单等一手证据。",
+      "一手证据链接（SEC、IR、监管机构）是人工核查入口——系统尚未自动抓取或解析公告。",
+      "方法论评分仍需要人工阅读链接文件中的产能、订单与客户验证信息。",
     ],
     generated_at: new Date().toISOString(),
   };

@@ -269,6 +269,13 @@ function translateThesisAudit(audit: AnalysisResult["thesis_audit"]): AnalysisRe
       translateCompanyNamesInText(translateEngineText(item)),
     ),
     limitations_zh: audit.limitations_zh.map(translateEngineText),
+    next_checks: audit.next_checks.map((check) => ({
+      ...check,
+      text_zh: translateCompanyNamesInText(translateEngineText(check.text_zh)),
+      url_label_zh: check.url_label_zh
+        ? translateCompanyNamesInText(translateEngineText(check.url_label_zh))
+        : undefined,
+    })),
   };
 }
 
@@ -320,6 +327,13 @@ export function translateAnalysisContent(
       ? translateIntelligence(result.reasoning_intelligence)
       : result.reasoning_intelligence,
     industry_map: translateIndustryMap(result.industry_map),
+    universe_coverage:
+      locale === "zh"
+        ? {
+            ...result.universe_coverage,
+            summary_zh: translateEngineText(result.universe_coverage.summary_zh),
+          }
+        : result.universe_coverage,
     thesis_audit: translateThesisAudit(result.thesis_audit),
     backtest: {
       ...result.backtest,

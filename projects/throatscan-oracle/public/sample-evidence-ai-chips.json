@@ -1,0 +1,722 @@
+{
+  "schema_version": "throatscan-run-evidence-v2",
+  "project": "ThroatScan Oracle",
+  "sample": true,
+  "industry_input": "AI chips",
+  "exported_at": "2026-06-19T08:50:08.401Z",
+  "run_id": "07d6ec0c",
+  "confidence": {
+    "score": 66,
+    "level": "LOW"
+  },
+  "universe_coverage": {
+    "level": "full",
+    "universe_size": 43,
+    "matched_count": 3,
+    "avg_query_alignment": 68,
+    "avg_sector_similarity": 52,
+    "canonical_industry": "ai chips",
+    "is_canonical_match": true,
+    "summary_en": "This query maps to the curated ai chips coverage set (3/43 universe names matched with strong alignment).",
+    "summary_zh": "该查询命中已验证的「ai chips」覆盖集（43 家公司库中匹配 3 家，对齐度良好）。",
+    "recommended_demo_inputs": [
+      "ai chips",
+      "semiconductor",
+      "ai data center",
+      "ev battery",
+      "oil and gas",
+      "biotech"
+    ]
+  },
+  "completeness": {
+    "schema_version": "throatscan-completeness-v1",
+    "public_demo_url": "https://throatscan-oracle.vercel.app",
+    "github_repo_url": null,
+    "end_to_end_stages": [
+      {
+        "id": "industry_input",
+        "label_en": "Industry input → intent",
+        "label_zh": "行业输入 → 意图解析",
+        "status": "complete",
+        "detail_en": "User query normalized with aliases and constrained intent analysis.",
+        "detail_zh": "用户查询经别名归一化与约束式意图解析。"
+      },
+      {
+        "id": "supply_chain",
+        "label_en": "Supply-chain reasoning",
+        "label_zh": "供应链推理",
+        "status": "complete",
+        "detail_en": "Layers, bottleneck, hard constraints, and audit trail generated.",
+        "detail_zh": "已生成层级、瓶颈、硬约束与审计链。"
+      },
+      {
+        "id": "agent_hub_research",
+        "label_en": "Agent Hub news + macro",
+        "label_zh": "Agent Hub 新闻 + 宏观",
+        "status": "complete",
+        "detail_en": "News=verified, macro=verified.",
+        "detail_zh": "新闻=verified，宏观=verified。"
+      },
+      {
+        "id": "bitget_market",
+        "label_en": "Bitget market verification",
+        "label_zh": "Bitget 行情验证",
+        "status": "complete",
+        "detail_en": "Public symbols/tickers attached to candidates.",
+        "detail_zh": "公开 symbols/tickers 已挂载到候选。"
+      },
+      {
+        "id": "event_sim",
+        "label_en": "Event trace → sim decision",
+        "label_zh": "事件链 → 模拟决策",
+        "status": "complete",
+        "detail_en": "Action=SIMULATED_BUY, selected=NVDA.",
+        "detail_zh": "动作=SIMULATED_BUY，选中=NVDA。"
+      },
+      {
+        "id": "backtest",
+        "label_en": "Bitget candle backtest",
+        "label_zh": "Bitget K 线回测",
+        "status": "complete",
+        "detail_en": "Verified period 2026-04-06 to 2026-06-18 (74 daily observations).",
+        "detail_zh": "已验证区间 2026-04-06 to 2026-06-18 (74 daily observations)。"
+      },
+      {
+        "id": "evidence_export",
+        "label_en": "Evidence bundle export",
+        "label_zh": "证据包导出",
+        "status": "complete",
+        "detail_en": "UI download includes candles, trades, research, thesis audit, and self-assessment.",
+        "detail_zh": "UI 下载包含 K 线、交易、调研、论证复核与自评。"
+      }
+    ],
+    "judge_self_assessment": [
+      {
+        "id": "thesis_depth",
+        "title_en": "Depth of thesis",
+        "title_zh": "论证深度",
+        "achieved_en": [
+          "Supply-chain bottleneck thesis with alternative hypothesis and thesis audit.",
+          "Universe coverage banner shows full/partial/out-of-scope honestly.",
+          "Primary-source SEC/IR links in thesis audit."
+        ],
+        "achieved_zh": [
+          "供应链瓶颈 thesis，含替代假设与论证复核。",
+          "覆盖度横幅诚实展示 full/partial/out-of-scope。",
+          "论证复核含 SEC/IR 一手证据入口。"
+        ],
+        "gaps_en": [
+          "Fixed ~44-company universe; niche queries may be proxy-only.",
+          "LLM runs in rules/curated grounding mode without live web search.",
+          "No automated filing parse — human review still required."
+        ],
+        "gaps_zh": [
+          "固定约 44 家公司库；冷门行业可能仅为代理映射。",
+          "无 API Key 时为规则/精选 grounding 模式。",
+          "尚未自动解析公告——仍需人工阅读。"
+        ],
+        "rating_en": "Strong for canonical industries",
+        "rating_zh": "已验证行业较强"
+      },
+      {
+        "id": "runnability",
+        "title_en": "Runnability",
+        "title_zh": "可运行性",
+        "achieved_en": [
+          "Public demo: https://throatscan-oracle.vercel.app",
+          "Bitget public API + backtest + downloadable evidence with SHA-256.",
+          "Local paper basket execution at live Bitget prices.",
+          "One-click AI chips demo and /api/health verification."
+        ],
+        "achieved_zh": [
+          "公网 Demo：https://throatscan-oracle.vercel.app",
+          "Bitget 公开 API + 回测 + 可下载 SHA-256 证据包。",
+          "本地纸交易篮子（Bitget 公开价成交）。",
+          "一键 AI chips 与 /api/health 验证。"
+        ],
+        "gaps_en": [
+          "Demo video URL not yet attached in submission pack.",
+          "Live trading intentionally locked; Bitget Demo API optional (server env)."
+        ],
+        "gaps_zh": [
+          "提交包中尚未附 demo 视频链接。",
+          "实盘交易刻意锁定；Bitget Demo API 为可选（服务端 env）。"
+        ],
+        "rating_en": "Backtest + local paper (Tier 2); not live trading",
+        "rating_zh": "回测 + 本地纸交易（Tier 2）；非实盘"
+      },
+      {
+        "id": "completeness",
+        "title_en": "Completeness",
+        "title_zh": "完整度",
+        "achieved_en": [
+          "End-to-end: input → reasoning → research → Bitget → events → sim → backtest → export.",
+          "Low-confidence paths withhold Top 5; missing data not fabricated.",
+          "Tradability guide separates research-only vs executable names."
+        ],
+        "achieved_zh": [
+          "端到端：输入 → 推理 → 调研 → Bitget → 事件 → 模拟 → 回测 → 导出。",
+          "低置信度不强制 Top 5；缺失数据不伪造。",
+          "可交易性指南区分研究结论与可执行标的。"
+        ],
+        "gaps_en": [
+          "Submission form, dev diary, and demo video still manual deliverables.",
+          "Current run has direct Bitget tradability."
+        ],
+        "gaps_zh": [
+          "提交表单、开发日记、demo 视频仍为人工交付项。",
+          "本次运行有直接 Bitget 可交易标的。"
+        ],
+        "rating_en": "MVP complete with honest boundary disclosure",
+        "rating_zh": "MVP 完整，边界披露诚实"
+      },
+      {
+        "id": "novelty_potential",
+        "title_en": "Novelty & potential",
+        "title_zh": "新颖性与潜力",
+        "achieved_en": [
+          "Multi-step Agent workflow: Agent Hub MCP + constrained engine + tradability gate.",
+          "LLM cannot bypass ticker allowlist or sector hard constraints.",
+          "Grounding mode: curated_rules.",
+          "Reproducible evidence chain for judges and developers."
+        ],
+        "achieved_zh": [
+          "多步 Agent 工作流：Agent Hub MCP + 约束引擎 + 可交易性过滤。",
+          "LLM 不能绕过 ticker 白名单或行业硬约束。",
+          "Grounding 模式：curated_rules。",
+          "可复现证据链，便于评委与开发者验证。"
+        ],
+        "gaps_en": [
+          "Not a single LLM prompt — requires explanation in demo.",
+          "Growth path: Bitget Demo API, broader universe, scheduled rebalance agent."
+        ],
+        "gaps_zh": [
+          "非单次 LLM 问答——需在 demo 中展示工作流。",
+          "成长路径：Bitget Demo API、更大 universe、定时 rebalance agent。"
+        ],
+        "rating_en": "Agent-native research-to-execution workflow",
+        "rating_zh": "Agent 原生 research-to-execution 工作流"
+      }
+    ],
+    "tradability_guide": {
+      "direct_execution_available": true,
+      "research_conclusion_valid": true,
+      "summary_en": "Direct Bitget execution is available for NVDA.",
+      "summary_zh": "可直接在 Bitget 执行：NVDA。",
+      "research_only_tickers": [
+        "TSM",
+        "AVGO"
+      ],
+      "online_proxy_options": [
+        {
+          "ticker": "SPY",
+          "bitget_symbol": "SPYONUSDT",
+          "role_en": "Broad US equity proxy",
+          "role_zh": "美股宽基代理",
+          "reason_en": "Use SPYONUSDT when the research bottleneck is not directly listed on Bitget.",
+          "reason_zh": "当研究瓶颈标的未在 Bitget 上线时，可使用 SPYONUSDT 作为方向性代理。"
+        },
+        {
+          "ticker": "QQQ",
+          "bitget_symbol": "QQQONUSDT",
+          "role_en": "Nasdaq / growth proxy",
+          "role_zh": "纳斯达克/成长代理",
+          "reason_en": "Use QQQONUSDT when the research bottleneck is not directly listed on Bitget.",
+          "reason_zh": "当研究瓶颈标的未在 Bitget 上线时，可使用 QQQONUSDT 作为方向性代理。"
+        }
+      ],
+      "recommended_action_en": "Proceed with paper basket execution or download the evidence bundle for audit.",
+      "recommended_action_zh": "可执行纸交易篮子，或下载证据包供审计。"
+    },
+    "honest_summary_en": "ThroatScan completed 7/7 end-to-end stages. Direct Bitget execution is available for NVDA. This is research software with verifiable Bitget evidence — not financial advice.",
+    "honest_summary_zh": "ThroatScan 完成 7/7 个端到端阶段。可直接在 Bitget 执行：NVDA。 这是带可验证 Bitget 证据的研究软件——不构成投资建议。",
+    "generated_at": "2026-06-19T08:50:08.401Z"
+  },
+  "thesis_audit": {
+    "source": "Open-source scarce-layer research methodology",
+    "repo_url": "https://github.com/muxuuu/serenity-skill",
+    "license": "MIT",
+    "verdict": "SUPPORTIVE",
+    "verdict_label_en": "Supports current bottleneck thesis",
+    "verdict_label_zh": "支持当前瓶颈判断",
+    "score": 72.4,
+    "evidence_grade": "MEDIUM",
+    "summary_en": "The thesis audit ranks Midstream conversion layer first and supports current bottleneck thesis with evidence grade MEDIUM.",
+    "summary_zh": "论证复核优先关注中游转化/平台层，结论为「支持当前瓶颈判断」，证据等级为中。",
+    "project_role_en": "This layer turns an open-source scarce-layer research workflow into an audit layer for ThroatScan: rank scarce layers first, challenge the thesis, then separate research-only names from Bitget-executable names.",
+    "project_role_zh": "这一层把开源稀缺层研究流程转成 ThroatScan 的审计层：先排稀缺层，再挑战结论，最后把研究标的和 Bitget 可执行标的分开。",
+    "layer_priorities": [
+      {
+        "stage": "midstream",
+        "label_en": "Midstream conversion layer",
+        "label_zh": "中游转化/平台层",
+        "score": 73.4,
+        "scarce_layer_reason_en": "Midstream conversion layer scores 73.4/100 because it contains NVDA, ANET, AMD, VRT and has 2 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "中游转化/平台层得分 73.4/100，因为这一层包含 NVDA、ANET、AMD、VRT，且有 2 个核心瓶颈候选。"
+      },
+      {
+        "stage": "upstream",
+        "label_en": "Upstream scarce inputs",
+        "label_zh": "上游稀缺输入层",
+        "score": 55.1,
+        "scarce_layer_reason_en": "Upstream scarce inputs scores 55.1/100 because it contains ASML, AMAT, LRCX, TSM and has 2 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "上游稀缺输入层得分 55.1/100，因为这一层包含 ASML、AMAT、LRCX、TSM，且有 2 个核心瓶颈候选。"
+      },
+      {
+        "stage": "downstream",
+        "label_en": "Downstream demand layer",
+        "label_zh": "下游需求层",
+        "score": 47.6,
+        "scarce_layer_reason_en": "Downstream demand layer scores 47.6/100 because it contains AMZN, GOOGL, ORCL, EQIX and has 0 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "下游需求层得分 47.6/100，因为这一层包含 AMZN、GOOGL、ORCL、EQIX，且有 0 个核心瓶颈候选。"
+      }
+    ],
+    "candidate_reviews": [
+      {
+        "ticker": "ASML",
+        "name": "ASML Holding",
+        "stage": "upstream",
+        "chain_position": "Lithography — EUV systems → AI Chips",
+        "scarcity_score": 79.9,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "reason_en": "ASML sits in Upstream scarce inputs with scarcity score 79.9/100. It is research-only until Bitget lists a stock-token market.",
+        "reason_zh": "ASML 位于上游稀缺输入层，稀缺层得分 79.9/100。 在 Bitget 未上线前，只能作为研究标的。",
+        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
+        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "ASML",
+            "category": "sec_filings",
+            "label_en": "ASML 20-F",
+            "label_zh": "ASML 20-F",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ASML&type=20-F&dateb=&owner=include&count=10",
+            "check_hint_en": "Verify EUV shipment backlog and capacity guidance.",
+            "check_hint_zh": "核实 EUV 出货 backlog 与产能指引。"
+          },
+          {
+            "ticker": "ASML",
+            "category": "investor_relations",
+            "label_en": "ASML IR",
+            "label_zh": "ASML 投资者关系",
+            "url": "https://www.asml.com/en/investors",
+            "check_hint_en": "Check quarterly order book and lead-time disclosures.",
+            "check_hint_zh": "查看季度订单与交期披露。"
+          }
+        ]
+      },
+      {
+        "ticker": "NVDA",
+        "name": "NVIDIA",
+        "stage": "midstream",
+        "chain_position": "AI Compute — accelerator allocation and CUDA stack → AI Chips",
+        "scarcity_score": 89.6,
+        "evidence_grade": "STRONG",
+        "signal": "SUPPORTS",
+        "bitget_symbol": "NVDAONUSDT",
+        "reason_en": "NVDA sits in Midstream conversion layer with scarcity score 89.6/100. Bitget execution evidence exists via NVDAONUSDT.",
+        "reason_zh": "NVDA 位于中游转化/平台层，稀缺层得分 89.6/100。 已有 Bitget 执行证据：NVDAONUSDT。",
+        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
+        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "NVDA",
+            "category": "sec_filings",
+            "label_en": "NVIDIA 10-K / 10-Q",
+            "label_zh": "NVIDIA 10-K / 10-Q",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+            "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+          },
+          {
+            "ticker": "NVDA",
+            "category": "investor_relations",
+            "label_en": "NVIDIA Investor Relations",
+            "label_zh": "NVIDIA 投资者关系",
+            "url": "https://investor.nvidia.com/",
+            "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+            "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
+          }
+        ]
+      },
+      {
+        "ticker": "AMZN",
+        "name": "Amazon",
+        "stage": "downstream",
+        "chain_position": "Hyperscale cloud — AWS and AI workloads → AI Chips",
+        "scarcity_score": 73.5,
+        "evidence_grade": "MEDIUM",
+        "signal": "WATCH",
+        "bitget_symbol": "AMZNONUSDT",
+        "reason_en": "AMZN sits in Downstream demand layer with scarcity score 73.5/100. Bitget execution evidence exists via AMZNONUSDT.",
+        "reason_zh": "AMZN 位于下游需求层，稀缺层得分 73.5/100。 已有 Bitget 执行证据：AMZNONUSDT。",
+        "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
+        "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "AMZN",
+            "category": "sec_filings",
+            "label_en": "Amazon SEC filings",
+            "label_zh": "Amazon SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMZN&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "AMZN",
+            "category": "capacity_orders",
+            "label_en": "AMZN capacity / orders checklist",
+            "label_zh": "AMZN 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMZN&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      },
+      {
+        "ticker": "GOOGL",
+        "name": "Alphabet",
+        "stage": "downstream",
+        "chain_position": "Hyperscale cloud — GCP and Gemini stack → AI Chips",
+        "scarcity_score": 70.4,
+        "evidence_grade": "MEDIUM",
+        "signal": "WATCH",
+        "bitget_symbol": "GOOGLONUSDT",
+        "reason_en": "GOOGL sits in Downstream demand layer with scarcity score 70.4/100. Bitget execution evidence exists via GOOGLONUSDT.",
+        "reason_zh": "GOOGL 位于下游需求层，稀缺层得分 70.4/100。 已有 Bitget 执行证据：GOOGLONUSDT。",
+        "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
+        "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "GOOGL",
+            "category": "sec_filings",
+            "label_en": "Alphabet SEC filings",
+            "label_zh": "Alphabet SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=GOOGL&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "GOOGL",
+            "category": "capacity_orders",
+            "label_en": "GOOGL capacity / orders checklist",
+            "label_zh": "GOOGL 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=GOOGL&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      },
+      {
+        "ticker": "ANET",
+        "name": "Arista Networks",
+        "stage": "midstream",
+        "chain_position": "Networking fabric — AI cluster switching → AI Chips",
+        "scarcity_score": 73.9,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "reason_en": "ANET sits in Midstream conversion layer with scarcity score 73.9/100. It is research-only until Bitget lists a stock-token market.",
+        "reason_zh": "ANET 位于中游转化/平台层，稀缺层得分 73.9/100。 在 Bitget 未上线前，只能作为研究标的。",
+        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
+        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "ANET",
+            "category": "sec_filings",
+            "label_en": "Arista Networks SEC filings",
+            "label_zh": "Arista Networks SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ANET&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "ANET",
+            "category": "capacity_orders",
+            "label_en": "ANET capacity / orders checklist",
+            "label_zh": "ANET 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ANET&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      },
+      {
+        "ticker": "AMAT",
+        "name": "Applied Materials",
+        "stage": "upstream",
+        "chain_position": "Wafer Fab Equipment — deposition and materials → AI Chips",
+        "scarcity_score": 63.6,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "reason_en": "AMAT sits in Upstream scarce inputs with scarcity score 63.6/100. It is research-only until Bitget lists a stock-token market.",
+        "reason_zh": "AMAT 位于上游稀缺输入层，稀缺层得分 63.6/100。 在 Bitget 未上线前，只能作为研究标的。",
+        "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
+        "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "AMAT",
+            "category": "sec_filings",
+            "label_en": "Applied Materials SEC filings",
+            "label_zh": "Applied Materials SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMAT&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "AMAT",
+            "category": "capacity_orders",
+            "label_en": "AMAT capacity / orders checklist",
+            "label_zh": "AMAT 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMAT&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      },
+      {
+        "ticker": "LRCX",
+        "name": "Lam Research",
+        "stage": "upstream",
+        "chain_position": "Wafer Fab Equipment — etch systems → AI Chips",
+        "scarcity_score": 62.2,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "reason_en": "LRCX sits in Upstream scarce inputs with scarcity score 62.2/100. It is research-only until Bitget lists a stock-token market.",
+        "reason_zh": "LRCX 位于上游稀缺输入层，稀缺层得分 62.2/100。 在 Bitget 未上线前，只能作为研究标的。",
+        "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
+        "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "LRCX",
+            "category": "sec_filings",
+            "label_en": "Lam Research SEC filings",
+            "label_zh": "Lam Research SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=LRCX&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "LRCX",
+            "category": "capacity_orders",
+            "label_en": "LRCX capacity / orders checklist",
+            "label_zh": "LRCX 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=LRCX&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      },
+      {
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices",
+        "stage": "midstream",
+        "chain_position": "AI Compute — secondary GPU/CPU path → AI Chips",
+        "scarcity_score": 67.1,
+        "evidence_grade": "MEDIUM",
+        "signal": "SUPPORTS",
+        "bitget_symbol": "AMDONUSDT",
+        "reason_en": "AMD sits in Midstream conversion layer with scarcity score 67.1/100. Bitget execution evidence exists via AMDONUSDT.",
+        "reason_zh": "AMD 位于中游转化/平台层，稀缺层得分 67.1/100。 已有 Bitget 执行证据：AMDONUSDT。",
+        "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
+        "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "AMD",
+            "category": "sec_filings",
+            "label_en": "Advanced Micro Devices SEC filings",
+            "label_zh": "Advanced Micro Devices SEC 公告",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMD&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+            "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+          },
+          {
+            "ticker": "AMD",
+            "category": "capacity_orders",
+            "label_en": "AMD capacity / orders checklist",
+            "label_zh": "AMD 产能/订单核查清单",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMD&type=8-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+            "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+          }
+        ]
+      }
+    ],
+    "next_checks": [
+      {
+        "text_en": "Verify midstream conversion layer with the latest SEC filings, capacity disclosures, lead times, and customer qualification evidence.",
+        "text_zh": "用最新 SEC 公告、产能披露、交期和客户认证证据验证中游转化/平台层。",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+        "url_label_en": "NVDA SEC filings",
+        "url_label_zh": "NVDA SEC 公告"
+      },
+      {
+        "text_en": "Check whether NVDA and peers actually control scarcity in AI Chips, or only benefit from narrative exposure.",
+        "text_zh": "确认 NVDA 及同类公司是在 AI Chips 中真正控制稀缺性，还是仅受益于叙事暴露。",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+        "url_label_en": "Open primary filing search",
+        "url_label_zh": "打开一手公告检索"
+      },
+      {
+        "text_en": "Compare Bitget-listed proxies against stronger research-only names before presenting a simulated trade basket.",
+        "text_zh": "在展示模拟交易篮子前，把 Bitget 已上线代理标的与更强但未上线的研究标的分开比较。"
+      }
+    ],
+    "primary_evidence": [
+      {
+        "ticker": "ASML",
+        "category": "sec_filings",
+        "label_en": "ASML 20-F",
+        "label_zh": "ASML 20-F",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ASML&type=20-F&dateb=&owner=include&count=10",
+        "check_hint_en": "Verify EUV shipment backlog and capacity guidance.",
+        "check_hint_zh": "核实 EUV 出货 backlog 与产能指引。"
+      },
+      {
+        "ticker": "ASML",
+        "category": "investor_relations",
+        "label_en": "ASML IR",
+        "label_zh": "ASML 投资者关系",
+        "url": "https://www.asml.com/en/investors",
+        "check_hint_en": "Check quarterly order book and lead-time disclosures.",
+        "check_hint_zh": "查看季度订单与交期披露。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "sec_filings",
+        "label_en": "NVIDIA 10-K / 10-Q",
+        "label_zh": "NVIDIA 10-K / 10-Q",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+        "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "investor_relations",
+        "label_en": "NVIDIA Investor Relations",
+        "label_zh": "NVIDIA 投资者关系",
+        "url": "https://investor.nvidia.com/",
+        "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+        "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
+      },
+      {
+        "ticker": "AMZN",
+        "category": "sec_filings",
+        "label_en": "Amazon SEC filings",
+        "label_zh": "Amazon SEC 公告",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMZN&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+        "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+      },
+      {
+        "ticker": "AMZN",
+        "category": "capacity_orders",
+        "label_en": "AMZN capacity / orders checklist",
+        "label_zh": "AMZN 产能/订单核查清单",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMZN&type=8-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+        "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+      },
+      {
+        "ticker": "GOOGL",
+        "category": "sec_filings",
+        "label_en": "Alphabet SEC filings",
+        "label_zh": "Alphabet SEC 公告",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=GOOGL&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+        "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+      },
+      {
+        "ticker": "GOOGL",
+        "category": "capacity_orders",
+        "label_en": "GOOGL capacity / orders checklist",
+        "label_zh": "GOOGL 产能/订单核查清单",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=GOOGL&type=8-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+        "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+      },
+      {
+        "ticker": "ANET",
+        "category": "sec_filings",
+        "label_en": "Arista Networks SEC filings",
+        "label_zh": "Arista Networks SEC 公告",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ANET&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+        "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+      },
+      {
+        "ticker": "ANET",
+        "category": "capacity_orders",
+        "label_en": "ANET capacity / orders checklist",
+        "label_zh": "ANET 产能/订单核查清单",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=ANET&type=8-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+        "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+      },
+      {
+        "ticker": "AMAT",
+        "category": "sec_filings",
+        "label_en": "Applied Materials SEC filings",
+        "label_zh": "Applied Materials SEC 公告",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMAT&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Start with the latest 10-K risk factors, segment mix, and customer/supplier disclosures.",
+        "check_hint_zh": "从最新 10-K 的风险因素、分部结构与上下游披露开始核查。"
+      },
+      {
+        "ticker": "AMAT",
+        "category": "capacity_orders",
+        "label_en": "AMAT capacity / orders checklist",
+        "label_zh": "AMAT 产能/订单核查清单",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMAT&type=8-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
+        "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+      }
+    ],
+    "next_checks_en": [
+      "Verify midstream conversion layer with the latest SEC filings, capacity disclosures, lead times, and customer qualification evidence.",
+      "Check whether NVDA and peers actually control scarcity in AI Chips, or only benefit from narrative exposure.",
+      "Compare Bitget-listed proxies against stronger research-only names before presenting a simulated trade basket."
+    ],
+    "next_checks_zh": [
+      "用最新 SEC 公告、产能披露、交期和客户认证证据验证中游转化/平台层。",
+      "确认 NVDA 及同类公司是在 AI Chips 中真正控制稀缺性，还是仅受益于叙事暴露。",
+      "在展示模拟交易篮子前，把 Bitget 已上线代理标的与更强但未上线的研究标的分开比较。"
+    ],
+    "limitations_en": [
+      "The thesis audit is research support, not trade execution.",
+      "It does not override Bitget listing status or verified candle availability.",
+      "Primary-source links (SEC, IR, regulators) are entry points for manual verification — the app does not scrape or auto-parse filings yet.",
+      "Methodology scoring still requires human review of capacity, orders, and customer proof inside linked documents."
+    ],
+    "limitations_zh": [
+      "论证复核只提供研究支持，不执行交易。",
+      "它不会覆盖 Bitget 上线状态或已验证 K 线数据。",
+      "一手证据链接（SEC、IR、监管机构）是人工核查入口——系统尚未自动抓取或解析公告。",
+      "方法论评分仍需要人工阅读链接文件中的产能、订单与客户验证信息。"
+    ],
+    "generated_at": "2026-06-19T08:50:08.400Z"
+  },
+  "backtest": {
+    "status": "verified",
+    "period": "2026-04-06 to 2026-06-18 (74 daily observations)",
+    "evidence_hash": "ef385026f60f1a85d6c8c678cb297289443f4ee43e0d5976d5f6f566de6b3170",
+    "metrics": {
+      "total_return_pct": 7.8,
+      "benchmark_return_pct": 14.11,
+      "max_drawdown_pct": 5.95,
+      "volatility_pct": 12.72,
+      "alpha_pct": -28.12,
+      "sharpe_ratio": 2.11
+    }
+  },
+  "event_intelligence": {
+    "simulated_decision": {
+      "action": "SIMULATED_BUY",
+      "selected_tickers": [
+        "NVDA"
+      ],
+      "rationale_en": "Select NVDA using structural bottleneck scores plus capped event and macro overlays.",
+      "rationale_zh": "基于结构性瓶颈评分，并叠加受限幅度的事件与宏观调整，选择 NVDA。"
+    }
+  },
+  "disclosure": "Sample evidence export for judges. Full run exports include candles, trades, and research raw data."
+}

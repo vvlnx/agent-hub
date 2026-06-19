@@ -22,6 +22,11 @@ const EXACT_ALIASES: Record<string, string> = {
   机器人: "robotics",
   国防: "defense",
   金融科技: "fintech",
+  量子: "quantum computing",
+  量子计算: "quantum computing",
+  太空: "space",
+  航天: "space",
+  碳中和: "carbon capture",
 };
 
 const PARTIAL_ALIASES: Array<{ pattern: RegExp; canonical: string }> = [

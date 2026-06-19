@@ -10,6 +10,7 @@ import { attachBitgetStockEvidence } from "./bitgetStocks";
 import { fetchMarketResearch } from "./marketResearch";
 import { buildEventIntelligence } from "./eventIntelligence";
 import { buildIndustryMap } from "./industryMap";
+import { buildCompletenessPack } from "./completeness/buildCompletenessPack";
 import { buildThesisAudit } from "./thesisAudit";
 
 const MOCK_DELAY_MS = 300;
@@ -82,6 +83,14 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     eventIntelligence: eventResult.intelligence,
     backtest,
   });
+  const completeness = await buildCompletenessPack({
+    profile,
+    companies: companiesWithEventEvidence,
+    marketResearch: market_research,
+    eventIntelligence: eventResult.intelligence,
+    backtest,
+    universeCoverage: reasoning.universe_coverage,
+  });
 
   return {
     industry: profile.label,
@@ -105,6 +114,8 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     event_intelligence: eventResult.intelligence,
     industry_map,
     thesis_audit,
+    universe_coverage: reasoning.universe_coverage,
+    completeness,
     backtest,
     analyzedAt: new Date().toISOString(),
   };

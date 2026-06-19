@@ -9,7 +9,10 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "verify:industries": "tsx scripts/verify-industries.mjs",
-    "verify:bitget": "tsx scripts/verify-bitget.mjs"
+    "verify:responses": "tsx scripts/verify-openai-responses.mjs",
+    "verify:bitget": "tsx scripts/verify-bitget.mjs",
+    "export:sample-evidence": "tsx scripts/export-sample-evidence.mjs",
+    "deploy:vercel": "vercel deploy --prod --yes"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -26,7 +29,8 @@
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
     "tsx": "^4.20.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vercel": "^54.14.2"
   },
   "overrides": {
     "postcss": "8.5.15"

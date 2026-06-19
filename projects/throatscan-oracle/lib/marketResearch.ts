@@ -1,7 +1,7 @@
 import type { Company } from "./types";
 
 const DEFAULT_MARKET_DATA_MCP_URL = "https://datahub.noxiaohao.com/mcp";
-const REQUEST_TIMEOUT_MS = 20_000;
+const REQUEST_TIMEOUT_MS = 12_000;
 const NEWS_FEEDS =
   "cnbc,fed,techcrunch,theverge,wired,arstechnica,bbc_world,guardian,cryptobriefing";
 

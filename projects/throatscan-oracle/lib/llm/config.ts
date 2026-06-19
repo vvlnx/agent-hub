@@ -2,6 +2,22 @@ export interface LLMConfig {
   apiKey: string;
   baseUrl: string;
   model: string;
+  webSearchEnabled: boolean;
+  searchContextSize: "low" | "medium" | "high";
+  allowedDomains: string[];
+  blockedDomains: string[];
+}
+
+function parseDomains(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((domain) => domain.trim().replace(/^https?:\/\//, "").replace(/\/.*$/, ""))
+    .filter(Boolean)
+    .slice(0, 100);
+}
+
+function searchContextSize(value: string | undefined): LLMConfig["searchContextSize"] {
+  return value === "low" || value === "high" ? value : "medium";
 }
 
 export function getLLMConfig(): LLMConfig | null {
@@ -16,7 +32,11 @@ export function getLLMConfig(): LLMConfig | null {
       /\/$/,
       "",
     ),
-    model: process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini",
+    model: process.env.OPENAI_MODEL?.trim() || "gpt-5.4-mini",
+    webSearchEnabled: process.env.OPENAI_WEB_SEARCH?.trim() !== "0",
+    searchContextSize: searchContextSize(process.env.OPENAI_SEARCH_CONTEXT_SIZE?.trim()),
+    allowedDomains: parseDomains(process.env.OPENAI_WEB_SEARCH_ALLOWED_DOMAINS),
+    blockedDomains: parseDomains(process.env.OPENAI_WEB_SEARCH_BLOCKED_DOMAINS),
   };
 }
 

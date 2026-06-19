@@ -6,6 +6,10 @@ import type { EventIntelligence } from "./eventIntelligence";
 import type { IndustryMap } from "./industryMap";
 import type { ThesisAudit } from "./thesisAudit";
 import { normalizeCompany } from "./types";
+import type { LLMResearchSource } from "./llm/types";
+import type { GroundingMode } from "./rulesModeGrounding";
+import type { UniverseCoverage } from "./universeCoverage";
+import type { CompletenessPack } from "./completeness/types";
 
 export interface ChainNode {
   name: string;
@@ -37,6 +41,10 @@ export interface IndustryInterpretation {
   selection_rationale?: string;
   confidence?: number;
   summary_en?: string;
+  research_sources?: LLMResearchSource[];
+  research_queries?: string[];
+  web_search_used?: boolean;
+  grounding_mode?: GroundingMode;
 }
 
 export type SupplyChainArchetype =
@@ -84,12 +92,18 @@ export interface AnalysisResult {
   event_intelligence: EventIntelligence;
   industry_map: IndustryMap;
   thesis_audit: ThesisAudit;
+  universe_coverage: UniverseCoverage;
+  completeness: CompletenessPack;
   backtest: BacktestValidation;
   meta?: {
     llm_enabled: boolean;
     llm_configured: boolean;
     llm_requested: boolean;
     llm_model?: string;
+    llm_api: "responses";
+    llm_web_search_enabled: boolean;
+    llm_web_search_used: boolean;
+    llm_source_count: number;
     inference_mode: IndustryInterpretation["inference_mode"];
   };
   analyzedAt: string;

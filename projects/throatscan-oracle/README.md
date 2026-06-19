@@ -25,7 +25,9 @@ ThroatScan separates:
 ## Current Demo
 
 1. Enter an industry theme such as `AI chips`, `EV battery`, or `Oil and Gas`.
-2. The reasoning engine builds a constrained supply-chain model.
+2. The reasoning engine builds a constrained supply-chain model. When enabled,
+   OpenAI Responses API web search grounds industry interpretation and records
+   the consulted URLs; it still cannot select tickers or bypass hard constraints.
 3. Candidates pass sector-alignment, role-fit, and structural-control gates.
 4. Official Agent Hub `news-briefing` and `macro-analyst` workflows add live
    headlines, rates, inflation, employment, VIX, Nasdaq, and dollar context.
@@ -76,6 +78,34 @@ See [docs/TRACK3_ROADMAP.md](docs/TRACK3_ROADMAP.md) for the implementation and
 delivery plan, and [docs/SUBMISSION.md](docs/SUBMISSION.md) for the under-200-word
 description, three-minute demo script, and final submission checklist.
 
+## Public Demo
+
+Deploy to Vercel for a judge-accessible URL (no clone required). See
+[docs/DEPLOY.md](docs/DEPLOY.md) for step-by-step instructions, health checks, and
+Bitget Demo Trading setup.
+
+After deploy, verify:
+
+```bash
+curl -s https://YOUR-DEMO-URL/api/health
+curl -s https://YOUR-DEMO-URL/api/warmup
+```
+
+Set `THROATSCAN_PUBLIC_DEMO_URL` in the deployment environment so `/api/health`
+returns the public link.
+
+## Paper Trading (Runnability)
+
+The demo supports three runnability tiers:
+
+1. **Backtest + evidence** — Bitget candle validation and downloadable JSON (default).
+2. **Local paper** — **Execute paper basket** records market fills at live Bitget public
+   prices (enabled when public market data is reachable).
+3. **Bitget Demo API** — optional `BITGET_DEMO_*` server credentials submit demo spot
+   orders with `paptrading=1`.
+
+Live trading remains locked in the UI. Configure demo keys in `.env.example`.
+
 ## Run Locally
 
 Requirements:
@@ -106,7 +136,7 @@ constraints, and obvious cross-sector recommendation failures.
 ## Optional LLM Configuration
 
 The deterministic reasoning engine works without an API key. To augment industry
-interpretation with an OpenAI-compatible model:
+interpretation with the OpenAI Responses API and hosted web search:
 
 ```bash
 cp .env.example .env.local
@@ -114,9 +144,19 @@ cp .env.example .env.local
 
 Then configure the variables documented in `.env.example`.
 
+The default model is `gpt-5.4-mini` to balance latency and cost. Set
+`OPENAI_MODEL=gpt-5.5` for the strongest current OpenAI web-search path. Custom
+`OPENAI_BASE_URL` providers must implement `/v1/responses`, structured outputs,
+and the `web_search` hosted tool; Chat Completions-only providers will fall back
+to the deterministic engine.
+
 ## Track 3 Submission Status
 
 - Runnable local demo: complete
+- Public deployment guide + health/warmup endpoints: complete
+- Local paper trading execution: complete
+- Optional Bitget Demo API paper routing: complete (requires server env)
+- One-click demo industry (AI chips): complete
 - Supply-chain reasoning and audit trail: complete
 - Cross-sector candidate gating: complete
 - Bitget tokenized-stock universe filter: complete
@@ -125,6 +165,11 @@ Then configure the variables documented in `.env.example`.
 - Event extraction, bottleneck-impact assessment, and confidence overlay: complete
 - Downloadable trade and API evidence: complete
 - Simulated portfolio risk loop: complete
-- Public deployment and short demo video: pending
+- Four-dimension judge self-assessment + tradability guide: complete
+- Sample evidence JSON for offline review: complete
+- Public deployment URL (Vercel): https://throatscan-oracle.vercel.app
+- Public GitHub repository: pending
+- Demo video: pending
+- Development diary / submission form: pending
 
 This project is research software and does not provide financial advice.

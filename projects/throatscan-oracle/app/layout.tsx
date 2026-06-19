@@ -12,12 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-    >
-      <body className="min-h-full bg-[#080b0f] text-zinc-100">
-        <main className="min-h-screen">{children}</main>
+    <html lang="en" className="h-full antialiased">
+      <body className="h-full overflow-hidden bg-white text-[#1e1e1e]">
+        {children}
       </body>
     </html>
   );

@@ -1,3 +1,9 @@
+import { COMPANY_UNIVERSE } from "../companyUniverse";
+import { enrichIntentWithRulesGrounding } from "../rulesModeGrounding";
+import {
+  assessUniverseCoverage,
+  coverageUncertaintyMessage,
+} from "../universeCoverage";
 import { analyzeIntent } from "./intentAnalysis";
 import { augmentIntentWithLLM } from "./generativeLLM";
 import { identifyBottleneck } from "./bottleneckAnalysis";
@@ -31,10 +37,31 @@ export async function runReasoningEngine(rawInput: string): Promise<ReasoningRes
   const layers = buildSupplyChainLayers({ ...intent, layer_bias });
   const bottleneck = identifyBottleneck(layers);
   const { matches: company_matches, unfilled_roles } = matchCompaniesByRole(intent, bottleneck);
+  const universe_coverage = assessUniverseCoverage(
+    intent.raw_input,
+    company_matches,
+    COMPANY_UNIVERSE.length,
+  );
   const selected_companies = selectCompanySeeds(company_matches);
   const chain_nodes = layersToChainNodes(layers);
   const primary_bottleneck_ticker = resolvePrimaryTicker(company_matches, selected_companies);
   const confidenceMeta = computeConfidence(company_matches, unfilled_roles, intent);
+  const coverageMessage = coverageUncertaintyMessage(universe_coverage);
+  if (coverageMessage) {
+    confidenceMeta.uncertain_mapping = true;
+    confidenceMeta.confidence_level = "LOW";
+    confidenceMeta.uncertainty_message = confidenceMeta.uncertainty_message
+      ? `${coverageMessage} ${confidenceMeta.uncertainty_message}`
+      : coverageMessage;
+  }
+  if (universe_coverage.level === "out_of_scope") {
+    confidenceMeta.confidence = Math.min(confidenceMeta.confidence, 35);
+  }
+
+  const groundedIntent = enrichIntentWithRulesGrounding(
+    { ...intent, confidence: confidenceMeta.confidence },
+    inference_mode,
+  );
 
   const scoredCompanies = scoreCompaniesFromReasoning(
     selected_companies,
@@ -65,7 +92,7 @@ export async function runReasoningEngine(rawInput: string): Promise<ReasoningRes
   );
 
   const base = {
-    intent: { ...intent, confidence: confidenceMeta.confidence },
+    intent: groundedIntent,
     layers,
     bottleneck,
     company_matches,
@@ -73,6 +100,7 @@ export async function runReasoningEngine(rawInput: string): Promise<ReasoningRes
     chain_nodes,
     primary_bottleneck_ticker,
     inference_mode,
+    universe_coverage,
     audit_trail,
     final_ranking,
     ...confidenceMeta,

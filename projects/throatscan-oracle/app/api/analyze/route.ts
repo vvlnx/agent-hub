@@ -3,6 +3,8 @@ import { getLLMConfig, isLLMConfigured } from "@/lib/llm/config";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   let industry = "";
@@ -28,6 +30,10 @@ export async function POST(request: Request) {
         llm_configured: isLLMConfigured(),
         llm_requested: process.env.THROATSCAN_LLM?.trim() === "1",
         llm_model: llmConfig?.model,
+        llm_api: "responses" as const,
+        llm_web_search_enabled: llmConfig?.webSearchEnabled ?? false,
+        llm_web_search_used: result.interpretation.web_search_used ?? false,
+        llm_source_count: result.interpretation.research_sources?.length ?? 0,
         inference_mode: result.interpretation.inference_mode,
       },
     });

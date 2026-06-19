@@ -9,3 +9,9 @@ export interface LLMIndustryPayload {
   preferred_tickers: string[];
   summary_en?: string;
 }
+
+export interface LLMResearchSource {
+  url: string;
+  title?: string;
+  cited: boolean;
+}
