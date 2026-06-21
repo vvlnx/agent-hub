@@ -1,3 +1,5 @@
+import type { GicsClassification } from "./gics";
+
 export type ThroatRole =
   | "CORE BOTTLENECK"
   | "STRATEGIC ENABLER"
@@ -21,6 +23,7 @@ export interface Company {
   name: string;
   ticker: string;
   sector_tags: string[];
+  gics?: GicsClassification;
   score: number;
   breakdown: CompanyBreakdown;
   throat_role: ThroatRole;
@@ -103,6 +106,7 @@ export function normalizeCompany(partial?: Partial<Company> | null): Company {
     name: partial?.name ?? "",
     ticker: partial?.ticker ?? "",
     sector_tags: partial?.sector_tags ?? [],
+    gics: partial?.gics,
     score: partial?.score ?? 0,
     breakdown: normalizeBreakdown(partial?.breakdown),
     throat_role: partial?.throat_role ?? DEFAULT_THROAT_ROLE,

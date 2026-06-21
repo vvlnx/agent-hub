@@ -1,4 +1,5 @@
 import { runReasoningEngine } from "./reasoning/engine";
+import { resolveGicsFromQuery } from "./gics";
 import type {
   ChainNode,
   CompanySeed,
@@ -35,6 +36,7 @@ function reasoningToInterpretation(result: ReasoningResult): IndustryInterpretat
     research_queries: result.intent.research_queries,
     web_search_used: result.intent.web_search_used,
     grounding_mode: result.intent.grounding_mode,
+    gics: resolveGicsFromQuery(result.intent.raw_input),
   };
 }
 

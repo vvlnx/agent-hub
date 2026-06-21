@@ -27,6 +27,7 @@ import type {
   BottleneckImpactDirection,
   SupplyChainEventType,
 } from "@/lib/eventIntelligence";
+import { formatGicsPath, type GicsMappingKind } from "@/lib/gics";
 
 function tierLabel(tier: "HIGH" | "MEDIUM" | "LOW", copy: ReturnType<typeof t>): string {
   if (tier === "HIGH") return copy.tierHigh;
@@ -325,6 +326,12 @@ function thesisAuditSignalStyles(signal: ThesisAuditCandidateSignal): string {
   return "bg-amber-400/10 text-amber-300";
 }
 
+function gicsMappingKindLabel(kind: GicsMappingKind, copy: ReturnType<typeof t>): string {
+  if (kind === "canonical") return copy.gicsMappingCanonical;
+  if (kind === "theme") return copy.gicsMappingTheme;
+  return copy.gicsMappingUnknown;
+}
+
 function universeCoverageLabel(
   level: AnalysisResult["universe_coverage"]["level"],
   copy: ReturnType<typeof t>,
@@ -535,6 +542,7 @@ export default function HomePage() {
       final_decision: baseResult.final_decision,
       industry_map: baseResult.industry_map,
       universe_coverage: baseResult.universe_coverage,
+      gics_query: baseResult.interpretation.gics,
       paper_trading: {
         status: paperStatus,
         recent_orders: recentPaperOrders,
@@ -1300,6 +1308,43 @@ export default function HomePage() {
                   ) : null}
                 </div>
               </div>
+              {result.interpretation.gics ? (
+                <div className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-4 py-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--cursor-fg-muted)]">
+                        {copy.gicsClassification}
+                      </p>
+                      <p className="mt-1 text-sm font-medium leading-6">
+                        {formatGicsPath(result.interpretation.gics.classification, locale === "zh" ? "zh" : "en")}
+                      </p>
+                      <p className="mt-1 text-xs text-[var(--cursor-fg-muted)]">{copy.gicsHint}</p>
+                    </div>
+                    <span className="rounded-full border border-[var(--cursor-accent)]/25 bg-[var(--cursor-accent-dim)] px-2.5 py-1 text-[10px] font-semibold text-[var(--cursor-accent)]">
+                      {gicsMappingKindLabel(result.interpretation.gics.mapping_kind, copy)}
+                    </span>
+                  </div>
+                  <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2 lg:grid-cols-4">
+                    {[
+                      [copy.gicsSector, locale === "zh" ? result.interpretation.gics.classification.sector_zh : result.interpretation.gics.classification.sector],
+                      [copy.gicsIndustryGroup, locale === "zh" ? result.interpretation.gics.classification.industry_group_zh : result.interpretation.gics.classification.industry_group],
+                      [copy.gicsIndustry, locale === "zh" ? result.interpretation.gics.classification.industry_zh : result.interpretation.gics.classification.industry],
+                      [copy.gicsSubIndustry, locale === "zh" ? result.interpretation.gics.classification.sub_industry_zh : result.interpretation.gics.classification.sub_industry],
+                    ].map(([label, value]) =>
+                      value ? (
+                        <div key={label} className="rounded-md border border-[var(--cursor-border)] px-2.5 py-2">
+                          <dt className="text-[10px] uppercase tracking-wide text-[var(--cursor-fg-subtle)]">{label}</dt>
+                          <dd className="mt-0.5 font-medium">{value}</dd>
+                        </div>
+                      ) : null,
+                    )}
+                  </dl>
+                  <p className="mt-3 text-xs leading-5 text-[var(--cursor-fg-muted)]">
+                    <span className="font-semibold">{copy.gicsThemeNote}: </span>
+                    {locale === "zh" ? result.interpretation.gics.notes_zh : result.interpretation.gics.notes_en}
+                  </p>
+                </div>
+              ) : null}
               <div className="mt-4 grid gap-3 lg:grid-cols-4">
                 <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainConclusion}</p>
@@ -3090,6 +3135,12 @@ export default function HomePage() {
                         {locale === "zh" && baseCompany?.name ? (
                           <p className="mt-1 text-xs text-zinc-500">
                             {terminalLabels.englishFullName}: {baseCompany.name}
+                          </p>
+                        ) : null}
+                        {company.gics ? (
+                          <p className="mt-1 text-xs text-zinc-500">
+                            {copy.gicsCompanyLabel}:{" "}
+                            {formatGicsPath(company.gics, locale === "zh" ? "zh" : "en")}
                           </p>
                         ) : null}
                         {company.sector_tags?.length > 0 ? (

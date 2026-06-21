@@ -127,6 +127,7 @@ npm run lint
 npm run typecheck
 npm run verify:industries
 npm run verify:bitget
+npm run verify:gics
 npm run build
 ```
 

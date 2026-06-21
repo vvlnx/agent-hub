@@ -11,6 +11,7 @@
     "verify:industries": "tsx scripts/verify-industries.mjs",
     "verify:responses": "tsx scripts/verify-openai-responses.mjs",
     "verify:bitget": "tsx scripts/verify-bitget.mjs",
+    "verify:gics": "tsx scripts/verify-gics.mjs",
     "export:sample-evidence": "tsx scripts/export-sample-evidence.mjs",
     "deploy:vercel": "vercel deploy --prod --yes"
   },

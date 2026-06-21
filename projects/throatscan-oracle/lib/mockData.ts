@@ -10,6 +10,7 @@ import type { LLMResearchSource } from "./llm/types";
 import type { GroundingMode } from "./rulesModeGrounding";
 import type { UniverseCoverage } from "./universeCoverage";
 import type { CompletenessPack } from "./completeness/types";
+import type { GicsQueryMapping } from "./gics";
 
 export interface ChainNode {
   name: string;
@@ -45,6 +46,7 @@ export interface IndustryInterpretation {
   research_queries?: string[];
   web_search_used?: boolean;
   grounding_mode?: GroundingMode;
+  gics?: GicsQueryMapping;
 }
 
 export type SupplyChainArchetype =

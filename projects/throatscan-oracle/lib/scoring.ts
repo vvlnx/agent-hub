@@ -8,6 +8,7 @@ import {
 } from "./types";
 import type { CompanySeed } from "./mockData";
 import type { ReasoningScoreContext } from "./reasoning/types";
+import { getTickerGics } from "./gics";
 
 function computeBaseThroatScore(breakdown: CompanyBreakdown): number {
   const replacementResistance = 100 - breakdown.replaceability;
@@ -52,6 +53,7 @@ export function scoreCompany(seed: CompanySeed, context: ReasoningScoreContext):
     name: seed.name,
     ticker: seed.ticker,
     sector_tags: seed.sector_tags,
+    gics: getTickerGics(seed.ticker),
     score,
     breakdown,
     throat_role: seed.throat_role,
