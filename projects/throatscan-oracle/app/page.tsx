@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { AnalysisResult } from "@/lib/mockData";
 import type { PaperOrder, PaperTradingStatus } from "@/lib/paperTrading/types";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
@@ -349,6 +349,13 @@ function universeCoverageStyles(level: AnalysisResult["universe_coverage"]["leve
   return "border-red-200 bg-red-50 text-red-900";
 }
 
+type WorkspaceSection =
+  | "scanner"
+  | "decision-overview"
+  | "industry-map"
+  | "professional-analysis"
+  | "agent-workflow";
+
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
   const [industry, setIndustry] = useState("AI chips");
@@ -361,7 +368,30 @@ export default function HomePage() {
   const [paperSubmitting, setPaperSubmitting] = useState(false);
   const [paperMessage, setPaperMessage] = useState<string | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [scannerExpanded, setScannerExpanded] = useState(true);
+  const [activeSection, setActiveSection] = useState<WorkspaceSection>("scanner");
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const mainScrollRef = useRef<HTMLElement>(null);
   const copy = t(locale);
+
+  useEffect(() => {
+    if (loading) {
+      setScannerExpanded(true);
+    }
+  }, [loading]);
+
+  function scrollToSection(
+    sectionId: WorkspaceSection,
+    options?: { openEvidence?: boolean },
+  ) {
+    setActiveSection(sectionId);
+    if (options?.openEvidence || sectionId === "professional-analysis") {
+      setEvidenceOpen(true);
+    }
+    requestAnimationFrame(() => {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   const analysisSteps = useMemo(
     () =>
@@ -461,6 +491,8 @@ export default function HomePage() {
       }
 
       setBaseResult(payload);
+      setScannerExpanded(false);
+      scrollToSection("decision-overview");
     } catch (err) {
       setError(err instanceof Error ? err.message : copy.analysisFailed);
       setBaseResult(null);
@@ -926,59 +958,106 @@ export default function HomePage() {
       </header>
 
       <div className="cursor-tabstrip shrink-0" aria-label="Primary navigation">
-        <a href="#scanner" className="cursor-tab active">
-          {terminalLabels.researchDesk}
-        </a>
-        <a href="#decision-overview" className="cursor-tab">
-          {terminalLabels.portfolio}
-        </a>
-        <a href="#professional-analysis" className="cursor-tab">
-          {terminalLabels.evidence}
-        </a>
-        <a href="#agent-workflow" className="cursor-tab">
-          {locale === "zh" ? "Agent 工作流" : "Agent workflow"}
-        </a>
+        {(
+          [
+            ["scanner", terminalLabels.researchDesk],
+            ["decision-overview", terminalLabels.portfolio],
+            ["professional-analysis", terminalLabels.evidence],
+            ["agent-workflow", locale === "zh" ? "Agent 工作流" : "Agent workflow"],
+          ] as const
+        ).map(([sectionId, label]) => (
+          <button
+            key={sectionId}
+            type="button"
+            onClick={() =>
+              scrollToSection(sectionId, {
+                openEvidence: sectionId === "professional-analysis",
+              })
+            }
+            className={`cursor-tab ${activeSection === sectionId ? "active" : ""}`}
+          >
+            {label}
+          </button>
+        ))}
       </div>
 
       <div className="flex min-h-0 flex-1">
         <nav className="cursor-activity-bar shrink-0" aria-label="Views">
-          <button type="button" className="cursor-activity-btn active" title={terminalLabels.workspace} aria-label={terminalLabels.workspace}>
+          <button
+            type="button"
+            onClick={() => scrollToSection("scanner")}
+            className={`cursor-activity-btn ${activeSection === "scanner" ? "active" : ""}`}
+            title={terminalLabels.workspace}
+            aria-label={terminalLabels.workspace}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
           </button>
-          <a href="#decision-overview" className="cursor-activity-btn" title={terminalLabels.portfolio} aria-label={terminalLabels.portfolio}>
+          <button
+            type="button"
+            onClick={() => scrollToSection("decision-overview")}
+            className={`cursor-activity-btn ${activeSection === "decision-overview" ? "active" : ""}`}
+            title={terminalLabels.portfolio}
+            aria-label={terminalLabels.portfolio}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M3 3v18h18M7 16l4-4 4 4 5-6" />
             </svg>
-          </a>
-          <a href="#professional-analysis" className="cursor-activity-btn" title={terminalLabels.evidence} aria-label={terminalLabels.evidence}>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection("professional-analysis", { openEvidence: true })}
+            className={`cursor-activity-btn ${activeSection === "professional-analysis" ? "active" : ""}`}
+            title={terminalLabels.evidence}
+            aria-label={terminalLabels.evidence}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
               <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
             </svg>
-          </a>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection("agent-workflow")}
+            className={`cursor-activity-btn ${activeSection === "agent-workflow" ? "active" : ""}`}
+            title={locale === "zh" ? "Agent 工作流" : "Agent workflow"}
+            aria-label={locale === "zh" ? "Agent 工作流" : "Agent workflow"}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 16.8 5.7 21l2.3-7-6-4.6h7.6L12 2z" />
+            </svg>
+          </button>
         </nav>
 
         <aside className="cursor-sidebar terminal-sidebar shrink-0 p-2">
           <p className="cursor-sidebar-section">{terminalLabels.workspace}</p>
           <div>
-            {[
-              ["01", terminalLabels.overview, "#decision-overview"],
-              ["02", terminalLabels.eventFlow, "#professional-analysis"],
-              ["03", terminalLabels.chain, "#industry-map"],
-              ["04", terminalLabels.candidates, "#industry-map"],
-              ["05", terminalLabels.backtest, "#professional-analysis"],
-              ["06", locale === "zh" ? "Agent 工作流" : "Agent workflow", "#agent-workflow"],
-            ].map(([number, label, href], index) => (
-              <a
-                href={href}
+            {(
+              [
+                ["01", terminalLabels.overview, "decision-overview"],
+                ["02", terminalLabels.eventFlow, "professional-analysis"],
+                ["03", terminalLabels.chain, "industry-map"],
+                ["04", terminalLabels.candidates, "industry-map"],
+                ["05", terminalLabels.backtest, "professional-analysis"],
+                ["06", locale === "zh" ? "Agent 工作流" : "Agent workflow", "agent-workflow"],
+              ] as const
+            ).map(([number, label, sectionId]) => (
+              <button
+                type="button"
                 key={label}
-                className={`cursor-sidebar-item ${index === 0 ? "active" : ""}`}
+                onClick={() =>
+                  scrollToSection(sectionId, {
+                    openEvidence: sectionId === "professional-analysis",
+                  })
+                }
+                className={`cursor-sidebar-item w-full border-0 bg-transparent text-left ${
+                  activeSection === sectionId ? "active" : ""
+                }`}
               >
                 <span className="font-mono text-[10px] opacity-50">{number}</span>
                 {label}
-              </a>
+              </button>
             ))}
           </div>
           <div className="sidebar-connection mx-1.5 mt-4 p-3">
@@ -1032,8 +1111,57 @@ export default function HomePage() {
           </div>
         </aside>
 
-        <main className="cursor-editor flex min-w-0 flex-col">
+        <main ref={mainScrollRef} className="cursor-editor flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto scroll-smooth">
           <section id="scanner" className="cursor-composer shrink-0">
+            {!scannerExpanded && result && !loading ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2 border-b border-[var(--cursor-border)] px-3 py-2.5 sm:px-4">
+                  <span className="text-xs font-semibold text-[var(--cursor-fg)]">{terminalLabels.scanner}</span>
+                  <label className="min-w-[10rem] flex-1">
+                    <span className="sr-only">{copy.industry}</span>
+                    <input
+                      type="text"
+                      value={industry}
+                      onChange={(event) => setIndustry(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" && !loading) void handleRunAnalysis();
+                      }}
+                      className="terminal-input w-full px-2.5 py-1.5 text-xs"
+                      placeholder={copy.industryPlaceholder}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => void handleRunAnalysis()}
+                    disabled={loading}
+                    className="cursor-btn-primary shrink-0 px-3 py-1.5 text-xs disabled:opacity-60"
+                  >
+                    {copy.runAnalysis}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setScannerExpanded(true)}
+                    className="cursor-btn-ghost shrink-0 px-2.5 py-1.5 text-xs"
+                  >
+                    {locale === "zh" ? "展开研究台" : "Expand desk"}
+                  </button>
+                </div>
+                <div className="status-grid grid grid-cols-2 border-b border-[var(--cursor-border)] sm:grid-cols-4">
+                  {[
+                    [terminalLabels.marketStatus, result ? terminalLabels.verified : terminalLabels.waiting, result ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
+                    [terminalLabels.bitgetStatus, result?.backtest.status === "verified" ? terminalLabels.live : terminalLabels.waiting, result?.backtest.status === "verified" ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
+                    [terminalLabels.decisionStatus, result ? simulatedActionLabel(result.event_intelligence.simulated_decision.action, copy) : terminalLabels.waiting, result ? "terminal-amber" : "text-[var(--cursor-fg-muted)]"],
+                    [terminalLabels.confidence, result ? `${result.confidence}/100` : "—", result ? "text-[var(--cursor-fg)]" : "text-[var(--cursor-fg-muted)]"],
+                  ].map(([label, value, valueClass]) => (
+                    <div key={label} className="status-cell border-r border-[var(--cursor-border)] px-3 py-2 last:border-r-0">
+                      <p className="text-[10px] uppercase tracking-wide text-[var(--cursor-fg-subtle)]">{label}</p>
+                      <p className={`mt-0.5 font-mono text-xs font-medium ${valueClass}`}>{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
             <div className="scanner-hero p-4 sm:p-5">
               <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
                 <div className="min-w-0">
@@ -1047,9 +1175,20 @@ export default function HomePage() {
                       </h1>
                       <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--cursor-fg-muted)]">{terminalLabels.scannerHint}</p>
                     </div>
-                    <div className="flex rounded-md border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-0.5 text-[10px] font-medium">
-                      <span className="rounded px-2.5 py-1 text-[var(--cursor-accent)]">{terminalLabels.paperMode}</span>
-                      <span className="px-2.5 py-1 text-[var(--cursor-fg-subtle)]">{terminalLabels.liveLocked}</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex rounded-md border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-0.5 text-[10px] font-medium">
+                        <span className="rounded px-2.5 py-1 text-[var(--cursor-accent)]">{terminalLabels.paperMode}</span>
+                        <span className="px-2.5 py-1 text-[var(--cursor-fg-subtle)]">{terminalLabels.liveLocked}</span>
+                      </div>
+                      {result && !loading ? (
+                        <button
+                          type="button"
+                          onClick={() => setScannerExpanded(false)}
+                          className="cursor-btn-ghost px-2.5 py-1 text-[11px]"
+                        >
+                          {locale === "zh" ? "收起研究台" : "Collapse desk"}
+                        </button>
+                      ) : null}
                     </div>
                   </div>
 
@@ -1234,9 +1373,11 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+              </>
+            )}
           </section>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5">
+          <div className="px-3 py-4 pb-10 sm:px-5">
         {error ? (
           <p className="m-4 rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">{error}</p>
         ) : null}
@@ -1279,7 +1420,7 @@ export default function HomePage() {
                 {copy.engineFootnote}
               </p>
             ) : null}
-            <section id="decision-overview" className="scroll-mt-28 rounded-lg border border-emerald-400/25 bg-[var(--cursor-panel)] p-4">
+            <section id="decision-overview" className="scroll-mt-4 rounded-lg border border-emerald-400/25 bg-[var(--cursor-panel)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">{terminalLabels.simpleTitle}</h2>
@@ -1446,7 +1587,7 @@ export default function HomePage() {
 
               <section
                 id="agent-workflow"
-                className="mt-4 scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
+                className="mt-4 scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
@@ -1725,7 +1866,7 @@ export default function HomePage() {
               <EquityTradabilityPanel result={result} locale={locale} />
             </section>
 
-            <section id="industry-map" className="scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
+            <section id="industry-map" className="scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">
@@ -2169,7 +2310,12 @@ export default function HomePage() {
               </p>
             </div>
 
-            <details id="professional-analysis" className="scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
+            <details
+              id="professional-analysis"
+              open={evidenceOpen}
+              onToggle={(event) => setEvidenceOpen(event.currentTarget.open)}
+              className="scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
+            >
               <summary className="cursor-pointer list-none">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>

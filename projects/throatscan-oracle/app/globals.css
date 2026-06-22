@@ -163,6 +163,8 @@ button {
   min-width: 0;
   overflow-y: auto;
   background: var(--cursor-bg);
+  scroll-padding-top: 1rem;
+  scroll-padding-bottom: 2.5rem;
 }
 
 .cursor-composer {
@@ -215,7 +217,9 @@ button {
   padding: 0 1rem;
   font-size: 12px;
   color: var(--cursor-fg-muted);
+  border: none;
   border-right: 1px solid var(--cursor-border);
+  background: transparent;
   text-decoration: none;
   transition: background 100ms ease, color 100ms ease;
 }
