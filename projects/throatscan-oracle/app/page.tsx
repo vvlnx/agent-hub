@@ -344,9 +344,9 @@ function universeCoverageLabel(
 }
 
 function universeCoverageStyles(level: AnalysisResult["universe_coverage"]["level"]): string {
-  if (level === "full") return "border-emerald-400/30 bg-emerald-400/10 text-emerald-200";
-  if (level === "partial") return "border-amber-400/30 bg-amber-400/10 text-amber-100";
-  return "border-red-400/30 bg-red-400/10 text-red-100";
+  if (level === "full") return "border-emerald-200 bg-emerald-50 text-emerald-900";
+  if (level === "partial") return "border-amber-200 bg-amber-50 text-amber-900";
+  return "border-red-200 bg-red-50 text-red-900";
 }
 
 export default function HomePage() {
@@ -1081,12 +1081,12 @@ export default function HomePage() {
                     </button>
                   </div>
                   {loading ? (
-                    <div className="mt-3 rounded-lg border border-[#273240] bg-[#0a0f15] px-4 py-3">
+                    <div className="mt-3 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-4 py-3">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-600">
                         {terminalLabels.loadingPipeline}
                       </p>
                       <p className="mt-1 text-sm text-emerald-300">{analysisSteps[loadingStep]}</p>
-                      <div className="mt-2 h-1 overflow-hidden rounded bg-[#1a2430]">
+                      <div className="mt-2 h-1 overflow-hidden rounded bg-[var(--cursor-selection)]">
                         <div
                           className="h-full bg-emerald-400 transition-all duration-500"
                           style={{
@@ -1118,7 +1118,7 @@ export default function HomePage() {
                         className={`rounded-md border px-2.5 py-1.5 text-[11px] transition ${
                           industry === item.value
                             ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300"
-                            : "border-[#273240] bg-[#0a0f15] text-zinc-500 hover:text-zinc-200"
+                            : "border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] text-zinc-500 hover:text-zinc-200"
                         }`}
                       >
                         {item.label}
@@ -1130,7 +1130,7 @@ export default function HomePage() {
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-600">{terminalLabels.workflow}</p>
                     <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
                       {[terminalLabels.workflowResearch, terminalLabels.workflowMap, terminalLabels.workflowVerify, terminalLabels.workflowSimulate].map((label, index) => (
-                        <div key={label} className="workflow-step rounded-lg border border-[#202a36] bg-[#0a0f15]/80 p-3">
+                        <div key={label} className="workflow-step rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-3">
                           <div className="flex items-center gap-2">
                             <span className="flex h-5 w-5 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 font-mono text-[9px] text-emerald-300">0{index + 1}</span>
                             <span className="text-xs font-medium text-zinc-300">{label}</span>
@@ -1141,7 +1141,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <aside className="execution-card rounded-xl border border-[#2a3745] bg-[#080d13]/95 p-4 sm:p-5">
+                <aside className="execution-card rounded-xl border border-[var(--cursor-border-strong)] bg-[var(--cursor-sidebar)] p-4 sm:p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-white">{terminalLabels.executionConsole}</p>
@@ -1152,7 +1152,7 @@ export default function HomePage() {
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                     </span>
                   </div>
-                  <div className="mt-5 space-y-1 rounded-lg border border-[#202a36] bg-[#0b1118] p-1">
+                  <div className="mt-5 space-y-1 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-1">
                     <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
                       <span className="text-zinc-500">{terminalLabels.publicMarket}</span>
                       <span className="font-mono font-semibold text-emerald-300">LIVE</span>
@@ -1242,7 +1242,7 @@ export default function HomePage() {
         ) : null}
 
         {!result && !loading && !error ? (
-          <div className="empty-workspace m-4 rounded-xl border border-dashed border-[#2a3745] px-5 py-10 text-center sm:m-5">
+          <div className="empty-workspace m-4 rounded-xl border border-dashed border-[var(--cursor-border-strong)] px-5 py-10 text-center sm:m-5">
             <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/10 font-mono text-xs font-bold text-emerald-300">TS</div>
             <h2 className="mt-4 text-base font-semibold text-white">{terminalLabels.emptyTitle}</h2>
             <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-zinc-500">{terminalLabels.emptyHint}</p>
@@ -1257,7 +1257,7 @@ export default function HomePage() {
               </a>
               <a
                 href="/sample-evidence-ai-chips.json"
-                className="rounded-md border border-[#273240] bg-[#0a0f15] px-3 py-2 text-xs font-semibold text-zinc-300"
+                className="rounded-md border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-3 py-2 text-xs font-semibold text-zinc-300"
               >
                 {copy.sampleEvidence}
               </a>
@@ -1279,7 +1279,7 @@ export default function HomePage() {
                 {copy.engineFootnote}
               </p>
             ) : null}
-            <section id="decision-overview" className="scroll-mt-28 rounded-lg border border-emerald-400/25 bg-[#0b1118] p-4">
+            <section id="decision-overview" className="scroll-mt-28 rounded-lg border border-emerald-400/25 bg-[var(--cursor-panel)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">{terminalLabels.simpleTitle}</h2>
@@ -1361,7 +1361,7 @@ export default function HomePage() {
                 </div>
               ) : null}
               <div className="mt-4 grid gap-3 lg:grid-cols-4">
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainConclusion}</p>
                   <p className="mt-2 text-xl font-semibold text-white">
                     {result.final_decision.final_result_card.core_bottleneck}
@@ -1371,7 +1371,7 @@ export default function HomePage() {
                     {result.final_decision.final_result_card.confidence}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainTradability}</p>
                   <p
                     className={`mt-2 text-xl font-semibold ${
@@ -1394,14 +1394,14 @@ export default function HomePage() {
                     {locale === "zh" ? "个候选当前可映射到 Bitget" : "candidates map to Bitget now"}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainReason}</p>
                   <p className="mt-2 text-sm leading-6 text-zinc-200">
                     {result.final_decision.final_result_card.reason}
                   </p>
                   <p className="mt-2 text-xs text-zinc-500">{terminalLabels.proxyNote}</p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainEvidence}</p>
                   <p className={`mt-2 text-xl font-semibold ${evidenceReady ? "terminal-green" : "terminal-amber"}`}>
                     {evidenceReady ? terminalLabels.verified : terminalLabels.marketStatus}
@@ -1416,7 +1416,7 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 rounded-lg border border-[#263241] bg-[#080d13] p-4">
+              <div className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
                   {terminalLabels.nextAction}
                 </p>
@@ -1653,7 +1653,7 @@ export default function HomePage() {
                 ) : null}
               </section>
 
-              <section className="mt-4 rounded-lg border border-[#263241] bg-[#080d13] p-4">
+              <section className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-semibold text-white">{copy.judgeSelfAssessment}</h3>
@@ -1693,7 +1693,7 @@ export default function HomePage() {
                   {result.completeness.judge_self_assessment.map((row) => (
                     <div
                       key={row.id}
-                      className="rounded-lg border border-[#263241] bg-[#0f151d] p-4"
+                      className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4"
                     >
                       <p className="text-sm font-semibold text-white">
                         {locale === "zh" ? row.title_zh : row.title_en}
@@ -1725,7 +1725,7 @@ export default function HomePage() {
               <EquityTradabilityPanel result={result} locale={locale} />
             </section>
 
-            <section id="industry-map" className="scroll-mt-28 rounded-lg border border-[#263241] bg-[#0b1118] p-4">
+            <section id="industry-map" className="scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">
@@ -1736,13 +1736,13 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-right text-xs">
-                  <div className="rounded-lg border border-[#263241] bg-[#0f151d] px-3 py-2">
+                  <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-3 py-2">
                     <p className="text-zinc-500">{terminalLabels.publicCompanies}</p>
                     <p className="mt-1 text-base font-semibold text-white">
                       {industryMapCompanies.length}
                     </p>
                   </div>
-                  <div className="rounded-lg border border-[#263241] bg-[#0f151d] px-3 py-2">
+                  <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-3 py-2">
                     <p className="text-zinc-500">{terminalLabels.bitgetOnline}</p>
                     <p className="mt-1 text-base font-semibold terminal-green">
                       {industryMapCompanies.filter((company) => company.bitget_status === "online").length}
@@ -1755,7 +1755,7 @@ export default function HomePage() {
                 {result.industry_map.layers.map((layer) => (
                   <div
                     key={layer.stage}
-                    className="rounded-lg border border-[#263241] bg-[#0f151d] p-4"
+                    className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -1766,13 +1766,13 @@ export default function HomePage() {
                           {industryStageDescription(layer.stage, locale)}
                         </p>
                       </div>
-                      <span className="rounded-full border border-[#344355] px-2 py-0.5 text-xs text-zinc-400">
+                      <span className="rounded-full border border-[var(--cursor-border-strong)] px-2 py-0.5 text-xs text-zinc-400">
                         {layer.companies.length} / {layer.bitget_online_count}
                       </span>
                     </div>
                     <ul className="mt-3 space-y-2">
                       {layer.companies.length === 0 ? (
-                        <li className="rounded-lg border border-dashed border-[#263241] p-3 text-xs text-zinc-500">
+                        <li className="rounded-lg border border-dashed border-[var(--cursor-border)] p-3 text-xs text-zinc-500">
                           {terminalLabels.noMappedCompanies}
                         </li>
                       ) : (
@@ -1781,7 +1781,7 @@ export default function HomePage() {
                           return (
                           <li
                             key={company.ticker}
-                            className="rounded-lg border border-[#263241] bg-[#080d13] p-3"
+                            className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
                           >
                             <div className="flex flex-wrap items-center justify-between gap-2">
                               <div className="flex flex-wrap items-center gap-2">
@@ -1808,7 +1808,7 @@ export default function HomePage() {
                                 {company.sector_tags.slice(0, 4).map((tag) => (
                                   <span
                                     key={tag}
-                                    className="rounded-full bg-[#141b24] px-2 py-0.5 text-[11px] text-zinc-300"
+                                    className="rounded-full bg-[var(--cursor-selection)] px-2 py-0.5 text-[11px] text-zinc-300"
                                   >
                                     {tag}
                                   </span>
@@ -1845,8 +1845,8 @@ export default function HomePage() {
                 ))}
               </div>
 
-              <div className="mt-4 overflow-x-auto rounded-lg border border-[#263241] bg-[#080d13]">
-                <div className="border-b border-[#263241] px-3 py-2">
+              <div className="mt-4 overflow-x-auto rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)]">
+                <div className="border-b border-[var(--cursor-border)] px-3 py-2">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.stockTrendTitle}
                   </h3>
@@ -1866,7 +1866,7 @@ export default function HomePage() {
                   </thead>
                   <tbody>
                     {industryMapCompanies.map((company) => (
-                      <tr key={company.ticker} className="border-t border-[#18202b]">
+                      <tr key={company.ticker} className="border-t border-[var(--cursor-border)]">
                         <td className="px-3 py-2 text-zinc-400">
                           {industryStageLabel(company.stage, locale)}
                         </td>
@@ -1904,7 +1904,7 @@ export default function HomePage() {
               </div>
             </section>
 
-            <section className="rounded-lg border border-violet-400/25 bg-[#0b1118] p-4">
+            <section className="rounded-lg border border-violet-400/25 bg-[var(--cursor-panel)] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-semibold text-white">
@@ -1924,7 +1924,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-4 grid gap-3 lg:grid-cols-4">
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">
                     {terminalLabels.auditScore}
                   </p>
@@ -1937,7 +1937,7 @@ export default function HomePage() {
                       : result.thesis_audit.summary_en}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">
                     {terminalLabels.auditEvidence}
                   </p>
@@ -1948,7 +1948,7 @@ export default function HomePage() {
                     {locale === "zh" ? "证据越强，越适合进入演示结论。" : "Higher evidence means stronger demo defensibility."}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">
                     {terminalLabels.auditSource}
                   </p>
@@ -1961,7 +1961,7 @@ export default function HomePage() {
                       : "Open-source methodology attribution and license are recorded in evidence and docs."}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#0f151d] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">
                     {terminalLabels.auditRole}
                   </p>
@@ -1974,7 +1974,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-4 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
-                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.scarceLayerRanking}
                   </h3>
@@ -1982,7 +1982,7 @@ export default function HomePage() {
                     {result.thesis_audit.layer_priorities.map((layer, index) => (
                       <li
                         key={layer.stage}
-                        className="rounded-lg border border-[#263241] bg-[#0f151d] p-3 text-sm"
+                        className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3 text-sm"
                       >
                         <div className="flex items-center justify-between gap-3">
                           <span className="font-semibold text-white">
@@ -2002,7 +2002,7 @@ export default function HomePage() {
                   </ol>
                 </div>
 
-                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.candidateCrossCheck}
                   </h3>
@@ -2010,7 +2010,7 @@ export default function HomePage() {
                     {result.thesis_audit.candidate_reviews.slice(0, 6).map((review) => (
                       <div
                         key={review.ticker}
-                        className="rounded-lg border border-[#263241] bg-[#0f151d] p-3"
+                        className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div>
@@ -2057,7 +2057,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-4 grid gap-3 lg:grid-cols-2">
-                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {copy.primaryEvidence}
                   </h3>
@@ -2080,7 +2080,7 @@ export default function HomePage() {
                     ))}
                   </ul>
                 </div>
-                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.nextChecks}
                   </h3>
@@ -2109,7 +2109,7 @@ export default function HomePage() {
               </div>
 
               <div className="mt-4 grid gap-3 lg:grid-cols-1">
-                <div className="rounded-lg border border-[#263241] bg-[#080d13] p-4">
+                <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <h3 className="text-sm font-semibold text-white">
                     {terminalLabels.limitations}
                   </h3>
@@ -2169,14 +2169,14 @@ export default function HomePage() {
               </p>
             </div>
 
-            <details id="professional-analysis" className="scroll-mt-28 rounded-lg border border-[#263241] bg-[#0b1118] p-4">
+            <details id="professional-analysis" className="scroll-mt-28 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
               <summary className="cursor-pointer list-none">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h2 className="text-lg font-semibold text-white">{terminalLabels.advancedTitle}</h2>
                     <p className="mt-1 text-xs text-zinc-400">{terminalLabels.advancedHint}</p>
                   </div>
-                  <span className="rounded-full border border-[#344355] px-3 py-1 text-xs font-semibold text-zinc-300">
+                  <span className="rounded-full border border-[var(--cursor-border-strong)] px-3 py-1 text-xs font-semibold text-zinc-300">
                     {locale === "zh" ? "点击展开" : "Click to expand"}
                   </span>
                 </div>
@@ -2949,7 +2949,7 @@ export default function HomePage() {
                 <BilingualText locale={locale} en={baseResult.summary} zh={result.summary} />
               </p>
               {result.interpretation.research_sources?.length ? (
-                <div className="mt-3 border-t border-[#202a36] pt-3">
+                <div className="mt-3 border-t border-[var(--cursor-border)] pt-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium text-zinc-200">
@@ -3649,7 +3649,7 @@ export default function HomePage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="bitget-setup-title"
-            className="connection-dialog w-full max-w-lg rounded-2xl border border-[#2a3745] bg-[#0d1219] p-5 shadow-2xl sm:p-6"
+            className="connection-dialog w-full max-w-lg rounded-2xl border border-[var(--cursor-border-strong)] bg-[var(--cursor-panel)] p-5 shadow-2xl sm:p-6"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -3663,14 +3663,14 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setShowBitgetSetup(false)}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#2a3745] text-lg text-zinc-500 transition hover:text-white"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[var(--cursor-border-strong)] text-lg text-zinc-500 transition hover:text-white"
                 aria-label={terminalLabels.close}
               >
                 ×
               </button>
             </div>
 
-            <div className="mt-5 rounded-xl border border-[#202a36] bg-[#090e14] p-4">
+            <div className="mt-5 rounded-xl border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                 <span className="text-zinc-500">{terminalLabels.permissions}</span>
                 <span className="font-semibold text-emerald-300">{terminalLabels.permissionValue}</span>
@@ -3678,7 +3678,7 @@ export default function HomePage() {
               <ol className="mt-4 space-y-3">
                 {[terminalLabels.setupStepOne, terminalLabels.setupStepTwo, terminalLabels.setupStepThree].map((step, index) => (
                   <li key={step} className="flex gap-3 text-sm leading-5 text-zinc-300">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#304052] bg-[#111923] font-mono text-[10px] text-emerald-300">{index + 1}</span>
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--cursor-border-strong)] bg-[var(--cursor-selection)] font-mono text-[10px] text-emerald-300">{index + 1}</span>
                     <span>{step}</span>
                   </li>
                 ))}
@@ -3690,7 +3690,7 @@ export default function HomePage() {
               <p>{terminalLabels.secretWarning}</p>
             </div>
 
-            <div className="mt-4 rounded-xl border border-[#202a36] bg-[#090e14] p-4 text-xs leading-5 text-zinc-400">
+            <div className="mt-4 rounded-xl border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4 text-xs leading-5 text-zinc-400">
               <p className="font-semibold text-zinc-200">
                 {locale === "zh" ? "纸交易层级（无需密钥也可用）" : "Paper trading tiers (no key required for tier 1)"}
               </p>
@@ -3716,7 +3716,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => void refreshPaperStatus()}
-              className="mt-4 w-full rounded-lg border border-[#304052] bg-[#111923] px-4 py-3 text-sm font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:text-emerald-300"
+              className="mt-4 w-full rounded-lg border border-[var(--cursor-border-strong)] bg-[var(--cursor-selection)] px-4 py-3 text-sm font-semibold text-zinc-200 transition hover:border-emerald-400/40 hover:text-emerald-300"
             >
               {terminalLabels.testPaperConnection}
             </button>

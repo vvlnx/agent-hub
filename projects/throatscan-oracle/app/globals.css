@@ -356,17 +356,19 @@ button {
   border-color: var(--cursor-border) !important;
 }
 
-.terminal-content section,
-.terminal-content div[class*="rounded-xl"],
-.terminal-content div[class*="rounded-lg"][class*="bg-white"],
-.terminal-content div[class*="rounded-lg"][class*="bg-"] {
+/* Flatten only legacy dark hex panels — keep tinted semantic sections (bg-blue-50, etc.) */
+.terminal-content section[class*="bg-[#"],
+.terminal-content div[class*="rounded-xl"][class*="bg-[#"],
+.terminal-content div[class*="rounded-lg"][class*="bg-[#"] {
   background-color: var(--cursor-panel) !important;
   background-image: none !important;
   border-radius: 6px !important;
 }
 
-.terminal-content h2,
-.terminal-content h3 {
+.terminal-content section[class*="bg-[#"] h2,
+.terminal-content section[class*="bg-[#"] h3,
+.terminal-content div[class*="bg-[#"] h2,
+.terminal-content div[class*="bg-[#"] h3 {
   color: var(--cursor-fg) !important;
 }
 
@@ -375,7 +377,6 @@ button {
 .terminal-content li,
 .terminal-content td {
   border-color: var(--cursor-border) !important;
-  color: var(--cursor-fg-muted);
 }
 
 .terminal-content table {
@@ -495,10 +496,40 @@ button {
   background-color: var(--cursor-accent-dim) !important;
 }
 
+.cursor-workbench .text-emerald-100,
 .cursor-workbench .text-emerald-200,
 .cursor-workbench .text-emerald-300,
 .cursor-workbench .text-emerald-400 {
   color: var(--cursor-accent) !important;
+}
+
+.cursor-workbench .text-amber-50,
+.cursor-workbench .text-amber-50\/90,
+.cursor-workbench .text-amber-100,
+.cursor-workbench .text-amber-100\/75,
+.cursor-workbench .text-amber-100\/80,
+.cursor-workbench .text-amber-100\/90 {
+  color: var(--cursor-warning) !important;
+}
+
+.cursor-workbench .text-red-100 {
+  color: var(--cursor-error) !important;
+}
+
+.cursor-workbench .text-sky-50,
+.cursor-workbench .text-sky-50\/90,
+.cursor-workbench .text-sky-100,
+.cursor-workbench .text-sky-200 {
+  color: #0369a1 !important;
+}
+
+.cursor-workbench .text-violet-50,
+.cursor-workbench .text-violet-50\/90,
+.cursor-workbench .text-violet-100,
+.cursor-workbench .text-violet-100\/65,
+.cursor-workbench .text-violet-100\/70,
+.cursor-workbench .text-violet-300\/80 {
+  color: #6d28d9 !important;
 }
 
 .cursor-workbench .bg-emerald-400 {
@@ -517,10 +548,6 @@ button {
 @media (max-width: 1279px) {
   .terminal-sidebar,
   .cursor-sidebar {
-    display: none;
-  }
-
-  .cursor-activity-bar {
     display: none;
   }
 }
