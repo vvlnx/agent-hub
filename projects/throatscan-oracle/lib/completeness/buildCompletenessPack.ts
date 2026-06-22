@@ -5,6 +5,7 @@ import type { MarketResearch } from "../marketResearch";
 import type { UniverseCoverage } from "../universeCoverage";
 import { isLLMConfigured } from "../llm/config";
 import type { Company } from "../types";
+import { companyHasBitgetListing } from "../equity/resolver";
 import { buildTradabilityGuide } from "./tradabilityGuide";
 import { buildNoveltyPack } from "./buildNoveltyPack";
 import { getPaperTradingStatus } from "../paperTrading/service";
@@ -53,7 +54,7 @@ function buildEndToEndStages(
         ? "skipped"
         : "partial";
 
-  const bitgetOnline = companies.some((c) => c.bitget_market?.status === "online");
+  const bitgetOnline = companies.some((company) => companyHasBitgetListing(company));
 
   return [
     stage(
@@ -97,8 +98,8 @@ function buildEndToEndStages(
       "Event trace → sim decision",
       "事件链 → 模拟决策",
       eventIntelligence.simulated_decision.action === "AVOID" ? "partial" : "complete",
-      `Action=${eventIntelligence.simulated_decision.action}, selected=${eventIntelligence.simulated_decision.selected_tickers.join(", ") || "none"}.`,
-      `动作=${eventIntelligence.simulated_decision.action}，选中=${eventIntelligence.simulated_decision.selected_tickers.join("、") || "无"}。`,
+      `Action=${eventIntelligence.simulated_decision.action}, tier_a=${eventIntelligence.simulated_decision.selected_tickers.join(", ") || "none"}, tier_b=${eventIntelligence.simulated_decision.app_handoff_tickers.join(", ") || "none"}.`,
+      `动作=${eventIntelligence.simulated_decision.action}，Tier A=${eventIntelligence.simulated_decision.selected_tickers.join("、") || "无"}，Tier B=${eventIntelligence.simulated_decision.app_handoff_tickers.join("、") || "无"}。`,
     ),
     stage(
       "backtest",
@@ -152,14 +153,14 @@ function buildJudgeSelfAssessment(
         "论证复核含 SEC/IR 一手证据入口。",
       ],
       gaps_en: [
-        "Fixed ~44-company universe; niche queries may be proxy-only.",
+        "Fixed curated research universe (~253 companies); niche queries may be proxy-only.",
         llmConfigured
           ? "LLM web search available when API key is set."
           : "LLM runs in rules/curated grounding mode without live web search.",
         "No automated filing parse — human review still required.",
       ],
       gaps_zh: [
-        "固定约 44 家公司库；冷门行业可能仅为代理映射。",
+        "固定策展研究库（约 253 家）；冷门行业可能仅为代理映射。",
         llmConfigured
           ? "配置 API Key 后可启用 LLM 联网搜索。"
           : "无 API Key 时为规则/精选 grounding 模式。",
@@ -267,6 +268,7 @@ export async function buildCompletenessPack({
   eventIntelligence,
   backtest,
   universeCoverage,
+  discoveryCandidateCount,
 }: {
   profile: IndustryProfile;
   companies: Company[];
@@ -274,6 +276,7 @@ export async function buildCompletenessPack({
   eventIntelligence: EventIntelligence;
   backtest: BacktestValidation;
   universeCoverage: UniverseCoverage;
+  discoveryCandidateCount?: number;
 }): Promise<CompletenessPack> {
   const tradability_guide = await buildTradabilityGuide(profile, companies, eventIntelligence);
   const paperStatus = await getPaperTradingStatus();
@@ -285,6 +288,7 @@ export async function buildCompletenessPack({
     universeCoverage,
     paperDemoConfigured: paperStatus.demo_configured,
     publicPaperEnabled: paperStatus.mode === "local_paper" || paperStatus.mode === "bitget_demo",
+    discoveryCandidateCount,
   });
   const end_to_end_stages = buildEndToEndStages(
     marketResearch,

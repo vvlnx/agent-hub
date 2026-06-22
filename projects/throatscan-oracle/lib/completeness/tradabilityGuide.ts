@@ -1,4 +1,10 @@
-import { getCachedBitgetSymbols } from "../bitgetCache";
+import {
+  buildExecutionHandoff,
+  companyHasBitgetListing,
+  companyIsApiExecutable,
+  companyIsAppHandoff,
+  loadEquityCatalog,
+} from "../equity";
 import type { EventIntelligence } from "../eventIntelligence";
 import type { IndustryProfile } from "../mockData";
 import type { Company } from "../types";
@@ -14,18 +20,26 @@ const PROXY_SYMBOLS: Array<{
   { bitget_symbol: "QQQONUSDT", ticker: "QQQ", role_en: "Nasdaq / growth proxy", role_zh: "纳斯达克/成长代理" },
 ];
 
-function isOnline(company: Company): boolean {
-  return company.bitget_market?.status === "online" && Boolean(company.bitget_market.symbol);
+function isTierA(company: Company): boolean {
+  return companyIsApiExecutable(company);
+}
+
+function isTierB(company: Company): boolean {
+  return companyIsAppHandoff(company);
 }
 
 async function listedProxySymbols(): Promise<Set<string>> {
   try {
-    const symbols = await getCachedBitgetSymbols<Array<{ symbol: string; status: string }>>();
-    return new Set(
-      symbols
-        .filter((row) => row.status?.toLowerCase() === "online")
-        .map((row) => row.symbol.toUpperCase()),
-    );
+    const { by_ticker } = await loadEquityCatalog();
+    const symbols = new Set<string>();
+    for (const instruments of by_ticker.values()) {
+      for (const instrument of instruments) {
+        if (instrument.status === "online") {
+          symbols.add(instrument.symbol.toUpperCase());
+        }
+      }
+    }
+    return symbols;
   } catch {
     return new Set();
   }
@@ -37,15 +51,22 @@ export async function buildTradabilityGuide(
   eventIntelligence: EventIntelligence,
 ): Promise<TradabilityGuide> {
   const selected = eventIntelligence.simulated_decision.selected_tickers;
+  const appHandoff = eventIntelligence.simulated_decision.app_handoff_tickers;
   const direct_execution_available = selected.length > 0;
+  const app_handoff_available = appHandoff.length > 0;
   const research_conclusion_valid = Boolean(profile.primary_bottleneck_ticker);
+  const catalog = await loadEquityCatalog();
 
-  const onlineCompanies = companies
-    .filter(isOnline)
+  const tierACompanies = companies
+    .filter(isTierA)
+    .sort((a, b) => b.score - a.score || a.ticker.localeCompare(b.ticker));
+
+  const tierBCompanies = companies
+    .filter(isTierB)
     .sort((a, b) => b.score - a.score || a.ticker.localeCompare(b.ticker));
 
   const researchOnly = companies
-    .filter((company) => !isOnline(company))
+    .filter((company) => !companyHasBitgetListing(company))
     .sort((a, b) => b.score - a.score || a.ticker.localeCompare(b.ticker))
     .slice(0, 5)
     .map((company) => company.ticker);
@@ -65,19 +86,21 @@ export async function buildTradabilityGuide(
     });
   }
 
-  for (const company of onlineCompanies) {
+  for (const company of tierACompanies) {
     if (proxyOptions.some((option) => option.ticker === company.ticker)) continue;
     if (selected.includes(company.ticker)) continue;
     proxyOptions.push({
       ticker: company.ticker,
       bitget_symbol: company.bitget_market!.symbol!,
-      role_en: "Sector-related Bitget-listed proxy",
-      role_zh: "与主题相关的 Bitget 已上线代理",
-      reason_en: `${company.ticker} is online on Bitget but was not selected for the current simulated basket.`,
-      reason_zh: `${company.ticker} 已在 Bitget 上线，但未进入当前模拟篮子。`,
+      role_en: "Tier A Bitget spot API proxy",
+      role_zh: "Tier A Bitget spot API 代理",
+      reason_en: `${company.ticker} is API-executable on Bitget spot but was not selected for the current simulated basket.`,
+      reason_zh: `${company.ticker} 可在 Bitget spot API 执行，但未进入当前模拟篮子。`,
     });
     if (proxyOptions.length >= 5) break;
   }
+
+  const appHandoffPlans = appHandoff.map((ticker) => buildExecutionHandoff(ticker));
 
   let recommended_action_en: string;
   let recommended_action_zh: string;
@@ -85,19 +108,24 @@ export async function buildTradabilityGuide(
   let summary_zh: string;
 
   if (direct_execution_available) {
-    summary_en = `Direct Bitget execution is available for ${selected.join(", ")}.`;
-    summary_zh = `可直接在 Bitget 执行：${selected.join("、")}。`;
+    summary_en = `Tier A API execution is available for ${selected.join(", ")}.`;
+    summary_zh = `Tier A API 可执行：${selected.join("、")}。`;
     recommended_action_en =
       "Proceed with paper basket execution or download the evidence bundle for audit.";
     recommended_action_zh = "可执行纸交易篮子，或下载证据包供审计。";
+  } else if (app_handoff_available) {
+    summary_en = `Tier B App handoff is available for ${appHandoff.join(", ")} (Bitget US Stocks direct; no public API yet).`;
+    summary_zh = `Tier B App 交接可用：${appHandoff.join("、")}（Bitget 美股直连，尚无公开 API）。`;
+    recommended_action_en = appHandoffPlans[0]?.steps_en.join(" ") ?? "Complete the trade in the Bitget App using USDC funding.";
+    recommended_action_zh = appHandoffPlans[0]?.steps_zh.join(" ") ?? "请在 Bitget App 内通过 USDC 入金完成交易。";
   } else if (research_conclusion_valid) {
     summary_en =
-      "Research conclusion is valid, but no selected candidate is currently tradable as a Bitget stock token.";
-    summary_zh = "研究结论成立，但当前选中的候选均未作为 Bitget 股票代币可交易。";
+      "Research conclusion is valid, but no selected candidate is currently API-executable or App-handoff ready on Bitget.";
+    summary_zh = "研究结论成立，但当前选中候选在 Bitget 上既不可 API 执行，也无 App 交接路径。";
     recommended_action_en =
       proxyOptions.length > 0
         ? `Keep research names as conclusions; for execution use a listed proxy such as ${proxyOptions[0]!.bitget_symbol}, or remain on watch.`
-        : "Keep results as research-only until Bitget lists a matching stock token.";
+        : "Keep results as research-only until Bitget lists a matching equity instrument.";
     recommended_action_zh =
       proxyOptions.length > 0
         ? `研究标的保留为结论；如需执行，可使用已上线代理如 ${proxyOptions[0]!.bitget_symbol}，或继续观察。`
@@ -111,7 +139,12 @@ export async function buildTradabilityGuide(
 
   return {
     direct_execution_available,
+    app_handoff_available,
     research_conclusion_valid,
+    execution_tier_summary_en: `Tier A: ${tierACompanies.length}, Tier B: ${tierBCompanies.length}, catalog tickers: ${catalog.snapshot.counts.total_unique_tickers}.`,
+    execution_tier_summary_zh: `Tier A：${tierACompanies.length}，Tier B：${tierBCompanies.length}，catalog 标的数：${catalog.snapshot.counts.total_unique_tickers}。`,
+    app_handoff_tickers: appHandoff,
+    app_handoff_plans: appHandoffPlans,
     summary_en,
     summary_zh,
     research_only_tickers: researchOnly,

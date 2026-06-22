@@ -36,7 +36,12 @@ export interface TradabilityProxyOption {
 
 export interface TradabilityGuide {
   direct_execution_available: boolean;
+  app_handoff_available: boolean;
   research_conclusion_valid: boolean;
+  execution_tier_summary_en: string;
+  execution_tier_summary_zh: string;
+  app_handoff_tickers: string[];
+  app_handoff_plans: import("../equity/types").ExecutionHandoff[];
   summary_en: string;
   summary_zh: string;
   research_only_tickers: string[];
@@ -99,6 +104,10 @@ export interface NoveltyPack {
   growth_roadmap: GrowthRoadmapPhase[];
   rebalance_agent: RebalanceAgentPlan;
   bitget_online_stock_token_count: number;
+  bitget_catalog_ticker_count: number;
+  bitget_tier_a_count: number;
+  bitget_tier_b_count: number;
+  discovery_candidate_count: number;
   fixed_universe_size: number;
   mcp_url: string;
   mcp_tools_used: string[];

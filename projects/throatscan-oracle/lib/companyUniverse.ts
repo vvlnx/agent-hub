@@ -1,35 +1,9 @@
-import type { CompanyBreakdown, ThroatRole, WhyBottleneckOrNot } from "./types";
 import type { CompanySeed } from "./mockData";
-
-function why(
-  scarce_resource: string,
-  can_function_without: string,
-  replaceability_1_to_3_years: string,
-): WhyBottleneckOrNot {
-  return { scarce_resource, can_function_without, replaceability_1_to_3_years };
-}
-
-function company(
-  ticker: string,
-  name: string,
-  chain_position: string,
-  throat_role: ThroatRole,
-  sector_tags: string[],
-  keywords: string[],
-  why_bottleneck_or_not: WhyBottleneckOrNot,
-  breakdown: Partial<CompanyBreakdown>,
-): CompanySeed {
-  return {
-    ticker,
-    name,
-    chain_position,
-    throat_role,
-    sector_tags,
-    keywords,
-    why_bottleneck_or_not,
-    breakdown,
-  };
-}
+import { company, why } from "./companyUniverseHelpers";
+import { COMPANY_UNIVERSE_NICHE } from "./companyUniverseNiche";
+import { COMPANY_UNIVERSE_WAVE1 } from "./companyUniverseWave1";
+import { COMPANY_UNIVERSE_WAVE2 } from "./companyUniverseWave2";
+import { COMPANY_UNIVERSE_SERVICE_DEEP } from "./companyUniverseServiceDeep";
 
 export const COMPANY_UNIVERSE: CompanySeed[] = [
   company(
@@ -350,7 +324,7 @@ export const COMPANY_UNIVERSE: CompanySeed[] = [
     "UnitedHealth Group",
     "Healthcare platform — payer and care delivery scale",
     "STRATEGIC ENABLER",
-    ["Healthcare AI", "Fintech"],
+    ["Healthcare", "Healthcare AI", "Fintech"],
     ["healthcare", "payer", "insurance", "clinical", "ai"],
     why(
       "Massive claims and provider network scale create switching friction.",
@@ -639,4 +613,78 @@ export const COMPANY_UNIVERSE: CompanySeed[] = [
     ),
     { bottleneck_strength: 78, supply_chain_control: 74, replaceability: 38, industry_dependency: 76 },
   ),
+  company(
+    "INTC",
+    "Intel",
+    "CPU / foundry — x86 and leading-edge fab ambition",
+    "STRATEGIC ENABLER",
+    ["Semiconductors", "AI Infrastructure"],
+    ["intel", "cpu", "fab", "foundry", "semiconductor", "chip", "x86"],
+    why(
+      "Owns x86 datacenter share and is rebuilding leading-edge fab capacity with long qualification cycles.",
+      "Cloud and PC markets can shift share to ARM and AMD but Intel remains a major allocation path.",
+      "Process and product competitiveness can improve over a 2–3 year fab ramp.",
+    ),
+    { bottleneck_strength: 74, supply_chain_control: 70, replaceability: 46, industry_dependency: 78 },
+  ),
+  company(
+    "MU",
+    "Micron Technology",
+    "Memory — HBM and DRAM supply for AI servers",
+    "CORE BOTTLENECK",
+    ["Semiconductors", "AI Infrastructure"],
+    ["memory", "dram", "hbm", "nand", "semiconductor", "ai", "data center"],
+    why(
+      "HBM and high-bandwidth memory supply is capacity-constrained for AI server builds.",
+      "Advanced AI clusters cannot scale without qualified memory allocation from few vendors.",
+      "New fabs add supply but remain concentrated among a small vendor set for 1–3 years.",
+    ),
+    { bottleneck_strength: 88, supply_chain_control: 82, replaceability: 28, industry_dependency: 86 },
+  ),
+  company(
+    "PANW",
+    "Palo Alto Networks",
+    "Cybersecurity platform — enterprise network control",
+    "STRATEGIC ENABLER",
+    ["Platform Software", "AI Infrastructure"],
+    ["cybersecurity", "security", "firewall", "cloud", "platform", "network"],
+    why(
+      "Controls enterprise security stack consolidation with high switching costs.",
+      "Cloud and AI workloads still run without one vendor but face rising compliance friction.",
+      "Competitive platform shifts occur over multi-year enterprise refresh cycles.",
+    ),
+    { bottleneck_strength: 72, supply_chain_control: 76, replaceability: 40, industry_dependency: 70 },
+  ),
+  company(
+    "NOW",
+    "ServiceNow",
+    "Enterprise workflow platform — operational control plane",
+    "STRATEGIC ENABLER",
+    ["Platform Software"],
+    ["workflow", "saas", "enterprise", "platform", "software", "cloud"],
+    why(
+      "Becomes sticky operational layer for large enterprises with deep workflow lock-in.",
+      "Business continues with alternative IT service tools but migration is costly.",
+      "Platform competition can erode share over 2–3 year renewal cycles.",
+    ),
+    { bottleneck_strength: 70, supply_chain_control: 74, replaceability: 42, industry_dependency: 68 },
+  ),
+  company(
+    "IBM",
+    "IBM",
+    "Hybrid cloud and mainframe — regulated enterprise compute",
+    "STRATEGIC ENABLER",
+    ["Platform Software", "AI Infrastructure"],
+    ["mainframe", "hybrid cloud", "consulting", "enterprise", "software", "ai"],
+    why(
+      "Mainframe and regulated-workload footprints create durable enterprise dependency.",
+      "Modern cloud-native stacks reduce reliance but critical systems migrate slowly.",
+      "Hybrid alternatives expand over 2–3 years in non-regulated segments.",
+    ),
+    { bottleneck_strength: 68, supply_chain_control: 72, replaceability: 44, industry_dependency: 66 },
+  ),
+  ...COMPANY_UNIVERSE_NICHE,
+  ...COMPANY_UNIVERSE_WAVE1,
+  ...COMPANY_UNIVERSE_WAVE2,
+  ...COMPANY_UNIVERSE_SERVICE_DEEP,
 ];

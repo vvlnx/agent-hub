@@ -1,6 +1,6 @@
 import type { BacktestValidation } from "./backtest";
 import {
-  attachBitgetStockEvidence,
+  attachBitgetEquityEvidence,
   fetchBitgetDailyCandles,
   type BitgetCandle,
 } from "./bitgetStocks";
@@ -231,7 +231,7 @@ async function expandIndustryCoverage(
     .filter((row) => !selectedByTicker.has(row.seed.ticker))
     .map((row) => seedToResearchCompany(row.seed, profile, row.relevance));
   const supplementalWithEvidence =
-    supplemental.length > 0 ? await attachBitgetStockEvidence(supplemental) : [];
+    supplemental.length > 0 ? await attachBitgetEquityEvidence(supplemental) : [];
 
   const supplementalByTicker = new Map(
     supplementalWithEvidence.map((company) => [company.ticker, company]),

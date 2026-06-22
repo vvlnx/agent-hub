@@ -1,4 +1,5 @@
 import { getCachedBitgetTickers } from "../bitgetCache";
+import { ondoSymbolForTicker } from "../equity";
 import { bitgetPrivateRequest, loadBitgetDemoCredentials } from "../bitgetPrivate";
 import type {
   PaperBasketRequest,
@@ -22,14 +23,14 @@ function trimLocalOrders(): void {
   }
 }
 
-function tickerToSymbol(ticker: string): string {
-  return `${ticker.toUpperCase()}ONUSDT`;
+function tickerToSpotSymbol(ticker: string): string {
+  return ondoSymbolForTicker(ticker);
 }
 
 async function publicMarketLive(): Promise<boolean> {
   try {
     const tickers = await getCachedBitgetTickers<TickerRow[]>();
-    return tickers.some((row) => row.symbol.endsWith("ONUSDT"));
+    return tickers.some((row) => row.symbol.endsWith("ONUSDT") || row.symbol.startsWith("r"));
   } catch {
     return false;
   }
@@ -144,7 +145,7 @@ export async function submitPaperBasket(
   const orders: PaperOrder[] = [];
 
   for (const ticker of tickers) {
-    const symbol = tickerToSymbol(ticker);
+    const symbol = tickerToSpotSymbol(ticker);
     const referencePrice = priceBySymbol.get(symbol);
     const baseOrder: PaperOrder = {
       order_id: `${input.run_id}-${symbol}-${Date.now()}`,

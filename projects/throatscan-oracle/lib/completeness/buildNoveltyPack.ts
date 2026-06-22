@@ -4,7 +4,7 @@ import type { IndustryProfile } from "../mockData";
 import type { MarketResearch } from "../marketResearch";
 import type { UniverseCoverage } from "../universeCoverage";
 import { isLLMConfigured } from "../llm/config";
-import { getCachedBitgetSymbols } from "../bitgetCache";
+import { loadEquityCatalog } from "../equity";
 import type {
   AgentWorkflowStep,
   GrowthRoadmapPhase,
@@ -12,23 +12,6 @@ import type {
   NoveltyPack,
   RebalanceAgentPlan,
 } from "./types";
-
-interface BitgetSymbolRow {
-  symbol: string;
-  baseCoin: string;
-  status: string;
-}
-
-async function countBitgetOnlineStockTokens(): Promise<number> {
-  try {
-    const rows = await getCachedBitgetSymbols<BitgetSymbolRow[]>();
-    return rows.filter(
-      (row) => row.symbol.endsWith("ONUSDT") && row.status?.toLowerCase() === "online",
-    ).length;
-  } catch {
-    return 0;
-  }
-}
 
 function buildHardConstraints(): HardConstraintRule[] {
   return [
@@ -50,8 +33,8 @@ function buildHardConstraints(): HardConstraintRule[] {
       id: "bitget_gate",
       label_en: "Bitget tradability gate",
       label_zh: "Bitget 可交易性过滤",
-      enforced_en: "Simulated basket restricted to online Bitget stock tokens or documented proxies.",
-      enforced_zh: "模拟篮子限制为 Bitget 在线 stock token 或文档化代理。",
+      enforced_en: "Tier A basket = spot API executable; Tier B = App handoff only; no fake API orders.",
+      enforced_zh: "Tier A 篮子 = spot API 可执行；Tier B = 仅 App 交接；禁止伪造 API 下单。",
     },
     {
       id: "confidence_cap",
@@ -279,6 +262,7 @@ export async function buildNoveltyPack({
   universeCoverage,
   paperDemoConfigured,
   publicPaperEnabled,
+  discoveryCandidateCount = 0,
 }: {
   profile: IndustryProfile;
   marketResearch: MarketResearch;
@@ -287,8 +271,13 @@ export async function buildNoveltyPack({
   universeCoverage: UniverseCoverage;
   paperDemoConfigured: boolean;
   publicPaperEnabled: boolean;
+  discoveryCandidateCount?: number;
 }): Promise<NoveltyPack> {
-  const bitgetOnlineCount = await countBitgetOnlineStockTokens();
+  const catalog = await loadEquityCatalog();
+  const bitgetOnlineCount = catalog.snapshot.counts.ondo_spot_online;
+  const bitgetCatalogTickerCount = catalog.snapshot.counts.total_unique_tickers;
+  const bitgetTierACount = catalog.snapshot.counts.ondo_spot_online + catalog.snapshot.counts.rtoken_online;
+  const bitgetTierBCount = catalog.snapshot.counts.us_stocks_app;
   const agent_workflow = buildAgentWorkflow(
     profile,
     marketResearch,
@@ -332,6 +321,10 @@ export async function buildNoveltyPack({
     growth_roadmap,
     rebalance_agent,
     bitget_online_stock_token_count: bitgetOnlineCount,
+    bitget_catalog_ticker_count: bitgetCatalogTickerCount,
+    bitget_tier_a_count: bitgetTierACount,
+    bitget_tier_b_count: bitgetTierBCount,
+    discovery_candidate_count: discoveryCandidateCount,
     fixed_universe_size: universeCoverage.universe_size,
     mcp_url: marketResearch.mcp_url,
     mcp_tools_used: marketResearch.tools_used,

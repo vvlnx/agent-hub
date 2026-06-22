@@ -1,4 +1,6 @@
 import type { GicsClassification } from "./types";
+import { TICKER_GICS_NICHE } from "./tickerMapNiche";
+import { TICKER_GICS_WAVES } from "./tickerMapWaves";
 
 function gics(
   sector: string,
@@ -537,6 +539,68 @@ export const TICKER_GICS: Record<string, GicsClassification> = {
       sub_industry: "工业机械与零部件",
     },
   ),
+  INTC: gics(
+    "Information Technology",
+    "Semiconductors & Semiconductor Equipment",
+    "Semiconductors",
+    "Semiconductors",
+    {
+      sector: "信息技术",
+      industry_group: "半导体与半导体设备",
+      industry: "半导体",
+      sub_industry: "半导体",
+    },
+  ),
+  MU: gics(
+    "Information Technology",
+    "Semiconductors & Semiconductor Equipment",
+    "Semiconductors",
+    "Semiconductors",
+    {
+      sector: "信息技术",
+      industry_group: "半导体与半导体设备",
+      industry: "半导体",
+      sub_industry: "半导体",
+    },
+  ),
+  PANW: gics(
+    "Information Technology",
+    "Software & Services",
+    "Software",
+    "Systems Software",
+    {
+      sector: "信息技术",
+      industry_group: "软件与服务",
+      industry: "软件",
+      sub_industry: "系统软件",
+    },
+  ),
+  NOW: gics(
+    "Information Technology",
+    "Software & Services",
+    "Software",
+    "Application Software",
+    {
+      sector: "信息技术",
+      industry_group: "软件与服务",
+      industry: "软件",
+      sub_industry: "应用软件",
+    },
+  ),
+  IBM: gics(
+    "Information Technology",
+    "Software & Services",
+    "IT Services",
+    "IT Consulting & Other Services",
+    {
+      sector: "信息技术",
+      industry_group: "软件与服务",
+      industry: "IT 服务",
+      sub_industry: "IT 咨询与其他服务",
+    },
+  ),
+  ...TICKER_GICS_NICHE,
+  ...TICKER_GICS_WAVES,
 };
 
 export function getTickerGics(ticker: string): GicsClassification | undefined {

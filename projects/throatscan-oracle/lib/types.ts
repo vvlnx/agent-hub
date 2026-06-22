@@ -1,4 +1,5 @@
 import type { GicsClassification } from "./gics";
+import type { AnalysisGrade, BitgetEquityEvidence } from "./equity/types";
 
 export type ThroatRole =
   | "CORE BOTTLENECK"
@@ -29,6 +30,8 @@ export interface Company {
   throat_role: ThroatRole;
   chain_position: string;
   why_bottleneck_or_not: WhyBottleneckOrNot;
+  analysis_grade?: AnalysisGrade;
+  bitget_equity?: BitgetEquityEvidence;
   bitget_market?: import("./bitgetStocks").BitgetStockMarketEvidence;
   event_adjustment?: import("./eventIntelligence").CompanyEventAdjustment;
   selection_insight?: {
@@ -112,6 +115,8 @@ export function normalizeCompany(partial?: Partial<Company> | null): Company {
     throat_role: partial?.throat_role ?? DEFAULT_THROAT_ROLE,
     chain_position: partial?.chain_position ?? "",
     why_bottleneck_or_not: normalizeWhy(partial?.why_bottleneck_or_not),
+    analysis_grade: partial?.analysis_grade ?? "deep",
+    bitget_equity: partial?.bitget_equity,
     bitget_market: partial?.bitget_market,
     event_adjustment: partial?.event_adjustment,
     selection_insight: partial?.selection_insight,

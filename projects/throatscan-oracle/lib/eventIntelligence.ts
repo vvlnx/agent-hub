@@ -1,5 +1,6 @@
 import type { IndustryProfile } from "./mockData";
 import type { MacroVerdict, MarketResearch, NewsEvidence } from "./marketResearch";
+import { companyIsApiExecutable, companyIsAppHandoff } from "./equity";
 import { clampScore, type Company, type ThroatRole } from "./types";
 
 export type SupplyChainEventType =
@@ -73,6 +74,7 @@ export interface DecisionTraceStep {
 export interface EventDrivenDecision {
   action: SimulatedDecisionAction;
   selected_tickers: string[];
+  app_handoff_tickers: string[];
   rationale_en: string;
   rationale_zh: string;
 }
@@ -357,13 +359,21 @@ export function buildEventIntelligence(
     .filter(
       (company) =>
         company.event_adjustment?.recommended_action === "SIMULATED_BUY" &&
-        company.bitget_market?.listed &&
-        company.bitget_market.status === "online",
+        companyIsApiExecutable(company),
+    )
+    .slice(0, 5);
+  const appHandoff = adjustedCompanies
+    .filter(
+      (company) =>
+        company.event_adjustment?.recommended_action === "SIMULATED_BUY" &&
+        !companyIsApiExecutable(company) &&
+        companyIsAppHandoff(company),
     )
     .slice(0, 5);
   const action: SimulatedDecisionAction =
     selected.length > 0 ? "SIMULATED_BUY" : adjustedCompanies.some((c) => c.score >= 55) ? "WATCH" : "AVOID";
   const selectedTickers = selected.map((company) => company.ticker);
+  const appHandoffTickers = appHandoff.map((company) => company.ticker);
   const eventStatus = research.news.status === "unavailable" ? "unavailable" : events.length > 0 ? "verified" : "partial";
   const traceEventStatus = eventStatus === "verified" ? "complete" : eventStatus;
   const intelligence: EventIntelligence = {
@@ -420,21 +430,36 @@ export function buildEventIntelligence(
         label_en: "Explainable Simulated Trade Decision",
         label_zh: "生成可解释的模拟交易决策",
         status: selectedTickers.length > 0 ? "complete" : "partial",
-        detail_en: selectedTickers.length > 0 ? `Current Bitget-tradable simulated basket: ${selectedTickers.join(", ")}.` : "No Bitget-tradable candidate currently clears the simulated-buy threshold.",
-        detail_zh: selectedTickers.length > 0 ? `当前可在 Bitget 交易的模拟篮子：${selectedTickers.join(", ")}。` : "当前没有可在 Bitget 交易的候选达到模拟买入阈值。",
+        detail_en:
+          selectedTickers.length > 0
+            ? `Tier A API-executable simulated basket: ${selectedTickers.join(", ")}.`
+            : appHandoffTickers.length > 0
+              ? `No Tier A API basket; Tier B App handoff candidates: ${appHandoffTickers.join(", ")}.`
+              : "No Bitget-tradable candidate currently clears the simulated-buy threshold.",
+        detail_zh:
+          selectedTickers.length > 0
+            ? `Tier A API 可执行模拟篮子：${selectedTickers.join(", ")}。`
+            : appHandoffTickers.length > 0
+              ? `无 Tier A API 篮子；Tier B App 交接候选：${appHandoffTickers.join(", ")}。`
+              : "当前没有可在 Bitget 交易的候选达到模拟买入阈值。",
       },
     ],
     simulated_decision: {
       action,
       selected_tickers: selectedTickers,
+      app_handoff_tickers: appHandoffTickers,
       rationale_en:
         selectedTickers.length > 0
-          ? `Select ${selectedTickers.join(", ")} using structural bottleneck scores plus capped event and macro overlays.`
-          : "Keep candidates on watch because no Bitget-tradable candidate currently supports a simulated entry.",
+          ? `Select ${selectedTickers.join(", ")} for Tier A API paper/demo execution using structural bottleneck scores plus capped event and macro overlays.`
+          : appHandoffTickers.length > 0
+            ? `Tier B App handoff for ${appHandoffTickers.join(", ")} — Bitget US Stocks direct has no public API yet; use the in-app USDC funding path.`
+            : "Keep candidates on watch because no Bitget-tradable candidate currently supports a simulated entry.",
       rationale_zh:
         selectedTickers.length > 0
-          ? `基于结构性瓶颈评分，并叠加受限幅度的事件与宏观调整，选择 ${selectedTickers.join(", ")}。`
-          : "当前没有可在 Bitget 交易的候选支持模拟建仓，候选维持观察。",
+          ? `基于结构性瓶颈评分与受限事件/宏观叠加，选择 ${selectedTickers.join(", ")} 进入 Tier A API 纸交易/demo 执行。`
+          : appHandoffTickers.length > 0
+            ? `${appHandoffTickers.join(", ")} 为 Tier B App 交接候选——Bitget 美股直连尚无公开 API，请按 App 内 USDC 路径操作。`
+            : "当前没有可在 Bitget 交易的候选支持模拟建仓，候选维持观察。",
     },
     disclosure_en:
       "Current news and macro evidence select today's candidate basket. Historical Bitget candles validate that basket only; current evidence is not back-propagated into historical dates.",

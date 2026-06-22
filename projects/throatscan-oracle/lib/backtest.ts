@@ -4,6 +4,7 @@ import {
   fetchBitgetDailyCandles,
   type BitgetCandle,
 } from "./bitgetStocks";
+import { companyIsApiExecutable } from "./equity/resolver";
 import type { Company, ThroatRole } from "./types";
 
 export interface EquityPoint {
@@ -463,12 +464,7 @@ function unavailableBacktest(warnings: string[]): BacktestValidation {
 
 export async function runBacktestValidation(topCompanies: Company[]): Promise<BacktestValidation> {
   const candidates = topCompanies
-    .filter(
-      (company) =>
-        company.bitget_market?.listed &&
-        company.bitget_market.status === "online" &&
-        company.bitget_market.symbol,
-    )
+    .filter((company) => companyIsApiExecutable(company) && company.bitget_market?.symbol)
     .slice(0, 5);
 
   if (candidates.length === 0) {

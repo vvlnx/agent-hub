@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import { analyzeIndustry } from "../lib/agent.ts";
 
+/** Bitget may list both Ondo (NVDAONUSDT) and rToken (RNVDAUSDT); policy prefers rToken when online. */
+const NVDA_EXECUTABLE_SYMBOLS = new Set(["NVDAONUSDT", "RNVDAUSDT"]);
+
+function assertExecutableNvdaSymbol(symbol, label) {
+  assert.ok(
+    NVDA_EXECUTABLE_SYMBOLS.has(symbol),
+    `${label} must map to an online Bitget tokenized NVDA symbol (NVDAONUSDT or RNVDAUSDT), got ${symbol ?? "undefined"}`,
+  );
+}
+
 const result = await analyzeIndustry("AI chips");
 const nvda = result.companies.find((company) => company.ticker === "NVDA");
 const backtest = result.backtest;
@@ -8,7 +18,8 @@ const research = result.market_research;
 const eventIntelligence = result.event_intelligence;
 
 assert.equal(nvda?.bitget_market?.status, "online", "NVDA must be online on Bitget");
-assert.equal(nvda?.bitget_market?.symbol, "NVDAONUSDT", "NVDA must map to NVDAONUSDT");
+assertExecutableNvdaSymbol(nvda?.bitget_market?.symbol, "NVDA");
+assert.equal(nvda?.bitget_equity?.execution_tier, "A", "NVDA must be Tier A API-executable");
 assert.equal(research.enabled, true, "Agent Hub market research must be enabled");
 assert.ok(research.tools_used.includes("news_feed"), "news-briefing workflow must call news_feed");
 assert.ok(
@@ -46,6 +57,10 @@ assert.ok(
 assert.equal(backtest.status, "verified", "Bitget-candle backtest must be verified");
 assert.match(backtest.evidence_hash ?? "", /^[a-f0-9]{64}$/, "Evidence hash must be SHA-256");
 assert.ok(backtest.evidence.holdings.length > 0, "Holding candle evidence must be present");
+assert.ok(
+  backtest.evidence.holdings.every((holding) => /^(R)?[A-Z0-9]+USDT$/.test(holding.symbol)),
+  "Each backtest holding must use an online Bitget tokenized-stock symbol",
+);
 assert.ok(
   backtest.evidence.holdings.every((holding) => holding.candles.length >= 5),
   "Each holding must include sufficient Bitget candles",
@@ -88,6 +103,7 @@ console.table(
     return_pct: holding.total_return_pct,
   })),
 );
+console.log(`NVDA Bitget symbol: ${nvda?.bitget_market?.symbol}`);
 console.log(`Period: ${backtest.period}`);
 console.log(`Evidence hash: ${backtest.evidence_hash}`);
 console.log(`Trade records: ${backtest.trade_log.length}`);

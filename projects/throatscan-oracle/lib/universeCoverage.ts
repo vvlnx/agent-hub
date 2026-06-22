@@ -29,6 +29,20 @@ export const DEMO_CANONICAL_INDUSTRIES = [
   "automotive",
   "fintech",
   "defense",
+  "space",
+  "quantum computing",
+  "cybersecurity",
+  "solar",
+  "rare earth",
+  "carbon capture",
+  "agriculture fertilizer",
+  "financials banking",
+  "consumer retail",
+  "healthcare services",
+  "utilities power grid",
+  "telecom broadband",
+  "media streaming",
+  "logistics shipping",
 ] as const;
 
 const CANONICAL_SET = new Set<string>(DEMO_CANONICAL_INDUSTRIES);

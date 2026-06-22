@@ -24,6 +24,13 @@ import {
   inferRequiredRoles,
   scoreCompanyForRole,
 } from "./supplyRoles";
+import {
+  companyHaystack,
+  resolveServiceIndustryProfile,
+  serviceIndustryRoleRequirements,
+  serviceKeywordAdjustment,
+  violatesServiceCrossSectorGuard,
+} from "./serviceIndustryProfiles";
 
 const ROLE_MATCH_THRESHOLD = 42;
 const SECTOR_FLOOR = 20;
@@ -54,9 +61,9 @@ function tokenMatchesField(token: string, field: string): boolean {
   return lowerField.includes(lowerToken);
 }
 
-function sectorSimilarity(company: CompanySeed, signals: string[]): number {
+function sectorSimilarity(company: CompanySeed, signals: string[], serviceSectorTags: string[] = []): number {
   let score = 0;
-  const tokens = signals.map((signal) => normalizeQueryToken(signal));
+  const tokens = [...signals, ...serviceSectorTags].map((signal) => normalizeQueryToken(signal));
 
   for (const signal of tokens) {
     for (const tag of company.sector_tags) {
@@ -70,6 +77,23 @@ function sectorSimilarity(company: CompanySeed, signals: string[]): number {
   }
 
   return Math.min(100, score);
+}
+
+function passesMatchConstraints(
+  company: CompanySeed,
+  bottleneck: BottleneckInsight,
+  intent: IndustryIntent,
+  queryAlignment: number,
+  sectorScore: number,
+  serviceProfile: ReturnType<typeof resolveServiceIndustryProfile>,
+): boolean {
+  if (passesSelectionConstraints(company, bottleneck)) {
+    return true;
+  }
+  if (!serviceProfile?.relax_constraints) {
+    return false;
+  }
+  return queryAlignment >= 45 && sectorScore >= 28;
 }
 
 function normalizeQueryToken(token: string): string {
@@ -110,38 +134,85 @@ export function matchCompaniesByRole(
   intent: IndustryIntent,
   bottleneck: BottleneckInsight,
 ): { matches: CompanyMatchReason[]; unfilled_roles: SupplyRole[] } {
-  const requirements = inferRequiredRoles(bottleneck);
+  const serviceProfile = resolveServiceIndustryProfile(intent);
+  const requirements = serviceProfile
+    ? serviceIndustryRoleRequirements(serviceProfile)
+    : inferRequiredRoles(bottleneck);
   const tokens = tokenizeIndustry(intent.raw_input);
   const signals = [...intent.sector_signals, ...tokens.map((token) => token.toLowerCase())];
+  const serviceSectorTags = serviceProfile?.sector_tags ?? [];
+  const queryHaystack = [intent.raw_input, intent.normalized_query].join(" ").toLowerCase();
   const picked = new Set<string>();
   const matches: CompanyMatchReason[] = [];
   const unfilled_roles: SupplyRole[] = [];
+  const roleThreshold = serviceProfile ? 36 : ROLE_MATCH_THRESHOLD;
+  const sectorFloor = serviceProfile ? 16 : SECTOR_FLOOR;
+  const alignmentFloor = serviceProfile ? 35 : 40;
 
   for (const requirement of requirements) {
     const ranked = COMPANY_UNIVERSE.map((company) => {
+      const haystack = companyHaystack(company);
+      if (
+        serviceProfile &&
+        violatesServiceCrossSectorGuard(serviceProfile, haystack, queryHaystack)
+      ) {
+        return null;
+      }
+
       const roleScore = scoreCompanyForRole(company, requirement.role);
-      const sectorScore = sectorSimilarity(company, signals);
+      const sectorScore = sectorSimilarity(company, signals, serviceSectorTags);
       const queryAlignment = directQueryAlignment(company, intent.raw_input);
       const roles = inferCompanyRoles(company);
       const roleBonus = roles.includes(requirement.role) ? 15 : 0;
+      const serviceBonus =
+        serviceProfile &&
+        company.sector_tags.some((tag) =>
+          serviceProfile.sector_tags.some(
+            (profileTag) => tag.toLowerCase() === profileTag.toLowerCase(),
+          ),
+        )
+          ? 12
+          : 0;
+      const keywordAdjustment = serviceProfile
+        ? serviceKeywordAdjustment(serviceProfile, haystack)
+        : 0;
+      const sectorOnlyBoost =
+        serviceProfile?.id === "consumer_retail" &&
+        company.sector_tags.includes("Consumer") &&
+        !company.sector_tags.some((tag) => /fintech|healthcare|platform software/i.test(tag))
+          ? 16
+          : 0;
       const constraints = evaluateSelectionConstraints(company, bottleneck);
       const composite = Math.round(
         roleScore * 0.4 +
           sectorScore * 0.2 +
           queryAlignment * 0.2 +
           roleBonus +
+          serviceBonus +
+          keywordAdjustment +
+          sectorOnlyBoost +
           requirement.priority * 0.05,
       );
 
       return { company, roleScore, sectorScore, queryAlignment, composite, constraints };
     })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
       .filter((entry) => !picked.has(entry.company.ticker))
-      .filter((entry) => passesSelectionConstraints(entry.company, bottleneck))
+      .filter((entry) =>
+        passesMatchConstraints(
+          entry.company,
+          bottleneck,
+          intent,
+          entry.queryAlignment,
+          entry.sectorScore,
+          serviceProfile,
+        ),
+      )
       .filter(
         (entry) =>
-          entry.queryAlignment >= 40 &&
-          entry.roleScore >= ROLE_MATCH_THRESHOLD &&
-          entry.sectorScore >= SECTOR_FLOOR,
+          entry.queryAlignment >= alignmentFloor &&
+          entry.roleScore >= roleThreshold &&
+          entry.sectorScore >= sectorFloor,
       )
       .sort(
         (a, b) =>
@@ -150,63 +221,76 @@ export function matchCompaniesByRole(
           a.company.ticker.localeCompare(b.company.ticker),
       );
 
-    const best = ranked[0];
-    if (!best) {
+    if (ranked.length === 0) {
       unfilled_roles.push(requirement.role);
       continue;
     }
 
-    picked.add(best.company.ticker);
-    const role = requirement.role;
-    const label = SUPPLY_ROLE_LABELS[role];
-    const proxy =
-      best.sectorScore < 25
-        ? `Uncertain proxy mapping for ${label}.`
-        : undefined;
+    const pickLimit =
+      serviceProfile?.fill_same_role_slots &&
+      requirement.role === serviceProfile.role_priority[0]
+        ? serviceProfile.fill_same_role_slots
+        : 1;
 
-    matches.push({
-      ticker: best.company.ticker,
-      supply_role: role,
-      supply_role_label: label,
-      sector_similarity: best.sectorScore,
-      role_fit: best.roleScore,
-      dependency_exposure: Math.round(best.company.breakdown.industry_dependency ?? 50),
-      substitution_difficulty: Math.round(100 - (best.company.breakdown.replaceability ?? 50)),
-      composite: best.composite,
-      mapped_layer: layerForRole(role),
-      why_selected: buildWhyIncluded(
-        best.company,
-        label,
-        best.constraints,
-        best.roleScore,
-        best.sectorScore,
-        intent,
-      ),
-      why_not_others: buildWhyNotOthers(
-        {
-          ticker: best.company.ticker,
-          supply_role: role,
-          supply_role_label: label,
-          sector_similarity: best.sectorScore,
-          role_fit: best.roleScore,
-          dependency_exposure: 0,
-          substitution_difficulty: 0,
-          composite: best.composite,
-          mapped_layer: layerForRole(role),
-          why_selected: "",
-          why_not_others: "",
-          depends_on: "",
-          match_confidence: best.composite,
-          constraints_met: best.constraints,
-        },
-        ranked,
-        bottleneck,
-      ),
-      depends_on: inferDependsOn(best.company, role),
-      match_confidence: Math.min(100, best.composite),
-      constraints_met: best.constraints,
-      proxy_note: proxy,
-    });
+    for (const best of ranked.slice(0, pickLimit)) {
+      if (picked.has(best.company.ticker)) continue;
+
+      picked.add(best.company.ticker);
+      const role = requirement.role;
+      const label = SUPPLY_ROLE_LABELS[role];
+      const proxy =
+        best.sectorScore < 25
+          ? `Uncertain proxy mapping for ${label}.`
+          : undefined;
+
+      matches.push({
+        ticker: best.company.ticker,
+        supply_role: role,
+        supply_role_label: label,
+        sector_similarity: best.sectorScore,
+        role_fit: best.roleScore,
+        dependency_exposure: Math.round(best.company.breakdown.industry_dependency ?? 50),
+        substitution_difficulty: Math.round(100 - (best.company.breakdown.replaceability ?? 50)),
+        composite: best.composite,
+        mapped_layer: layerForRole(role),
+        why_selected: buildWhyIncluded(
+          best.company,
+          label,
+          best.constraints,
+          best.roleScore,
+          best.sectorScore,
+          intent,
+        ),
+        why_not_others: buildWhyNotOthers(
+          {
+            ticker: best.company.ticker,
+            supply_role: role,
+            supply_role_label: label,
+            sector_similarity: best.sectorScore,
+            role_fit: best.roleScore,
+            dependency_exposure: 0,
+            substitution_difficulty: 0,
+            composite: best.composite,
+            mapped_layer: layerForRole(role),
+            why_selected: "",
+            why_not_others: "",
+            depends_on: "",
+            match_confidence: best.composite,
+            constraints_met: best.constraints,
+          },
+          ranked,
+          bottleneck,
+        ),
+        depends_on: inferDependsOn(best.company, role),
+        match_confidence: Math.min(100, best.composite),
+        constraints_met: best.constraints,
+        proxy_note: proxy,
+      });
+
+      if (matches.length >= 8) break;
+    }
+
+    if (serviceProfile?.fill_same_role_slots) break;
 
     if (matches.length >= 8) break;
   }

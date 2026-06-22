@@ -9,7 +9,7 @@ const cases = [
   { input: "Biotech", forbidden: ["NVDA", "ASML", "XOM"] },
   { input: "Oil and Gas", forbidden: ["NVDA", "MSFT", "LLY"] },
   { input: "Nuclear Energy", forbidden: ["NVDA", "MSFT", "LLY"] },
-  { input: "quantum computing", forbidden: [], expectCoverage: "out_of_scope" },
+  { input: "quantum computing", forbidden: [], expectCoverage: "full" },
 ];
 
 async function profileSummary({ input, forbidden, expectCoverage }) {

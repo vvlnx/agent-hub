@@ -20,22 +20,22 @@ export const SUPPLY_ROLE_LABELS: Record<SupplyRole, string> = {
 
 const ROLE_PATTERNS: Record<SupplyRole, RegExp[]> = {
   compute_provider: [
-    /\bgpu\b|accelerator|cuda|compute|chip design|foundry|asic|semiconductor design|tpu|ai compute/i,
+    /\bgpu\b|accelerator|cuda|compute|chip design|foundry|asic|semiconductor design|tpu|ai compute|qpu|quantum|eda|sequencing/i,
   ],
   equipment_supplier: [
-    /equipment|fab|deposition|etch|lithography|wfe|oilfield|tooling|packaging|test equipment|cobot hardware/i,
+    /equipment|fab|deposition|etch|lithography|wfe|oilfield|tooling|packaging|test equipment|cobot hardware|inspection|metrology|turbine|inverter|laser|photonics/i,
   ],
   material_bottleneck: [
-    /lithium|uranium|material|chemical|fuel|cathode|anode|refining|battery input|specialty chemical|hydrocarbon/i,
+    /lithium|uranium|material|chemical|fuel|cathode|anode|refining|battery input|specialty chemical|hydrocarbon|copper|rare earth|fertilizer|potash|phosphate|magnet|ammonia/i,
   ],
   downstream_consumer: [
-    /oem|vehicle|automotive|integrator|prime|pharma|payer|robotics|surgical|exchange|crm|workflow app|utility deployment/i,
+    /oem|vehicle|automotive|integrator|prime|pharma|payer|robotics|surgical|exchange|crm|workflow app|utility deployment|retail|brokerage|bnpl|consumer|bank|insurance|managed care|health insurance|hospital|carrier|wireless|broadband|apparel|restaurant|footwear|grocery|staples|logistics|parcel|shipping|freight/i,
   ],
   infrastructure_enabler: [
-    /cloud|network|switch|fabric|data center|power|cooling|colocation|hyperscale|rack|thermal|payment rail/i,
+    /cloud|network|switch|fabric|data center|power|cooling|colocation|hyperscale|rack|thermal|payment rail|optical|fiber|grid|electrical|solar|telecom|tower|wireless|broadband|carrier|pipeline|midstream|utility|electric|transmission|logistics|express|parcel|shipping|freight|warehouse/i,
   ],
   platform_controller: [
-    /platform|saas|identity|control plane|database|security platform|workflow|copilot|azure|aws|gcp/i,
+    /platform|saas|identity|control plane|database|security platform|workflow|copilot|azure|aws|gcp|observability|zero trust|edge cloud|fintech|streaming|ott|video|marketplace|payments|ratings|exchange|indices|wealth|asset management|ecommerce|content/i,
   ],
 };
 

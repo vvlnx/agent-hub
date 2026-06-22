@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import type { AnalysisResult } from "@/lib/mockData";
 import type { PaperOrder, PaperTradingStatus } from "@/lib/paperTrading/types";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
+import { EquityTierBadge } from "@/components/EquityTierBadge";
+import { EquityTradabilityPanel } from "@/components/EquityTradabilityPanel";
 import {
   formatBacktestMeta,
   formatBottleneckStrategyScore,
@@ -535,8 +537,11 @@ export default function HomePage() {
       },
       bitget_market_evidence: baseResult.companies.map((company) => ({
         ticker: company.ticker,
+        analysis_grade: company.analysis_grade,
+        bitget_equity: company.bitget_equity,
         market: company.bitget_market,
       })),
+      bitget_discovery: baseResult.bitget_discovery,
       market_research: baseResult.market_research,
       event_intelligence: baseResult.event_intelligence,
       final_decision: baseResult.final_decision,
@@ -849,15 +854,25 @@ export default function HomePage() {
   const quickIndustries = [
     { value: "AI chips", label: locale === "zh" ? "AI 芯片" : "AI chips" },
     { value: "Semiconductor", label: locale === "zh" ? "半导体" : "Semiconductor" },
-    { value: "Nuclear Energy", label: locale === "zh" ? "核能" : "Nuclear Energy" },
+    { value: "Space", label: locale === "zh" ? "商业航天" : "Space" },
+    { value: "Quantum computing", label: locale === "zh" ? "量子计算" : "Quantum" },
+    { value: "Rare earth", label: locale === "zh" ? "稀土/关键矿物" : "Rare earth" },
+    { value: "Nuclear Energy", label: locale === "zh" ? "核能/铀" : "Nuclear" },
+    { value: "Cybersecurity", label: locale === "zh" ? "网络安全" : "Cybersecurity" },
     { value: "EV Battery", label: locale === "zh" ? "电动车电池" : "EV Battery" },
+    { value: "Healthcare services", label: locale === "zh" ? "医疗服务" : "Healthcare" },
+    { value: "Financials banking", label: locale === "zh" ? "银行金融" : "Financials" },
+    { value: "Telecom broadband", label: locale === "zh" ? "电信宽带" : "Telecom" },
+    { value: "Logistics shipping", label: locale === "zh" ? "物流运输" : "Logistics" },
   ];
   const selectedTradeTickers = result?.event_intelligence.simulated_decision.selected_tickers ?? [];
+  const appHandoffTickers = result?.event_intelligence.simulated_decision.app_handoff_tickers ?? [];
   const onlineCandidateCount =
     result?.companies.filter(
       (company) =>
-        company.bitget_market?.listed &&
-        company.bitget_market.status === "online",
+        company.bitget_equity?.execution_tier === "A" ||
+        company.bitget_equity?.execution_tier === "B" ||
+        (company.bitget_market?.listed && company.bitget_market.status === "online"),
     ).length ?? 0;
   const totalCandidateCount = result?.companies.length ?? 0;
   const evidenceReady =
@@ -1707,41 +1722,7 @@ export default function HomePage() {
                 </div>
               </section>
 
-              {!result.completeness.tradability_guide.direct_execution_available ? (
-                <section className="mt-4 rounded-lg border border-amber-400/25 bg-amber-400/5 p-4">
-                  <h3 className="text-sm font-semibold text-amber-100">{copy.tradabilityGuide}</h3>
-                  <p className="mt-2 text-sm leading-6 text-amber-50/90">
-                    {locale === "zh"
-                      ? result.completeness.tradability_guide.summary_zh
-                      : result.completeness.tradability_guide.summary_en}
-                  </p>
-                  {result.completeness.tradability_guide.research_only_tickers.length > 0 ? (
-                    <p className="mt-3 text-xs text-amber-100/80">
-                      {copy.researchOnlyNames}:{" "}
-                      {result.completeness.tradability_guide.research_only_tickers.join(", ")}
-                    </p>
-                  ) : null}
-                  {result.completeness.tradability_guide.online_proxy_options.length > 0 ? (
-                    <div className="mt-3">
-                      <p className="text-xs font-semibold text-amber-100/90">{copy.proxyOptions}</p>
-                      <ul className="mt-2 space-y-1 text-xs text-amber-50/90">
-                        {result.completeness.tradability_guide.online_proxy_options.map((option) => (
-                          <li key={option.bitget_symbol}>
-                            <span className="font-mono font-semibold">{option.bitget_symbol}</span> —{" "}
-                            {locale === "zh" ? option.role_zh : option.role_en}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                  <p className="mt-3 text-sm font-medium text-amber-100">
-                    {copy.tradabilityNextStep}:{" "}
-                    {locale === "zh"
-                      ? result.completeness.tradability_guide.recommended_action_zh
-                      : result.completeness.tradability_guide.recommended_action_en}
-                  </p>
-                </section>
-              ) : null}
+              <EquityTradabilityPanel result={result} locale={locale} />
             </section>
 
             <section id="industry-map" className="scroll-mt-28 rounded-lg border border-[#263241] bg-[#0b1118] p-4">
@@ -2534,9 +2515,17 @@ export default function HomePage() {
                       )}
                     </span>
                     <p className="mt-2 font-mono text-sm font-semibold text-orange-950 dark:text-orange-100">
-                      {result.event_intelligence.simulated_decision.selected_tickers.join(", ") ||
-                        "—"}
+                      {selectedTradeTickers.length > 0
+                        ? `${copy.tierAExecutable}: ${selectedTradeTickers.join(", ")}`
+                        : appHandoffTickers.length > 0
+                          ? `${copy.tierBAppHandoff}: ${appHandoffTickers.join(", ")}`
+                          : "—"}
                     </p>
+                    {selectedTradeTickers.length > 0 && appHandoffTickers.length > 0 ? (
+                      <p className="mt-1 font-mono text-xs text-orange-900/80 dark:text-orange-100/80">
+                        {copy.tierBAppHandoff}: {appHandoffTickers.join(", ")}
+                      </p>
+                    ) : null}
                     <p className="mt-2 text-xs text-orange-950/80 dark:text-orange-100/80">
                       {locale === "zh"
                         ? result.event_intelligence.simulated_decision.rationale_zh
@@ -3119,17 +3108,14 @@ export default function HomePage() {
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono font-semibold">{company.ticker}</span>
                           <ThroatRoleBadge role={company.throat_role} locale={locale} />
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                              company.bitget_market?.status === "online"
-                                ? "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300"
-                                : "bg-zinc-100 text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400"
-                            }`}
-                          >
-                            {company.bitget_market?.status === "online"
-                              ? `Bitget ${company.bitget_market.symbol}`
-                              : copy.notListedOnBitget}
-                          </span>
+                          <EquityTierBadge
+                            tier={company.bitget_equity?.execution_tier ?? "C"}
+                            locale={locale}
+                            symbol={
+                              company.bitget_equity?.execution_instrument?.symbol ??
+                              company.bitget_market?.symbol
+                            }
+                          />
                         </div>
                         <p className="mt-1 text-zinc-600 dark:text-zinc-300">{company.name}</p>
                         {locale === "zh" && baseCompany?.name ? (

@@ -6,7 +6,8 @@ import { buildThroatScanConclusion } from "./conclusion";
 import { buildFinalDecisionLayer } from "./decisionLayer";
 import { buildReasoningIntelligence } from "./reasoning/intelligenceLayer";
 import { scoreCompaniesFromReasoning } from "./scoring";
-import { attachBitgetStockEvidence } from "./bitgetStocks";
+import { attachBitgetEquityEvidence } from "./bitgetStocks";
+import { discoverBitgetListedCandidates } from "./equity";
 import { fetchMarketResearch } from "./marketResearch";
 import { buildEventIntelligence } from "./eventIntelligence";
 import { buildIndustryMap } from "./industryMap";
@@ -54,7 +55,7 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
   });
 
   const [companiesWithMarketEvidence, market_research] = await Promise.all([
-    attachBitgetStockEvidence(companiesWithUncertainty),
+    attachBitgetEquityEvidence(companiesWithUncertainty),
     fetchMarketResearch({
       industry: profile.label,
       companies: companiesWithUncertainty,
@@ -83,6 +84,12 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     eventIntelligence: eventResult.intelligence,
     backtest,
   });
+  const bitget_discovery = await discoverBitgetListedCandidates({
+    curatedTickers: companiesWithEventEvidence.map((company) => company.ticker),
+    sectorTags: profile.interpretation.sector_tags,
+    keywords: reasoning.intent.sector_signals,
+    limit: 12,
+  });
   const completeness = await buildCompletenessPack({
     profile,
     companies: companiesWithEventEvidence,
@@ -90,6 +97,7 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     eventIntelligence: eventResult.intelligence,
     backtest,
     universeCoverage: reasoning.universe_coverage,
+    discoveryCandidateCount: bitget_discovery.discovery_count,
   });
 
   return {
@@ -117,6 +125,7 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     universe_coverage: reasoning.universe_coverage,
     completeness,
     backtest,
+    bitget_discovery,
     analyzedAt: new Date().toISOString(),
   };
 }

@@ -1,4 +1,8 @@
 import { normalizeIndustryQuery, tokenizeIndustry } from "../industryAliases";
+import {
+  resolveServiceIndustryProfile,
+  serviceIndustryLayerBias,
+} from "./serviceIndustryProfiles";
 import type { IndustryIntent, SupplyLayerId } from "./types";
 
 const LAYER_CONCEPTS: Record<SupplyLayerId, string[]> = {
@@ -15,6 +19,14 @@ const LAYER_CONCEPTS: Record<SupplyLayerId, string[]> = {
     "robotics",
     "utility",
     "exchange",
+    "retail",
+    "bank",
+    "insurance",
+    "payer",
+    "streaming",
+    "media",
+    "restaurant",
+    "apparel",
   ],
   infrastructure: [
     "cloud",
@@ -29,6 +41,21 @@ const LAYER_CONCEPTS: Record<SupplyLayerId, string[]> = {
     "payment",
     "fintech",
     "saas",
+    "optical",
+    "fiber",
+    "launch",
+    "satellite",
+    "solar",
+    "inverter",
+    "telecom",
+    "wireless",
+    "broadband",
+    "carrier",
+    "tower",
+    "logistics",
+    "shipping",
+    "utility",
+    "pipeline",
   ],
   core_technology: [
     "chip",
@@ -43,6 +70,12 @@ const LAYER_CONCEPTS: Record<SupplyLayerId, string[]> = {
     "robot",
     "defense",
     "biotech",
+    "quantum",
+    "qubit",
+    "eda",
+    "photonics",
+    "laser",
+    "sequencing",
   ],
   materials: [
     "lithium",
@@ -57,14 +90,23 @@ const LAYER_CONCEPTS: Record<SupplyLayerId, string[]> = {
     "refining",
     "cathode",
     "hydrocarbon",
+    "copper",
+    "rare earth",
+    "fertilizer",
+    "potash",
+    "phosphate",
+    "magnet",
   ],
 };
 
+const SERVICE_HINTS =
+  /bank|financial|insurance|brokerage|healthcare|health insurance|payer|telecom|wireless|broadband|carrier|streaming|media|retail|apparel|logistics|shipping|parcel|utility|power grid|电网|电信|金融|医疗|物流|零售|流媒体/i;
 const PHYSICAL_HINTS =
-  /battery|lithium|wafer|oil|gas|uranium|vehicle|fab|chip|semiconductor|refining|hydrocarbon|nuclear|material|cathode/i;
+  /battery|lithium|wafer|oil|gas|uranium|vehicle|fab|chip|semiconductor|refining|hydrocarbon|nuclear|material|cathode|copper|rare earth|fertilizer|potash|solar|launch|satellite|mining/i;
 const REGULATED_HINTS =
-  /pharma|biotech|healthcare|defense|nuclear|fintech|payment|clinical|regulated|compliance/i;
-const DIGITAL_HINTS = /cloud|saas|software|ai|data center|platform|fintech|payment|llm/i;
+  /pharma|biotech|healthcare|defense|nuclear|fintech|payment|clinical|regulated|compliance|law enforcement|bank|insurance|payer/i;
+const DIGITAL_HINTS =
+  /cloud|saas|software|ai|data center|platform|fintech|payment|llm|cybersecurity|quantum|observability|edge|streaming|media|telecom|marketplace/i;
 
 function titleCase(value: string): string {
   return value
@@ -117,7 +159,9 @@ function generateSectorSignals(tokens: string[], normalized: string): string[] {
   }
 
   if (PHYSICAL_HINTS.test(normalized)) signals.add("Physical Supply Chain");
-  if (DIGITAL_HINTS.test(normalized)) signals.add("Digital Infrastructure");
+  if (DIGITAL_HINTS.test(normalized) || SERVICE_HINTS.test(normalized)) {
+    signals.add("Digital Infrastructure");
+  }
   if (REGULATED_HINTS.test(normalized)) signals.add("Regulated Workflow");
 
   return signals.size > 0 ? [...signals].slice(0, 5) : ["Open-domain Industry"];
@@ -157,13 +201,29 @@ export function analyzeIntent(
   const normalized = normalized_query.toLowerCase();
   const tokens = tokenizeIndustry(raw);
   const display_label = /[\u4e00-\u9fff]/.test(raw) ? raw : titleCase(normalized_query);
+  const serviceProfile = resolveServiceIndustryProfile({
+    raw_input: raw,
+    normalized_query,
+  });
 
   const physical_intensity = PHYSICAL_HINTS.test(normalized)
     ? 0.9
-    : DIGITAL_HINTS.test(normalized)
+    : DIGITAL_HINTS.test(normalized) || SERVICE_HINTS.test(normalized)
       ? 0.35
       : 0.55;
-  const regulation_intensity = REGULATED_HINTS.test(normalized) ? 0.88 : 0.45;
+  const regulation_intensity =
+    REGULATED_HINTS.test(normalized) || serviceProfile?.id === "financials_banking" ? 0.88 : 0.45;
+
+  const baseLayerBias = inferLayerBias(normalized, tokens);
+  const layer_bias = serviceProfile
+    ? { ...baseLayerBias, ...serviceIndustryLayerBias(serviceProfile) }
+    : baseLayerBias;
+
+  if (serviceProfile) {
+    for (const tag of serviceProfile.sector_tags) {
+      tokens.push(tag.toLowerCase());
+    }
+  }
 
   return {
     raw_input: raw,
@@ -174,6 +234,6 @@ export function analyzeIntent(
     sector_signals: generateSectorSignals(tokens, normalized),
     physical_intensity,
     regulation_intensity,
-    layer_bias: inferLayerBias(normalized, tokens),
+    layer_bias,
   };
 }

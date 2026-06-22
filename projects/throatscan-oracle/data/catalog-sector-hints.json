@@ -1,0 +1,1222 @@
+{
+  "as_of": "2026-06-21",
+  "hints": {
+    "JPM": [
+      "Financials",
+      "Fintech",
+      "bank",
+      "finance",
+      "payments",
+      "lending"
+    ],
+    "BAC": [
+      "Financials",
+      "bank",
+      "finance",
+      "lending"
+    ],
+    "GS": [
+      "Financials",
+      "investment bank",
+      "finance",
+      "capital markets"
+    ],
+    "MS": [
+      "Financials",
+      "wealth",
+      "investment bank",
+      "finance"
+    ],
+    "SCHW": [
+      "Financials",
+      "Fintech",
+      "brokerage",
+      "wealth",
+      "finance"
+    ],
+    "BLK": [
+      "Financials",
+      "asset management",
+      "etf",
+      "finance"
+    ],
+    "C": [
+      "Financials",
+      "bank",
+      "global finance",
+      "lending"
+    ],
+    "WFC": [
+      "Financials",
+      "bank",
+      "mortgage",
+      "finance"
+    ],
+    "PNC": [
+      "Financials",
+      "regional bank",
+      "finance"
+    ],
+    "TFC": [
+      "Financials",
+      "regional bank",
+      "finance"
+    ],
+    "AXP": [
+      "Financials",
+      "Fintech",
+      "payments",
+      "credit card",
+      "finance"
+    ],
+    "COF": [
+      "Financials",
+      "Fintech",
+      "credit card",
+      "bank",
+      "fintech"
+    ],
+    "AIG": [
+      "Financials",
+      "insurance",
+      "risk",
+      "finance"
+    ],
+    "MET": [
+      "Financials",
+      "insurance",
+      "retirement",
+      "finance"
+    ],
+    "PRU": [
+      "Financials",
+      "insurance",
+      "annuity",
+      "finance"
+    ],
+    "SPGI": [
+      "Financials",
+      "Platform Software",
+      "ratings",
+      "data",
+      "indices",
+      "finance"
+    ],
+    "ICE": [
+      "Financials",
+      "exchange",
+      "derivatives",
+      "data"
+    ],
+    "CME": [
+      "Financials",
+      "futures",
+      "exchange",
+      "derivatives"
+    ],
+    "MCO": [
+      "Financials",
+      "ratings",
+      "credit",
+      "data"
+    ],
+    "MSCI": [
+      "Financials",
+      "Platform Software",
+      "indices",
+      "analytics",
+      "etf"
+    ],
+    "NKE": [
+      "Consumer",
+      "apparel",
+      "brand",
+      "consumer",
+      "retail"
+    ],
+    "SBUX": [
+      "Consumer",
+      "coffee",
+      "consumer",
+      "retail",
+      "brand"
+    ],
+    "CMG": [
+      "Consumer",
+      "restaurant",
+      "consumer",
+      "food"
+    ],
+    "YUM": [
+      "Consumer",
+      "restaurant",
+      "franchise",
+      "consumer"
+    ],
+    "DPZ": [
+      "Consumer",
+      "restaurant",
+      "delivery",
+      "consumer"
+    ],
+    "TJX": [
+      "Consumer",
+      "retail",
+      "off-price",
+      "consumer"
+    ],
+    "ROST": [
+      "Consumer",
+      "retail",
+      "off-price",
+      "consumer"
+    ],
+    "LULU": [
+      "Consumer",
+      "apparel",
+      "retail",
+      "consumer"
+    ],
+    "DECK": [
+      "Consumer",
+      "footwear",
+      "brand",
+      "consumer"
+    ],
+    "ONON": [
+      "Consumer",
+      "footwear",
+      "brand",
+      "consumer"
+    ],
+    "EL": [
+      "Consumer",
+      "beauty",
+      "consumer",
+      "brand"
+    ],
+    "PG": [
+      "Consumer",
+      "consumer staples",
+      "brand",
+      "household"
+    ],
+    "CLX": [
+      "Consumer",
+      "consumer staples",
+      "household"
+    ],
+    "KMB": [
+      "Consumer",
+      "consumer staples",
+      "paper"
+    ],
+    "GIS": [
+      "Consumer",
+      "Agriculture",
+      "food",
+      "consumer staples"
+    ],
+    "K": [
+      "Consumer",
+      "food",
+      "snacks",
+      "consumer"
+    ],
+    "HSY": [
+      "Consumer",
+      "confectionery",
+      "consumer"
+    ],
+    "JNJ": [
+      "Healthcare",
+      "Biotech",
+      "pharma",
+      "medtech",
+      "healthcare"
+    ],
+    "ABBV": [
+      "Biotech",
+      "Healthcare",
+      "pharma",
+      "immunology",
+      "healthcare"
+    ],
+    "CI": [
+      "Healthcare",
+      "health insurance",
+      "pharmacy",
+      "healthcare"
+    ],
+    "HUM": [
+      "Healthcare",
+      "medicare",
+      "health insurance",
+      "healthcare"
+    ],
+    "ELV": [
+      "Healthcare",
+      "health insurance",
+      "managed care",
+      "healthcare"
+    ],
+    "CVS": [
+      "Healthcare",
+      "pharmacy",
+      "healthcare",
+      "retail clinic"
+    ],
+    "MDLZ": [
+      "Consumer",
+      "snacks",
+      "food",
+      "consumer"
+    ],
+    "KO": [
+      "Consumer",
+      "beverage",
+      "brand",
+      "consumer"
+    ],
+    "PEP": [
+      "Consumer",
+      "beverage",
+      "snacks",
+      "consumer"
+    ],
+    "META": [
+      "Platform Software",
+      "AI Infrastructure",
+      "social",
+      "advertising",
+      "platform",
+      "ai"
+    ],
+    "NFLX": [
+      "Platform Software",
+      "streaming",
+      "media",
+      "platform"
+    ],
+    "ADBE": [
+      "Platform Software",
+      "creative cloud",
+      "saas",
+      "software"
+    ],
+    "INTU": [
+      "Platform Software",
+      "Fintech",
+      "accounting",
+      "tax",
+      "saas",
+      "fintech"
+    ],
+    "ADSK": [
+      "Platform Software",
+      "cad",
+      "design",
+      "software",
+      "saas"
+    ],
+    "QCOM": [
+      "Semiconductors",
+      "Telecom",
+      "mobile",
+      "modem",
+      "semiconductor",
+      "5g"
+    ],
+    "SWKS": [
+      "Semiconductors",
+      "rf",
+      "semiconductor",
+      "mobile"
+    ],
+    "MTSI": [
+      "Semiconductors",
+      "rf",
+      "semiconductor",
+      "data center"
+    ],
+    "ALGM": [
+      "Semiconductors",
+      "Automotive",
+      "sensor",
+      "auto",
+      "semiconductor"
+    ],
+    "RMBS": [
+      "Semiconductors",
+      "memory",
+      "interface",
+      "semiconductor"
+    ],
+    "CRUS": [
+      "Semiconductors",
+      "audio",
+      "semiconductor",
+      "mobile"
+    ],
+    "SLAB": [
+      "Semiconductors",
+      "iot",
+      "mcu",
+      "semiconductor"
+    ],
+    "SITM": [
+      "Semiconductors",
+      "timing",
+      "semiconductor",
+      "data center"
+    ],
+    "LITE": [
+      "Semiconductors",
+      "AI Infrastructure",
+      "optics",
+      "laser",
+      "data center"
+    ],
+    "DOV": [
+      "Robotics",
+      "industrial",
+      "components",
+      "manufacturing"
+    ],
+    "ROP": [
+      "Platform Software",
+      "vertical software",
+      "industrial",
+      "saas"
+    ],
+    "FTV": [
+      "Robotics",
+      "industrial",
+      "instrumentation",
+      "automation"
+    ],
+    "IEX": [
+      "Robotics",
+      "fluidics",
+      "industrial",
+      "components"
+    ],
+    "GNRC": [
+      "Energy Materials",
+      "generator",
+      "backup power",
+      "grid"
+    ],
+    "AOS": [
+      "Robotics",
+      "water heater",
+      "industrial"
+    ],
+    "NDSN": [
+      "Robotics",
+      "dispensing",
+      "industrial",
+      "automation"
+    ],
+    "AME": [
+      "Robotics",
+      "instrumentation",
+      "industrial",
+      "components"
+    ],
+    "IT": [
+      "Platform Software",
+      "research",
+      "enterprise",
+      "software"
+    ],
+    "TDY": [
+      "Defense",
+      "Robotics",
+      "imaging",
+      "defense",
+      "industrial"
+    ],
+    "EQT": [
+      "Oil and Gas",
+      "natural gas",
+      "shale",
+      "energy"
+    ],
+    "AR": [
+      "Oil and Gas",
+      "natural gas",
+      "shale",
+      "energy"
+    ],
+    "FANG": [
+      "Oil and Gas",
+      "shale",
+      "oil",
+      "permian",
+      "energy"
+    ],
+    "MTDR": [
+      "Oil and Gas",
+      "shale",
+      "oil",
+      "energy"
+    ],
+    "CVI": [
+      "Oil and Gas",
+      "refining",
+      "energy"
+    ],
+    "DINO": [
+      "Oil and Gas",
+      "refining",
+      "renewable diesel",
+      "energy"
+    ],
+    "PLD": [
+      "AI Infrastructure",
+      "logistics reit",
+      "warehouse",
+      "industrial"
+    ],
+    "SPG": [
+      "Consumer",
+      "retail reit",
+      "mall",
+      "real estate"
+    ],
+    "WELL": [
+      "Healthcare",
+      "healthcare reit",
+      "senior housing",
+      "healthcare"
+    ],
+    "EXR": [
+      "Financials",
+      "storage reit",
+      "real estate"
+    ],
+    "DUK": [
+      "Energy Materials",
+      "utility",
+      "power",
+      "grid"
+    ],
+    "AEP": [
+      "Energy Materials",
+      "utility",
+      "power",
+      "grid"
+    ],
+    "EXC": [
+      "Energy Materials",
+      "utility",
+      "nuclear",
+      "power"
+    ],
+    "SRE": [
+      "Energy Materials",
+      "Oil and Gas",
+      "utility",
+      "lng",
+      "infrastructure"
+    ],
+    "ES": [
+      "Energy Materials",
+      "utility",
+      "transmission",
+      "grid"
+    ],
+    "ETR": [
+      "Energy Materials",
+      "utility",
+      "nuclear",
+      "power"
+    ],
+    "CMCSA": [
+      "Telecom",
+      "Platform Software",
+      "cable",
+      "media",
+      "telecom"
+    ],
+    "CHTR": [
+      "Telecom",
+      "cable",
+      "broadband",
+      "telecom"
+    ],
+    "WBD": [
+      "Platform Software",
+      "media",
+      "streaming",
+      "entertainment"
+    ],
+    "SPOT": [
+      "Platform Software",
+      "streaming",
+      "audio",
+      "platform"
+    ],
+    "ROKU": [
+      "Platform Software",
+      "streaming",
+      "ctv",
+      "platform"
+    ],
+    "PINS": [
+      "Platform Software",
+      "social",
+      "advertising",
+      "platform"
+    ],
+    "SNAP": [
+      "Platform Software",
+      "social",
+      "advertising",
+      "platform"
+    ],
+    "MTCH": [
+      "Platform Software",
+      "dating",
+      "platform",
+      "consumer"
+    ],
+    "HUBS": [
+      "Platform Software",
+      "crm",
+      "saas",
+      "marketing"
+    ],
+    "WIX": [
+      "Platform Software",
+      "website",
+      "saas",
+      "platform"
+    ],
+    "ESTC": [
+      "Platform Software",
+      "AI Infrastructure",
+      "search",
+      "observability",
+      "saas"
+    ],
+    "PATH": [
+      "Platform Software",
+      "Robotics",
+      "rpa",
+      "automation",
+      "software"
+    ],
+    "BILL": [
+      "Fintech",
+      "Platform Software",
+      "ap",
+      "payments",
+      "saas",
+      "fintech"
+    ],
+    "TWLO": [
+      "Platform Software",
+      "communications",
+      "api",
+      "saas"
+    ],
+    "TXN": [
+      "semiconductors"
+    ],
+    "ADI": [
+      "semiconductors"
+    ],
+    "NXPI": [
+      "semiconductors",
+      "automotive"
+    ],
+    "MCHP": [
+      "semiconductors"
+    ],
+    "MRVL": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "ON": [
+      "semiconductors",
+      "evbatteries"
+    ],
+    "ENTG": [
+      "semiconductors",
+      "materials"
+    ],
+    "QRVO": [
+      "semiconductors",
+      "defense"
+    ],
+    "ONTO": [
+      "semiconductors"
+    ],
+    "FORM": [
+      "semiconductors"
+    ],
+    "TMO": [
+      "biotech",
+      "healthcare"
+    ],
+    "DHR": [
+      "biotech",
+      "healthcare"
+    ],
+    "ABT": [
+      "healthcare",
+      "biotech"
+    ],
+    "AMGN": [
+      "biotech"
+    ],
+    "GILD": [
+      "biotech"
+    ],
+    "BMY": [
+      "biotech"
+    ],
+    "IQV": [
+      "biotech",
+      "healthcare"
+    ],
+    "IDXX": [
+      "healthcare"
+    ],
+    "SYK": [
+      "healthcare"
+    ],
+    "BSX": [
+      "healthcare"
+    ],
+    "BA": [
+      "defense",
+      "robotics"
+    ],
+    "GD": [
+      "defense"
+    ],
+    "HII": [
+      "defense"
+    ],
+    "CAT": [
+      "robotics",
+      "energymaterials"
+    ],
+    "DE": [
+      "agriculture",
+      "robotics"
+    ],
+    "CMI": [
+      "energymaterials",
+      "automotive"
+    ],
+    "PH": [
+      "robotics",
+      "industrials"
+    ],
+    "ITW": [
+      "robotics"
+    ],
+    "EOG": [
+      "oilandgas"
+    ],
+    "DVN": [
+      "oilandgas"
+    ],
+    "MPC": [
+      "oilandgas"
+    ],
+    "VLO": [
+      "oilandgas"
+    ],
+    "WMB": [
+      "oilandgas"
+    ],
+    "OKE": [
+      "oilandgas"
+    ],
+    "HAL": [
+      "oilandgas"
+    ],
+    "DLR": [
+      "aiinfrastructure"
+    ],
+    "AMT": [
+      "telecom",
+      "aiinfrastructure"
+    ],
+    "CCI": [
+      "telecom"
+    ],
+    "SBAC": [
+      "telecom"
+    ],
+    "FDX": [
+      "robotics"
+    ],
+    "UPS": [
+      "robotics"
+    ],
+    "ADM": [
+      "agriculture"
+    ],
+    "BG": [
+      "agriculture"
+    ],
+    "NTR": [
+      "agriculture",
+      "energymaterials"
+    ],
+    "PYPL": [
+      "fintech"
+    ],
+    "UBER": [
+      "fintech",
+      "platformsoftware"
+    ],
+    "ABNB": [
+      "platformsoftware",
+      "fintech"
+    ],
+    "SHOP": [
+      "platformsoftware",
+      "fintech"
+    ],
+    "OKTA": [
+      "cybersecurity",
+      "platformsoftware"
+    ],
+    "TEAM": [
+      "platformsoftware"
+    ],
+    "WDAY": [
+      "platformsoftware"
+    ],
+    "MELI": [
+      "fintech",
+      "platformsoftware"
+    ],
+    "COP": [
+      "oilandgas"
+    ],
+    "WDC": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "STX": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "TMUS": [
+      "telecom"
+    ],
+    "VZ": [
+      "telecom",
+      "aiinfrastructure"
+    ],
+    "T": [
+      "telecom"
+    ],
+    "NTAP": [
+      "aiinfrastructure",
+      "platformsoftware"
+    ],
+    "CDW": [
+      "platformsoftware"
+    ],
+    "CVX": [
+      "oil&gas",
+      "energy"
+    ],
+    "DIS": [
+      "media",
+      "streaming",
+      "entertainment"
+    ],
+    "HD": [
+      "consumer",
+      "retail",
+      "brand",
+      "staples"
+    ],
+    "LOW": [
+      "consumer",
+      "retail",
+      "brand",
+      "staples"
+    ],
+    "WMT": [
+      "consumer",
+      "retail",
+      "brand",
+      "staples"
+    ],
+    "XOM": [
+      "oil&gas",
+      "energy"
+    ],
+    "NVDA": [
+      "semiconductors",
+      "aiinfrastructure",
+      "robotics"
+    ],
+    "AMD": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "AMAT": [
+      "semiconductors",
+      "materials"
+    ],
+    "LRCX": [
+      "semiconductors"
+    ],
+    "AVGO": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "ANET": [
+      "aiinfrastructure",
+      "datacenters"
+    ],
+    "VRT": [
+      "aiinfrastructure",
+      "energystorage"
+    ],
+    "EQIX": [
+      "aiinfrastructure",
+      "datacenters"
+    ],
+    "MSFT": [
+      "cloudsoftware",
+      "aiinfrastructure",
+      "fintech",
+      "healthcareai"
+    ],
+    "CRM": [
+      "cloudsoftware",
+      "fintech"
+    ],
+    "CRWD": [
+      "cloudsoftware",
+      "defensetech"
+    ],
+    "SNOW": [
+      "cloudsoftware",
+      "healthcareai",
+      "fintech"
+    ],
+    "ALB": [
+      "energystorage",
+      "materials",
+      "evbatteries"
+    ],
+    "TSLA": [
+      "automotive",
+      "evbatteries",
+      "robotics"
+    ],
+    "CCJ": [
+      "nuclearenergy",
+      "materials"
+    ],
+    "NEE": [
+      "nuclearenergy",
+      "energystorage"
+    ],
+    "LMT": [
+      "defensetech",
+      "aerospace"
+    ],
+    "RTX": [
+      "defensetech",
+      "aerospace"
+    ],
+    "PLTR": [
+      "defensetech",
+      "healthcareai",
+      "aiinfrastructure"
+    ],
+    "ISRG": [
+      "robotics",
+      "healthcareai"
+    ],
+    "ROK": [
+      "robotics",
+      "industrialautomation"
+    ],
+    "TER": [
+      "robotics",
+      "semiconductors"
+    ],
+    "UNH": [
+      "healthcareai",
+      "fintech"
+    ],
+    "VEEV": [
+      "healthcareai",
+      "cloudsoftware"
+    ],
+    "V": [
+      "fintech",
+      "cloudsoftware"
+    ],
+    "MA": [
+      "fintech"
+    ],
+    "COIN": [
+      "fintech"
+    ],
+    "ORCL": [
+      "cloudsoftware",
+      "healthcareai",
+      "fintech"
+    ],
+    "SMCI": [
+      "aiinfrastructure"
+    ],
+    "TSM": [
+      "semiconductors"
+    ],
+    "ASML": [
+      "semiconductors"
+    ],
+    "AMZN": [
+      "aiinfrastructure",
+      "cloudsoftware",
+      "datacenters"
+    ],
+    "GOOGL": [
+      "aiinfrastructure",
+      "cloudsoftware",
+      "datacenters"
+    ],
+    "LLY": [
+      "lifesciences",
+      "healthcareai"
+    ],
+    "PFE": [
+      "lifesciences",
+      "healthcareai"
+    ],
+    "MRK": [
+      "lifesciences",
+      "healthcareai"
+    ],
+    "SLB": [
+      "oil&gas",
+      "energy"
+    ],
+    "BYDDY": [
+      "evbatteries",
+      "energystorage",
+      "automotive",
+      "robotics"
+    ],
+    "GM": [
+      "automotive",
+      "evbatteries"
+    ],
+    "F": [
+      "automotive",
+      "evbatteries"
+    ],
+    "APTV": [
+      "automotive"
+    ],
+    "INTC": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "MU": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "PANW": [
+      "platformsoftware",
+      "aiinfrastructure"
+    ],
+    "NOW": [
+      "platformsoftware"
+    ],
+    "IBM": [
+      "platformsoftware",
+      "aiinfrastructure"
+    ],
+    "RKLB": [
+      "space",
+      "defense",
+      "robotics"
+    ],
+    "ASTS": [
+      "space",
+      "telecom"
+    ],
+    "LUNR": [
+      "space",
+      "defense"
+    ],
+    "IONQ": [
+      "quantumcomputing",
+      "platformsoftware"
+    ],
+    "RGTI": [
+      "quantumcomputing"
+    ],
+    "QBTS": [
+      "quantumcomputing"
+    ],
+    "UEC": [
+      "nuclear",
+      "energymaterials"
+    ],
+    "LEU": [
+      "nuclear",
+      "defense"
+    ],
+    "OKLO": [
+      "nuclear",
+      "aiinfrastructure"
+    ],
+    "MP": [
+      "energymaterials",
+      "defense",
+      "evbatteries"
+    ],
+    "LAC": [
+      "evbatteries",
+      "energymaterials"
+    ],
+    "FCX": [
+      "energymaterials",
+      "aiinfrastructure",
+      "evbatteries"
+    ],
+    "CF": [
+      "energymaterials",
+      "agriculture"
+    ],
+    "GEV": [
+      "aiinfrastructure",
+      "energymaterials"
+    ],
+    "ENPH": [
+      "solar",
+      "energymaterials"
+    ],
+    "FSLR": [
+      "solar",
+      "energymaterials"
+    ],
+    "ETN": [
+      "aiinfrastructure",
+      "robotics"
+    ],
+    "ZS": [
+      "cybersecurity",
+      "platformsoftware"
+    ],
+    "FTNT": [
+      "cybersecurity",
+      "aiinfrastructure"
+    ],
+    "NET": [
+      "cybersecurity",
+      "platformsoftware",
+      "aiinfrastructure"
+    ],
+    "DDOG": [
+      "platformsoftware",
+      "aiinfrastructure"
+    ],
+    "MDB": [
+      "platformsoftware"
+    ],
+    "SNPS": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "CDNS": [
+      "semiconductors"
+    ],
+    "KLAC": [
+      "semiconductors"
+    ],
+    "COHR": [
+      "semiconductors",
+      "aiinfrastructure"
+    ],
+    "CIEN": [
+      "aiinfrastructure",
+      "telecom"
+    ],
+    "MRNA": [
+      "biotech",
+      "healthcare"
+    ],
+    "REGN": [
+      "biotech",
+      "healthcare"
+    ],
+    "VRTX": [
+      "biotech",
+      "healthcare"
+    ],
+    "ILMN": [
+      "biotech",
+      "healthcare"
+    ],
+    "DXCM": [
+      "healthcare",
+      "biotech"
+    ],
+    "KTOS": [
+      "defense",
+      "space",
+      "robotics"
+    ],
+    "AXON": [
+      "defense",
+      "platformsoftware"
+    ],
+    "NOC": [
+      "defense",
+      "space"
+    ],
+    "SOFI": [
+      "fintech",
+      "platformsoftware"
+    ],
+    "HOOD": [
+      "fintech"
+    ],
+    "AFRM": [
+      "fintech",
+      "platformsoftware"
+    ],
+    "EMR": [
+      "robotics",
+      "energymaterials"
+    ],
+    "HON": [
+      "robotics",
+      "defense",
+      "aiinfrastructure"
+    ],
+    "PSTG": [
+      "aiinfrastructure",
+      "platformsoftware"
+    ],
+    "OXY": [
+      "oilandgas",
+      "energymaterials"
+    ],
+    "MOS": [
+      "agriculture",
+      "energymaterials"
+    ]
+  }
+}

@@ -1,0 +1,1549 @@
+{
+  "as_of": "2026-06-21",
+  "wave": 2,
+  "count": 100,
+  "seeds": [
+    {
+      "ticker": "JPM",
+      "name": "JPMorgan Chase",
+      "chain_position": "Global bank — diversified lending and investment banking",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Fintech"
+      ],
+      "keywords": [
+        "bank",
+        "finance",
+        "payments",
+        "lending",
+        "investment bank"
+      ],
+      "scarce_resource": "Primary dealer and commercial banking scale concentrate corporate lending and payments flows.",
+      "can_function_without": "Capital markets continue through other global banks, but large-ticket lending reroutes slowly.",
+      "replaceability_note": "Share shifts among money-center banks over credit cycles, not quarterly.",
+      "breakdown": {
+        "bottleneck_strength": 78,
+        "supply_chain_control": 76,
+        "replaceability": 36,
+        "industry_dependency": 76
+      }
+    },
+    {
+      "ticker": "BAC",
+      "name": "Bank of America",
+      "chain_position": "Retail and commercial bank — U.S. deposit franchise",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "bank",
+        "finance",
+        "lending",
+        "mortgage"
+      ],
+      "scarce_resource": "U.S. consumer and commercial deposit base anchors nationwide lending capacity.",
+      "can_function_without": "Borrowers can switch banks, but mortgage and SMB relationships migrate slowly.",
+      "replaceability_note": "Regional and national banks compete on rate promotions over years.",
+      "breakdown": {
+        "bottleneck_strength": 76,
+        "supply_chain_control": 74,
+        "replaceability": 38,
+        "industry_dependency": 74
+      }
+    },
+    {
+      "ticker": "GS",
+      "name": "Goldman Sachs",
+      "chain_position": "Investment bank — capital markets and advisory",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "investment bank",
+        "finance",
+        "capital markets",
+        "trading"
+      ],
+      "scarce_resource": "Advisory and trading franchise concentrates institutional capital markets access.",
+      "can_function_without": "Issuers can use other bulge-bracket banks for underwriting over time.",
+      "replaceability_note": "M&A and IPO league tables rotate across banks each cycle.",
+      "breakdown": {
+        "bottleneck_strength": 75,
+        "supply_chain_control": 74,
+        "replaceability": 39,
+        "industry_dependency": 73
+      }
+    },
+    {
+      "ticker": "MS",
+      "name": "Morgan Stanley",
+      "chain_position": "Wealth and investment bank — brokerage scale",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "wealth",
+        "investment bank",
+        "finance"
+      ],
+      "scarce_resource": "Wealth management AUM and institutional trading desks create sticky fee pools.",
+      "can_function_without": "Clients can move advisors, but tax and lending bundles slow attrition.",
+      "replaceability_note": "Wealth platforms compete on advisor teams and product breadth.",
+      "breakdown": {
+        "bottleneck_strength": 74,
+        "supply_chain_control": 73,
+        "replaceability": 40,
+        "industry_dependency": 72
+      }
+    },
+    {
+      "ticker": "SCHW",
+      "name": "Charles Schwab",
+      "chain_position": "Retail brokerage and wealth platform",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Fintech"
+      ],
+      "keywords": [
+        "brokerage",
+        "wealth",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "BLK",
+      "name": "BlackRock",
+      "chain_position": "Asset management — ETF and index platform",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "asset management",
+        "etf",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "C",
+      "name": "Citigroup",
+      "chain_position": "Citigroup — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "bank",
+        "global finance",
+        "lending"
+      ],
+      "scarce_resource": "Global network bank links cross-border corporate treasury and trade finance.",
+      "can_function_without": "Multinationals diversify banking partners across regions.",
+      "replaceability_note": "Global banks win or lose mandates on country coverage cycles.",
+      "breakdown": {
+        "bottleneck_strength": 73,
+        "supply_chain_control": 72,
+        "replaceability": 41,
+        "industry_dependency": 71
+      }
+    },
+    {
+      "ticker": "WFC",
+      "name": "Wells Fargo",
+      "chain_position": "Wells Fargo — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "bank",
+        "mortgage",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "PNC",
+      "name": "PNC Financial",
+      "chain_position": "PNC Financial — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "regional bank",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "TFC",
+      "name": "Truist Financial",
+      "chain_position": "Truist Financial — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "regional bank",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "AXP",
+      "name": "American Express",
+      "chain_position": "American Express — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Fintech"
+      ],
+      "keywords": [
+        "payments",
+        "credit card",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "COF",
+      "name": "Capital One",
+      "chain_position": "Capital One — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Fintech"
+      ],
+      "keywords": [
+        "credit card",
+        "bank",
+        "fintech"
+      ]
+    },
+    {
+      "ticker": "AIG",
+      "name": "AIG",
+      "chain_position": "AIG — Financials expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "insurance",
+        "risk",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "MET",
+      "name": "MetLife",
+      "chain_position": "MetLife — Financials expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "insurance",
+        "retirement",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "PRU",
+      "name": "Prudential Financial",
+      "chain_position": "Prudential Financial — Financials expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "insurance",
+        "annuity",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "SPGI",
+      "name": "S&P Global",
+      "chain_position": "S&P Global — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Platform Software"
+      ],
+      "keywords": [
+        "ratings",
+        "data",
+        "indices",
+        "finance"
+      ]
+    },
+    {
+      "ticker": "ICE",
+      "name": "Intercontinental Exchange",
+      "chain_position": "Intercontinental Exchange — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "exchange",
+        "derivatives",
+        "data"
+      ]
+    },
+    {
+      "ticker": "CME",
+      "name": "CME Group",
+      "chain_position": "CME Group — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "futures",
+        "exchange",
+        "derivatives"
+      ]
+    },
+    {
+      "ticker": "MCO",
+      "name": "Moody's",
+      "chain_position": "Moody's — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "ratings",
+        "credit",
+        "data"
+      ]
+    },
+    {
+      "ticker": "MSCI",
+      "name": "MSCI",
+      "chain_position": "MSCI — Financials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Financials",
+        "Platform Software"
+      ],
+      "keywords": [
+        "indices",
+        "analytics",
+        "etf"
+      ]
+    },
+    {
+      "ticker": "NKE",
+      "name": "Nike",
+      "chain_position": "Apparel retail — global footwear and sportswear brand",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "apparel",
+        "retail",
+        "consumer",
+        "brand",
+        "footwear"
+      ]
+    },
+    {
+      "ticker": "SBUX",
+      "name": "Starbucks",
+      "chain_position": "Starbucks — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "coffee",
+        "consumer",
+        "retail",
+        "brand"
+      ]
+    },
+    {
+      "ticker": "CMG",
+      "name": "Chipotle",
+      "chain_position": "Chipotle — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "restaurant",
+        "consumer",
+        "food"
+      ]
+    },
+    {
+      "ticker": "YUM",
+      "name": "Yum! Brands",
+      "chain_position": "Yum! Brands — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "restaurant",
+        "franchise",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "DPZ",
+      "name": "Domino's Pizza",
+      "chain_position": "Domino's Pizza — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "restaurant",
+        "delivery",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "TJX",
+      "name": "TJX Companies",
+      "chain_position": "TJX Companies — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "retail",
+        "off-price",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "ROST",
+      "name": "Ross Stores",
+      "chain_position": "Ross Stores — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "retail",
+        "off-price",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "LULU",
+      "name": "Lululemon",
+      "chain_position": "Lululemon — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "apparel",
+        "retail",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "DECK",
+      "name": "Deckers Outdoor",
+      "chain_position": "Deckers Outdoor — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "footwear",
+        "brand",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "ONON",
+      "name": "On Holding",
+      "chain_position": "On Holding — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "footwear",
+        "brand",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "EL",
+      "name": "Estée Lauder",
+      "chain_position": "Estée Lauder — Consumer expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "beauty",
+        "consumer",
+        "brand"
+      ]
+    },
+    {
+      "ticker": "PG",
+      "name": "Procter & Gamble",
+      "chain_position": "Procter & Gamble — Consumer expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "consumer staples",
+        "brand",
+        "household"
+      ]
+    },
+    {
+      "ticker": "CLX",
+      "name": "Clorox",
+      "chain_position": "Clorox — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "consumer staples",
+        "household"
+      ]
+    },
+    {
+      "ticker": "KMB",
+      "name": "Kimberly-Clark",
+      "chain_position": "Kimberly-Clark — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "consumer staples",
+        "paper"
+      ]
+    },
+    {
+      "ticker": "GIS",
+      "name": "General Mills",
+      "chain_position": "General Mills — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer",
+        "Agriculture"
+      ],
+      "keywords": [
+        "food",
+        "consumer staples"
+      ]
+    },
+    {
+      "ticker": "K",
+      "name": "Kellanova",
+      "chain_position": "Kellanova — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "food",
+        "snacks",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "HSY",
+      "name": "Hershey",
+      "chain_position": "Hershey — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "confectionery",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "chain_position": "Johnson & Johnson — Healthcare expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare",
+        "Biotech"
+      ],
+      "keywords": [
+        "pharma",
+        "medtech",
+        "healthcare"
+      ]
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie",
+      "chain_position": "AbbVie — Biotech expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Biotech",
+        "Healthcare"
+      ],
+      "keywords": [
+        "pharma",
+        "immunology",
+        "healthcare"
+      ]
+    },
+    {
+      "ticker": "CI",
+      "name": "Cigna Group",
+      "chain_position": "Health insurance — managed care and pharmacy benefits",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare"
+      ],
+      "keywords": [
+        "health insurance",
+        "payer",
+        "managed care",
+        "healthcare"
+      ],
+      "scarce_resource": "Commercial and government health insurance books concentrate covered lives and provider contracts.",
+      "can_function_without": "Employers rebid health plans annually, but network disruption deters switching.",
+      "replaceability_note": "UNH, ELV, and regional Blues compete on network discounts.",
+      "breakdown": {
+        "bottleneck_strength": 76,
+        "supply_chain_control": 74,
+        "replaceability": 37,
+        "industry_dependency": 75
+      }
+    },
+    {
+      "ticker": "HUM",
+      "name": "Humana",
+      "chain_position": "Medicare-focused health insurance payer",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare"
+      ],
+      "keywords": [
+        "medicare",
+        "health insurance",
+        "payer",
+        "healthcare"
+      ],
+      "scarce_resource": "Medicare Advantage membership concentration influences MA star ratings and bids.",
+      "can_function_without": "Seniors can change plans during annual enrollment.",
+      "replaceability_note": "UNH and CVS/Aetna compete aggressively in MA geographies.",
+      "breakdown": {
+        "bottleneck_strength": 74,
+        "supply_chain_control": 72,
+        "replaceability": 39,
+        "industry_dependency": 73
+      }
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health",
+      "chain_position": "Managed care — commercial and government health insurance payer",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare"
+      ],
+      "keywords": [
+        "health insurance",
+        "managed care",
+        "payer",
+        "healthcare"
+      ],
+      "scarce_resource": "Blue Cross scale in multiple states anchors provider negotiation leverage.",
+      "can_function_without": "States regulate plan switches; employers can change carriers at renewal.",
+      "replaceability_note": "Regional Blues and national peers compete on premium bids.",
+      "breakdown": {
+        "bottleneck_strength": 75,
+        "supply_chain_control": 73,
+        "replaceability": 38,
+        "industry_dependency": 74
+      }
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS Health",
+      "chain_position": "Pharmacy and health insurance — retail clinic network",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare"
+      ],
+      "keywords": [
+        "pharmacy",
+        "healthcare",
+        "retail clinic"
+      ]
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "Mondelez",
+      "chain_position": "Mondelez — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "snacks",
+        "food",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "KO",
+      "name": "Coca-Cola",
+      "chain_position": "Coca-Cola — Consumer expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "beverage",
+        "brand",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "PEP",
+      "name": "PepsiCo",
+      "chain_position": "PepsiCo — Consumer expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "beverage",
+        "snacks",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms",
+      "chain_position": "Meta Platforms — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "AI Infrastructure"
+      ],
+      "keywords": [
+        "social",
+        "advertising",
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "ticker": "NFLX",
+      "name": "Netflix",
+      "chain_position": "Netflix — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "Media"
+      ],
+      "keywords": [
+        "streaming",
+        "media",
+        "platform",
+        "entertainment",
+        "video"
+      ],
+      "scarce_resource": "Global subscriber scale funds exclusive content amortization and recommendation data flywheel.",
+      "can_function_without": "Viewers can cancel subscriptions monthly, but habit and catalog depth slow churn.",
+      "replaceability_note": "Disney+, Prime, and YouTube compete for viewing time each quarter.",
+      "breakdown": {
+        "bottleneck_strength": 70,
+        "supply_chain_control": 72,
+        "replaceability": 44,
+        "industry_dependency": 68
+      }
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe",
+      "chain_position": "Adobe — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "creative cloud",
+        "saas",
+        "software"
+      ]
+    },
+    {
+      "ticker": "INTU",
+      "name": "Intuit",
+      "chain_position": "Intuit — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "Fintech"
+      ],
+      "keywords": [
+        "accounting",
+        "tax",
+        "saas",
+        "fintech"
+      ]
+    },
+    {
+      "ticker": "ADSK",
+      "name": "Autodesk",
+      "chain_position": "Autodesk — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "cad",
+        "design",
+        "software",
+        "saas"
+      ]
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm",
+      "chain_position": "Qualcomm — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors",
+        "Telecom"
+      ],
+      "keywords": [
+        "mobile",
+        "modem",
+        "semiconductor",
+        "5g"
+      ]
+    },
+    {
+      "ticker": "SWKS",
+      "name": "Skyworks Solutions",
+      "chain_position": "Skyworks Solutions — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "rf",
+        "semiconductor",
+        "mobile"
+      ]
+    },
+    {
+      "ticker": "MTSI",
+      "name": "MACOM Technology",
+      "chain_position": "MACOM Technology — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "rf",
+        "semiconductor",
+        "data center"
+      ]
+    },
+    {
+      "ticker": "ALGM",
+      "name": "Allegro MicroSystems",
+      "chain_position": "Allegro MicroSystems — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors",
+        "Automotive"
+      ],
+      "keywords": [
+        "sensor",
+        "auto",
+        "semiconductor"
+      ]
+    },
+    {
+      "ticker": "RMBS",
+      "name": "Rambus",
+      "chain_position": "Rambus — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "memory",
+        "interface",
+        "semiconductor"
+      ]
+    },
+    {
+      "ticker": "CRUS",
+      "name": "Cirrus Logic",
+      "chain_position": "Cirrus Logic — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "audio",
+        "semiconductor",
+        "mobile"
+      ]
+    },
+    {
+      "ticker": "SLAB",
+      "name": "Silicon Laboratories",
+      "chain_position": "Silicon Laboratories — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "iot",
+        "mcu",
+        "semiconductor"
+      ]
+    },
+    {
+      "ticker": "SITM",
+      "name": "SiTime",
+      "chain_position": "SiTime — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors"
+      ],
+      "keywords": [
+        "timing",
+        "semiconductor",
+        "data center"
+      ]
+    },
+    {
+      "ticker": "LITE",
+      "name": "Lumentum",
+      "chain_position": "Lumentum — Semiconductors expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Semiconductors",
+        "AI Infrastructure"
+      ],
+      "keywords": [
+        "optics",
+        "laser",
+        "data center"
+      ]
+    },
+    {
+      "ticker": "DOV",
+      "name": "Dover Corporation",
+      "chain_position": "Dover Corporation — Robotics expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "industrial",
+        "components",
+        "manufacturing"
+      ]
+    },
+    {
+      "ticker": "ROP",
+      "name": "Roper Technologies",
+      "chain_position": "Roper Technologies — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "vertical software",
+        "industrial",
+        "saas"
+      ]
+    },
+    {
+      "ticker": "FTV",
+      "name": "Fortive",
+      "chain_position": "Fortive — Robotics expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "industrial",
+        "instrumentation",
+        "automation"
+      ]
+    },
+    {
+      "ticker": "IEX",
+      "name": "IDEX Corporation",
+      "chain_position": "IDEX Corporation — Robotics expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "fluidics",
+        "industrial",
+        "components"
+      ]
+    },
+    {
+      "ticker": "GNRC",
+      "name": "Generac",
+      "chain_position": "Generac — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials"
+      ],
+      "keywords": [
+        "generator",
+        "backup power",
+        "grid"
+      ]
+    },
+    {
+      "ticker": "AOS",
+      "name": "A.O. Smith",
+      "chain_position": "A.O. Smith — Robotics expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "water heater",
+        "industrial"
+      ]
+    },
+    {
+      "ticker": "NDSN",
+      "name": "Nordson",
+      "chain_position": "Nordson — Robotics expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "dispensing",
+        "industrial",
+        "automation"
+      ]
+    },
+    {
+      "ticker": "AME",
+      "name": "AMETEK",
+      "chain_position": "AMETEK — Robotics expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Robotics"
+      ],
+      "keywords": [
+        "instrumentation",
+        "industrial",
+        "components"
+      ]
+    },
+    {
+      "ticker": "IT",
+      "name": "Gartner",
+      "chain_position": "Gartner — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "research",
+        "enterprise",
+        "software"
+      ]
+    },
+    {
+      "ticker": "TDY",
+      "name": "Teledyne Technologies",
+      "chain_position": "Teledyne Technologies — Defense expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Defense",
+        "Robotics"
+      ],
+      "keywords": [
+        "imaging",
+        "defense",
+        "industrial"
+      ]
+    },
+    {
+      "ticker": "EQT",
+      "name": "EQT Corporation",
+      "chain_position": "EQT Corporation — Oil and Gas expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "natural gas",
+        "shale",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "AR",
+      "name": "Antero Resources",
+      "chain_position": "Antero Resources — Oil and Gas expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "natural gas",
+        "shale",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "FANG",
+      "name": "Diamondback Energy",
+      "chain_position": "Diamondback Energy — Oil and Gas expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "shale",
+        "oil",
+        "permian",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "MTDR",
+      "name": "Matador Resources",
+      "chain_position": "Matador Resources — Oil and Gas expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "shale",
+        "oil",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "CVI",
+      "name": "CVR Energy",
+      "chain_position": "CVR Energy — Oil and Gas expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "refining",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "DINO",
+      "name": "HF Sinclair",
+      "chain_position": "HF Sinclair — Oil and Gas expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "refining",
+        "renewable diesel",
+        "energy"
+      ]
+    },
+    {
+      "ticker": "PLD",
+      "name": "Prologis",
+      "chain_position": "Prologis — AI Infrastructure expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "AI Infrastructure"
+      ],
+      "keywords": [
+        "logistics reit",
+        "warehouse",
+        "industrial"
+      ]
+    },
+    {
+      "ticker": "SPG",
+      "name": "Simon Property Group",
+      "chain_position": "Simon Property Group — Consumer expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Consumer"
+      ],
+      "keywords": [
+        "retail reit",
+        "mall",
+        "real estate"
+      ]
+    },
+    {
+      "ticker": "WELL",
+      "name": "Welltower",
+      "chain_position": "Welltower — Healthcare expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Healthcare"
+      ],
+      "keywords": [
+        "healthcare reit",
+        "senior housing",
+        "healthcare"
+      ]
+    },
+    {
+      "ticker": "EXR",
+      "name": "Extra Space Storage",
+      "chain_position": "Extra Space Storage — Financials expansion pack coverage",
+      "throat_role": "PERIPHERAL EXPOSURE",
+      "sector_tags": [
+        "Financials"
+      ],
+      "keywords": [
+        "storage reit",
+        "real estate"
+      ]
+    },
+    {
+      "ticker": "DUK",
+      "name": "Duke Energy",
+      "chain_position": "Duke Energy — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials",
+        "Utilities"
+      ],
+      "keywords": [
+        "utility",
+        "power",
+        "grid",
+        "electric",
+        "regulated"
+      ]
+    },
+    {
+      "ticker": "AEP",
+      "name": "American Electric Power",
+      "chain_position": "American Electric Power — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials",
+        "Utilities"
+      ],
+      "keywords": [
+        "utility",
+        "power",
+        "grid",
+        "electric",
+        "transmission"
+      ]
+    },
+    {
+      "ticker": "EXC",
+      "name": "Exelon",
+      "chain_position": "Exelon — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials"
+      ],
+      "keywords": [
+        "utility",
+        "nuclear",
+        "power"
+      ]
+    },
+    {
+      "ticker": "SRE",
+      "name": "Sempra",
+      "chain_position": "Sempra — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials",
+        "Oil and Gas"
+      ],
+      "keywords": [
+        "utility",
+        "lng",
+        "infrastructure"
+      ]
+    },
+    {
+      "ticker": "ES",
+      "name": "Eversource Energy",
+      "chain_position": "Eversource Energy — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials"
+      ],
+      "keywords": [
+        "utility",
+        "transmission",
+        "grid"
+      ]
+    },
+    {
+      "ticker": "ETR",
+      "name": "Entergy",
+      "chain_position": "Entergy — Energy Materials expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Energy Materials"
+      ],
+      "keywords": [
+        "utility",
+        "nuclear",
+        "power"
+      ]
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "Comcast",
+      "chain_position": "Cable and media — broadband and content distribution",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Telecom",
+        "Platform Software"
+      ],
+      "keywords": [
+        "cable",
+        "media",
+        "telecom"
+      ]
+    },
+    {
+      "ticker": "CHTR",
+      "name": "Charter Communications",
+      "chain_position": "Cable broadband — fixed-line connectivity provider",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Telecom"
+      ],
+      "keywords": [
+        "cable",
+        "broadband",
+        "telecom"
+      ]
+    },
+    {
+      "ticker": "WBD",
+      "name": "Warner Bros Discovery",
+      "chain_position": "Warner Bros Discovery — Platform Software expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "media",
+        "streaming",
+        "entertainment"
+      ]
+    },
+    {
+      "ticker": "SPOT",
+      "name": "Spotify",
+      "chain_position": "Spotify — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "Media"
+      ],
+      "keywords": [
+        "streaming",
+        "audio",
+        "platform",
+        "media",
+        "entertainment"
+      ],
+      "scarce_resource": "Music catalog licenses and listener habit create two-sided audio platform scale.",
+      "can_function_without": "Users can switch streaming apps easily compared with video bundles.",
+      "replaceability_note": "Apple Music and YouTube Music compete on bundles and exclusives.",
+      "breakdown": {
+        "bottleneck_strength": 68,
+        "supply_chain_control": 70,
+        "replaceability": 46,
+        "industry_dependency": 66
+      }
+    },
+    {
+      "ticker": "ROKU",
+      "name": "Roku",
+      "chain_position": "Roku — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "Media"
+      ],
+      "keywords": [
+        "streaming",
+        "ctv",
+        "platform",
+        "media",
+        "entertainment"
+      ],
+      "scarce_resource": "CTV operating system share aggregates ad inventory across streaming apps.",
+      "can_function_without": "TV OEMs can ship alternate smart TV platforms.",
+      "replaceability_note": "Amazon Fire TV and Google TV compete on OEM deals.",
+      "breakdown": {
+        "bottleneck_strength": 66,
+        "supply_chain_control": 68,
+        "replaceability": 47,
+        "industry_dependency": 64
+      }
+    },
+    {
+      "ticker": "PINS",
+      "name": "Pinterest",
+      "chain_position": "Pinterest — Platform Software expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "social",
+        "advertising",
+        "platform"
+      ]
+    },
+    {
+      "ticker": "SNAP",
+      "name": "Snap",
+      "chain_position": "Snap — Platform Software expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "social",
+        "advertising",
+        "platform"
+      ]
+    },
+    {
+      "ticker": "MTCH",
+      "name": "Match Group",
+      "chain_position": "Match Group — Platform Software expansion pack coverage",
+      "throat_role": "DOWNSTREAM USER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "dating",
+        "platform",
+        "consumer"
+      ]
+    },
+    {
+      "ticker": "HUBS",
+      "name": "HubSpot",
+      "chain_position": "HubSpot — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "crm",
+        "saas",
+        "marketing"
+      ]
+    },
+    {
+      "ticker": "WIX",
+      "name": "Wix.com",
+      "chain_position": "Wix.com — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "website",
+        "saas",
+        "platform"
+      ]
+    },
+    {
+      "ticker": "ESTC",
+      "name": "Elastic",
+      "chain_position": "Elastic — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "AI Infrastructure"
+      ],
+      "keywords": [
+        "search",
+        "observability",
+        "saas"
+      ]
+    },
+    {
+      "ticker": "PATH",
+      "name": "UiPath",
+      "chain_position": "UiPath — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software",
+        "Robotics"
+      ],
+      "keywords": [
+        "rpa",
+        "automation",
+        "software"
+      ]
+    },
+    {
+      "ticker": "BILL",
+      "name": "Bill.com",
+      "chain_position": "Bill.com — Fintech expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Fintech",
+        "Platform Software"
+      ],
+      "keywords": [
+        "ap",
+        "payments",
+        "saas",
+        "fintech"
+      ]
+    },
+    {
+      "ticker": "TWLO",
+      "name": "Twilio",
+      "chain_position": "Twilio — Platform Software expansion pack coverage",
+      "throat_role": "STRATEGIC ENABLER",
+      "sector_tags": [
+        "Platform Software"
+      ],
+      "keywords": [
+        "communications",
+        "api",
+        "saas"
+      ]
+    }
+  ]
+}

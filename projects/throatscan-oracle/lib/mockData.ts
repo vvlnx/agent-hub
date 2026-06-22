@@ -10,6 +10,7 @@ import type { LLMResearchSource } from "./llm/types";
 import type { GroundingMode } from "./rulesModeGrounding";
 import type { UniverseCoverage } from "./universeCoverage";
 import type { CompletenessPack } from "./completeness/types";
+import type { BitgetDiscoveryResult } from "./equity/types";
 import type { GicsQueryMapping } from "./gics";
 
 export interface ChainNode {
@@ -97,6 +98,7 @@ export interface AnalysisResult {
   universe_coverage: UniverseCoverage;
   completeness: CompletenessPack;
   backtest: BacktestValidation;
+  bitget_discovery: BitgetDiscoveryResult;
   meta?: {
     llm_enabled: boolean;
     llm_configured: boolean;
