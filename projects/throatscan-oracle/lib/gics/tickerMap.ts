@@ -1,6 +1,7 @@
 import type { GicsClassification } from "./types";
 import { TICKER_GICS_NICHE } from "./tickerMapNiche";
 import { TICKER_GICS_WAVES } from "./tickerMapWaves";
+import { getSp500Gics } from "./sp500Map";
 
 function gics(
   sector: string,
@@ -604,7 +605,15 @@ export const TICKER_GICS: Record<string, GicsClassification> = {
 };
 
 export function getTickerGics(ticker: string): GicsClassification | undefined {
-  return TICKER_GICS[ticker.toUpperCase()];
+  const key = ticker.toUpperCase();
+  return TICKER_GICS[key] ?? getSp500Gics(key);
 }
 
 export const TICKER_GICS_COUNT = Object.keys(TICKER_GICS).length;
+
+export function getTickerGicsSource(ticker: string): "curated" | "sp500" | undefined {
+  const key = ticker.toUpperCase();
+  if (TICKER_GICS[key]) return "curated";
+  if (getSp500Gics(key)) return "sp500";
+  return undefined;
+}

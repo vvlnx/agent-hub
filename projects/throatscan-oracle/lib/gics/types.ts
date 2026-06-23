@@ -12,6 +12,9 @@ export interface GicsClassification {
 
 export type GicsMappingKind = "canonical" | "theme" | "partial" | "unknown";
 
+/** Where a company's GICS classification came from. */
+export type GicsSource = "remote" | "curated" | "sp500";
+
 /** GICS path resolved from a user industry query (Phase 0 — display only). */
 export interface GicsQueryMapping {
   classification: GicsClassification;

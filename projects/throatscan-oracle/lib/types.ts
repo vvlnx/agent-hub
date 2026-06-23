@@ -1,4 +1,4 @@
-import type { GicsClassification } from "./gics";
+import type { GicsClassification, GicsSource } from "./gics";
 import type { AnalysisGrade, BitgetEquityEvidence } from "./equity/types";
 
 export type ThroatRole =
@@ -25,6 +25,7 @@ export interface Company {
   ticker: string;
   sector_tags: string[];
   gics?: GicsClassification;
+  gics_source?: GicsSource;
   score: number;
   breakdown: CompanyBreakdown;
   throat_role: ThroatRole;

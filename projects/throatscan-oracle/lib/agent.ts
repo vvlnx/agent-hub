@@ -8,6 +8,7 @@ import { buildReasoningIntelligence } from "./reasoning/intelligenceLayer";
 import { scoreCompaniesFromReasoning } from "./scoring";
 import { attachBitgetEquityEvidence } from "./bitgetStocks";
 import { discoverBitgetListedCandidates } from "./equity";
+import { enrichCompaniesWithGics } from "./gics/enrich";
 import { fetchMarketResearch } from "./marketResearch";
 import { buildEventIntelligence } from "./eventIntelligence";
 import { buildIndustryMap } from "./industryMap";
@@ -35,9 +36,10 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
       reasoning.company_matches,
     ),
   );
+  const companiesWithGics = await enrichCompaniesWithGics(companies);
 
-  const reasoning_intelligence = buildReasoningIntelligence(reasoning, companies);
-  const companiesWithUncertainty = companies.map((company) => {
+  const reasoning_intelligence = buildReasoningIntelligence(reasoning, companiesWithGics);
+  const companiesWithUncertainty = companiesWithGics.map((company) => {
     const record = reasoning_intelligence.company_uncertainties.find(
       (row) => row.ticker === company.ticker,
     );

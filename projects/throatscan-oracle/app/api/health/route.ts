@@ -1,4 +1,5 @@
 import { warmBitgetPublicCache } from "@/lib/bitgetCache";
+import { probeGicsApiHealth } from "@/lib/gics/remoteClient";
 import { getPaperTradingStatus } from "@/lib/paperTrading/service";
 import { NextResponse } from "next/server";
 
@@ -50,10 +51,11 @@ async function probeMcp(): Promise<{ ok: boolean; latency_ms?: number; error?: s
 
 export async function GET() {
   const started = Date.now();
-  const [bitget, paper, mcp] = await Promise.all([
+  const [bitget, paper, mcp, gics_api] = await Promise.all([
     warmBitgetPublicCache(),
     getPaperTradingStatus(),
     probeMcp(),
+    probeGicsApiHealth(),
   ]);
 
   return NextResponse.json({
@@ -64,6 +66,7 @@ export async function GET() {
     bitget_public: bitget,
     paper_trading: paper,
     agent_hub_mcp: mcp,
+    gics_api,
     demo_url: process.env.THROATSCAN_PUBLIC_DEMO_URL ?? null,
   });
 }
