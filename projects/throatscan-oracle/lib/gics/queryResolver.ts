@@ -2,7 +2,7 @@ import { resolveGicsFromQuery as resolveThemeGicsFromQuery } from "./themeMap";
 import { searchGicsByQuery, gicsPrefixForClassification } from "./staticCatalog";
 import type { GicsQueryMapping } from "./types";
 
-export type GicsQuerySource = "theme" | "static_search" | "unknown";
+export type GicsQuerySource = "canonical" | "theme" | "static_search" | "unknown";
 
 export interface ResolvedGicsQuery extends GicsQueryMapping {
   gics_code?: string;
@@ -19,7 +19,7 @@ export async function resolveGicsFromQueryAsync(rawInput: string): Promise<Resol
       ...theme,
       gics_code: prefix.length >= 6 ? `${prefix.padEnd(8, "0")}` : undefined,
       gics_code_prefix: prefix.slice(0, Math.max(4, prefix.length)),
-      resolver_source: theme.mapping_kind === "canonical" ? "theme" : "theme",
+      resolver_source: theme.mapping_kind === "canonical" ? "canonical" : "theme",
     };
   }
 

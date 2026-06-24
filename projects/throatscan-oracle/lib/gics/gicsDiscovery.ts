@@ -18,7 +18,7 @@ export async function discoverBitgetCandidatesByGicsPrefix(input: {
   const prefix = input.gicsCodePrefix.replace(/\D/g, "").slice(0, 6);
   const curated = new Set(input.curatedTickers.map(normalizeTicker));
   const peers = listCompaniesByGicsPrefix(prefix, 400);
-  const { by_ticker, snapshot } = await loadEquityCatalog();
+  const { by_ticker } = await loadEquityCatalog();
 
   const entries: BitgetDiscoveryEntry[] = [];
 

@@ -387,12 +387,6 @@ export default function HomePage() {
   const analyzeAbortRef = useRef<AbortController | null>(null);
   const copy = t(locale);
 
-  useEffect(() => {
-    if (loading) {
-      setScannerExpanded(true);
-    }
-  }, [loading]);
-
   function scrollToSection(
     sectionId: WorkspaceSection,
     options?: {
@@ -442,7 +436,25 @@ export default function HomePage() {
 
   useEffect(() => {
     void fetch("/api/warmup", { cache: "no-store" }).catch(() => undefined);
-    void refreshPaperStatus();
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await fetch("/api/paper/status", { cache: "no-store" });
+        if (!response.ok || cancelled) return;
+        const payload = (await response.json()) as PaperTradingStatus & {
+          recent_orders?: PaperOrder[];
+        };
+        setPaperStatus(payload);
+        setRecentPaperOrders(payload.recent_orders ?? []);
+      } catch {
+        /* ignore transient status failures */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const result = useMemo(() => {
@@ -493,6 +505,7 @@ export default function HomePage() {
     analyzeAbortRef.current = controller;
 
     setLoading(true);
+    setScannerExpanded(true);
     setError(null);
     setPaperMessage(null);
     setEvidenceOpen(false);

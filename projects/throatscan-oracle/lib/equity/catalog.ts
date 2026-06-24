@@ -62,10 +62,6 @@ function ondoSymbolForTicker(ticker: string): string {
   return `${normalizeTicker(ticker)}ONUSDT`;
 }
 
-function rtokenSymbolForTicker(ticker: string): string {
-  return `r${normalizeTicker(ticker)}`;
-}
-
 function parseOndoSpotInstrument(
   ticker: string,
   symbol: SpotSymbolRow,
