@@ -109,5 +109,6 @@ after each run, plus the same data inside exported evidence JSON under
 | Demo URL | https://throatscan-oracle.vercel.app |
 | Health | https://throatscan-oracle.vercel.app/api/health |
 | GitHub | https://github.com/vvlnx/agent-hub/tree/main/projects/throatscan-oracle |
+| Latest commit | `e19e0da` — submission-ready sample + docs + catalog sync |
 | Sample evidence | https://throatscan-oracle.vercel.app/sample-evidence-ai-chips.json |
 | Monorepo path | `projects/throatscan-oracle` |
