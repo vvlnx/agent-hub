@@ -6,6 +6,8 @@ import type { PaperOrder, PaperTradingStatus } from "@/lib/paperTrading/types";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
 import { EquityTierBadge } from "@/components/EquityTierBadge";
 import { EquityTradabilityPanel } from "@/components/EquityTradabilityPanel";
+import { GicsResearchPanel } from "@/components/GicsResearchPanel";
+import { AgentWorkflowPanel } from "@/components/AgentWorkflowPanel";
 import {
   formatBacktestMeta,
   formatBottleneckStrategyScore,
@@ -29,7 +31,7 @@ import type {
   BottleneckImpactDirection,
   SupplyChainEventType,
 } from "@/lib/eventIntelligence";
-import { formatGicsPath, type GicsMappingKind } from "@/lib/gics";
+import { formatGicsPath, type GicsMappingKind } from "@/lib/gics/client";
 
 function tierLabel(tier: "HIGH" | "MEDIUM" | "LOW", copy: ReturnType<typeof t>): string {
   if (tier === "HIGH") return copy.tierHigh;
@@ -356,6 +358,14 @@ type WorkspaceSection =
   | "professional-analysis"
   | "agent-workflow";
 
+const WORKSPACE_SECTIONS: WorkspaceSection[] = [
+  "scanner",
+  "decision-overview",
+  "industry-map",
+  "professional-analysis",
+  "agent-workflow",
+];
+
 export default function HomePage() {
   const [locale, setLocale] = useState<Locale>("en");
   const [industry, setIndustry] = useState("AI chips");
@@ -367,11 +377,14 @@ export default function HomePage() {
   const [recentPaperOrders, setRecentPaperOrders] = useState<PaperOrder[]>([]);
   const [paperSubmitting, setPaperSubmitting] = useState(false);
   const [paperMessage, setPaperMessage] = useState<string | null>(null);
-  const [loadingStep, setLoadingStep] = useState(0);
   const [scannerExpanded, setScannerExpanded] = useState(true);
   const [activeSection, setActiveSection] = useState<WorkspaceSection>("scanner");
   const [evidenceOpen, setEvidenceOpen] = useState(false);
+  const [industryMapOpen, setIndustryMapOpen] = useState(false);
+  const [thesisAuditOpen, setThesisAuditOpen] = useState(false);
+  const [agentWorkflowOpen, setAgentWorkflowOpen] = useState(false);
   const mainScrollRef = useRef<HTMLElement>(null);
+  const analyzeAbortRef = useRef<AbortController | null>(null);
   const copy = t(locale);
 
   useEffect(() => {
@@ -382,38 +395,36 @@ export default function HomePage() {
 
   function scrollToSection(
     sectionId: WorkspaceSection,
-    options?: { openEvidence?: boolean },
+    options?: {
+      openEvidence?: boolean;
+      openIndustryMap?: boolean;
+      openThesisAudit?: boolean;
+      openAgentWorkflow?: boolean;
+    },
   ) {
     setActiveSection(sectionId);
     if (options?.openEvidence || sectionId === "professional-analysis") {
       setEvidenceOpen(true);
+    }
+    if (options?.openIndustryMap || sectionId === "industry-map") {
+      setIndustryMapOpen(true);
+    }
+    if (options?.openThesisAudit) {
+      setThesisAuditOpen(true);
+    }
+    if (options?.openAgentWorkflow || sectionId === "agent-workflow") {
+      setAgentWorkflowOpen(true);
     }
     requestAnimationFrame(() => {
       document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
-  const analysisSteps = useMemo(
-    () =>
-      locale === "zh"
-        ? [
-            "解析行业与供应链层级…",
-            "匹配上市公司与硬约束…",
-            "拉取 Bitget 公开行情…",
-            "并行请求 Agent Hub 新闻/宏观…",
-            "生成事件信号与模拟决策…",
-            "运行 Bitget 回测与证据包…",
-          ]
-        : [
-            "Parsing industry and supply-chain layers…",
-            "Matching public companies and hard constraints…",
-            "Fetching Bitget public market data…",
-            "Running Agent Hub news/macro research in parallel…",
-            "Building event signals and simulated decision…",
-            "Running Bitget backtest and evidence bundle…",
-          ],
-    [locale],
-  );
+  function handleCancelAnalysis() {
+    analyzeAbortRef.current?.abort();
+    analyzeAbortRef.current = null;
+    setLoading(false);
+  }
 
   async function refreshPaperStatus() {
     try {
@@ -434,20 +445,6 @@ export default function HomePage() {
     void refreshPaperStatus();
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      setLoadingStep(0);
-      return;
-    }
-    let step = 0;
-    setLoadingStep(0);
-    const timer = setInterval(() => {
-      step = Math.min(step + 1, analysisSteps.length - 1);
-      setLoadingStep(step);
-    }, 2800);
-    return () => clearInterval(timer);
-  }, [loading, analysisSteps.length]);
-
   const result = useMemo(() => {
     if (!baseResult) return null;
     try {
@@ -457,6 +454,33 @@ export default function HomePage() {
     }
   }, [baseResult, locale]);
 
+  useEffect(() => {
+    if (!result) return;
+    const root = mainScrollRef.current;
+    if (!root) return;
+
+    const elements = WORKSPACE_SECTIONS.map((id) => document.getElementById(id)).filter(
+      (element): element is HTMLElement => element !== null,
+    );
+    if (elements.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const top = visible[0]?.target.id;
+        if (top && WORKSPACE_SECTIONS.includes(top as WorkspaceSection)) {
+          setActiveSection(top as WorkspaceSection);
+        }
+      },
+      { root, rootMargin: "-12% 0px -58% 0px", threshold: [0, 0.08, 0.2, 0.4] },
+    );
+
+    elements.forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [result]);
+
   async function handleRunAnalysis(nextIndustry?: string) {
     if (nextIndustry) {
       setIndustry(nextIndustry);
@@ -464,14 +488,23 @@ export default function HomePage() {
     const query = (nextIndustry ?? industry).trim();
     if (!query) return;
 
+    analyzeAbortRef.current?.abort();
+    const controller = new AbortController();
+    analyzeAbortRef.current = controller;
+
     setLoading(true);
     setError(null);
     setPaperMessage(null);
+    setEvidenceOpen(false);
+    setIndustryMapOpen(false);
+    setThesisAuditOpen(false);
+    setAgentWorkflowOpen(false);
     try {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ industry: query }),
+        signal: controller.signal,
       });
 
       const payload = (await response.json()) as AnalysisResult & { error?: string };
@@ -494,9 +527,15 @@ export default function HomePage() {
       setScannerExpanded(false);
       scrollToSection("decision-overview");
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       setError(err instanceof Error ? err.message : copy.analysisFailed);
       setBaseResult(null);
     } finally {
+      if (analyzeAbortRef.current === controller) {
+        analyzeAbortRef.current = null;
+      }
       setLoading(false);
     }
   }
@@ -580,6 +619,7 @@ export default function HomePage() {
       industry_map: baseResult.industry_map,
       universe_coverage: baseResult.universe_coverage,
       gics_query: baseResult.interpretation.gics,
+      gics_research: baseResult.gics_research,
       paper_trading: {
         status: paperStatus,
         recent_orders: recentPaperOrders,
@@ -907,6 +947,12 @@ export default function HomePage() {
         (company.bitget_market?.listed && company.bitget_market.status === "online"),
     ).length ?? 0;
   const totalCandidateCount = result?.companies.length ?? 0;
+  const researchTopPicks = result?.final_decision.traditional_vs_throatscan.throatscan.top_picks ?? [];
+  const secondaryBottleneckTickers =
+    result?.final_decision.secondary_bottlenecks.map((company) => company.ticker) ?? [];
+  const gicsDiscoveryCount = result?.bitget_discovery.discovery_count ?? 0;
+  const gicsDiscoverySample =
+    result?.bitget_discovery.entries.slice(0, 8).map((entry) => entry.ticker) ?? [];
   const evidenceReady =
     result?.market_research.macro.status !== "unavailable" &&
     result?.market_research.news.status !== "unavailable" &&
@@ -957,100 +1003,23 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="cursor-tabstrip shrink-0" aria-label="Primary navigation">
-        {(
-          [
-            ["scanner", terminalLabels.researchDesk],
-            ["decision-overview", terminalLabels.portfolio],
-            ["professional-analysis", terminalLabels.evidence],
-            ["agent-workflow", locale === "zh" ? "Agent 工作流" : "Agent workflow"],
-          ] as const
-        ).map(([sectionId, label]) => (
-          <button
-            key={sectionId}
-            type="button"
-            onClick={() =>
-              scrollToSection(sectionId, {
-                openEvidence: sectionId === "professional-analysis",
-              })
-            }
-            className={`cursor-tab ${activeSection === sectionId ? "active" : ""}`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
       <div className="flex min-h-0 flex-1">
-        <nav className="cursor-activity-bar shrink-0" aria-label="Views">
-          <button
-            type="button"
-            onClick={() => scrollToSection("scanner")}
-            className={`cursor-activity-btn ${activeSection === "scanner" ? "active" : ""}`}
-            title={terminalLabels.workspace}
-            aria-label={terminalLabels.workspace}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollToSection("decision-overview")}
-            className={`cursor-activity-btn ${activeSection === "decision-overview" ? "active" : ""}`}
-            title={terminalLabels.portfolio}
-            aria-label={terminalLabels.portfolio}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path d="M3 3v18h18M7 16l4-4 4 4 5-6" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollToSection("professional-analysis", { openEvidence: true })}
-            className={`cursor-activity-btn ${activeSection === "professional-analysis" ? "active" : ""}`}
-            title={terminalLabels.evidence}
-            aria-label={terminalLabels.evidence}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-              <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollToSection("agent-workflow")}
-            className={`cursor-activity-btn ${activeSection === "agent-workflow" ? "active" : ""}`}
-            title={locale === "zh" ? "Agent 工作流" : "Agent workflow"}
-            aria-label={locale === "zh" ? "Agent 工作流" : "Agent workflow"}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-              <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 16.8 5.7 21l2.3-7-6-4.6h7.6L12 2z" />
-            </svg>
-          </button>
-        </nav>
-
         <aside className="cursor-sidebar terminal-sidebar shrink-0 p-2">
           <p className="cursor-sidebar-section">{terminalLabels.workspace}</p>
           <div>
             {(
               [
-                ["01", terminalLabels.overview, "decision-overview"],
-                ["02", terminalLabels.eventFlow, "professional-analysis"],
-                ["03", terminalLabels.chain, "industry-map"],
-                ["04", terminalLabels.candidates, "industry-map"],
-                ["05", terminalLabels.backtest, "professional-analysis"],
-                ["06", locale === "zh" ? "Agent 工作流" : "Agent workflow", "agent-workflow"],
+                ["01", terminalLabels.researchDesk, "scanner", {}],
+                ["02", terminalLabels.overview, "decision-overview", {}],
+                ["03", terminalLabels.chain, "industry-map", { openIndustryMap: true }],
+                ["04", terminalLabels.evidence, "professional-analysis", { openEvidence: true }],
+                ["05", locale === "zh" ? "Agent 工作流" : "Agent workflow", "agent-workflow", { openAgentWorkflow: true }],
               ] as const
-            ).map(([number, label, sectionId]) => (
+            ).map(([number, label, sectionId, options]) => (
               <button
                 type="button"
-                key={label}
-                onClick={() =>
-                  scrollToSection(sectionId, {
-                    openEvidence: sectionId === "professional-analysis",
-                  })
-                }
+                key={`${number}-${label}`}
+                onClick={() => scrollToSection(sectionId, options)}
                 className={`cursor-sidebar-item w-full border-0 bg-transparent text-left ${
                   activeSection === sectionId ? "active" : ""
                 }`}
@@ -1221,18 +1190,24 @@ export default function HomePage() {
                   </div>
                   {loading ? (
                     <div className="mt-3 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-4 py-3">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-600">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--cursor-fg-subtle)]">
                         {terminalLabels.loadingPipeline}
                       </p>
-                      <p className="mt-1 text-sm text-emerald-300">{analysisSteps[loadingStep]}</p>
-                      <div className="mt-2 h-1 overflow-hidden rounded bg-[var(--cursor-selection)]">
-                        <div
-                          className="h-full bg-emerald-400 transition-all duration-500"
-                          style={{
-                            width: `${Math.round(((loadingStep + 1) / analysisSteps.length) * 100)}%`,
-                          }}
-                        />
+                      <p className="mt-1 text-sm text-[var(--cursor-fg-muted)]">
+                        {locale === "zh"
+                          ? "多阶段分析进行中，通常需要数十秒…"
+                          : "Multi-stage analysis in progress, typically tens of seconds…"}
+                      </p>
+                      <div className="loading-indeterminate mt-3 h-1 overflow-hidden rounded bg-[var(--cursor-selection)]">
+                        <div className="loading-indeterminate-bar h-full" />
                       </div>
+                      <button
+                        type="button"
+                        onClick={handleCancelAnalysis}
+                        className="cursor-btn-ghost mt-3 px-3 py-1.5 text-xs"
+                      >
+                        {locale === "zh" ? "取消分析" : "Cancel analysis"}
+                      </button>
                     </div>
                   ) : null}
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -1360,19 +1335,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="status-grid grid grid-cols-2 border-t border-[var(--cursor-border)] sm:grid-cols-4">
-              {[
-                [terminalLabels.marketStatus, result ? terminalLabels.verified : terminalLabels.waiting, result ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
-                [terminalLabels.bitgetStatus, result?.backtest.status === "verified" ? terminalLabels.live : terminalLabels.waiting, result?.backtest.status === "verified" ? "terminal-green" : "text-[var(--cursor-fg-muted)]"],
-                [terminalLabels.decisionStatus, result ? simulatedActionLabel(result.event_intelligence.simulated_decision.action, copy) : terminalLabels.waiting, result ? "terminal-amber" : "text-[var(--cursor-fg-muted)]"],
-                [terminalLabels.confidence, result ? `${result.confidence}/100` : "—", result ? "text-[var(--cursor-fg)]" : "text-[var(--cursor-fg-muted)]"],
-              ].map(([label, value, valueClass]) => (
-                <div key={label} className="status-cell border-r border-[var(--cursor-border)] px-4 py-3 last:border-r-0">
-                  <p className="text-[10px] uppercase tracking-wide text-[var(--cursor-fg-subtle)]">{label}</p>
-                  <p className={`mt-0.5 font-mono text-sm font-medium ${valueClass}`}>{value}</p>
-                </div>
-              ))}
-            </div>
               </>
             )}
           </section>
@@ -1511,6 +1473,16 @@ export default function HomePage() {
                     {stanceLabel(result.final_decision.final_result_card.investment_stance, copy)} ·{" "}
                     {result.final_decision.final_result_card.confidence}
                   </p>
+                  {researchTopPicks.length > 1 ? (
+                    <p className="mt-2 text-xs text-zinc-400">
+                      {copy.researchTopPicks}: {researchTopPicks.join(", ")}
+                    </p>
+                  ) : null}
+                  {secondaryBottleneckTickers.length > 0 ? (
+                    <p className="mt-1 text-xs text-zinc-500">
+                      {copy.secondaryBottlenecks}: {secondaryBottleneckTickers.join(", ")}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainTradability}</p>
@@ -1530,10 +1502,22 @@ export default function HomePage() {
                       ? terminalLabels.directTradable
                       : terminalLabels.notDirectTradable}
                   </p>
+                  {appHandoffTickers.length > 0 ? (
+                    <p className="mt-2 text-xs text-sky-400">
+                      {copy.tierBAppHandoff}: {appHandoffTickers.join(", ")}
+                    </p>
+                  ) : null}
+                  {gicsDiscoveryCount > 0 ? (
+                    <p className="mt-2 text-xs text-violet-400">
+                      {copy.gicsDiscovery}: {gicsDiscoveryCount}
+                      {gicsDiscoverySample.length > 0 ? ` (${gicsDiscoverySample.join(", ")})` : ""}
+                    </p>
+                  ) : null}
                   <p className="mt-2 text-xs text-zinc-500">
                     {onlineCandidateCount}/{totalCandidateCount}{" "}
-                    {locale === "zh" ? "个候选当前可映射到 Bitget" : "candidates map to Bitget now"}
+                    {locale === "zh" ? "个策展候选可映射 Bitget" : "curated candidates map to Bitget"}
                   </p>
+                  <p className="mt-1 text-[11px] leading-5 text-zinc-600">{copy.researchVsTradableNote}</p>
                 </div>
                 <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">{terminalLabels.plainReason}</p>
@@ -1584,299 +1568,37 @@ export default function HomePage() {
                   <p className="mt-3 text-xs leading-5 text-emerald-300">{paperMessage}</p>
                 ) : null}
               </div>
-
-              <section
-                id="agent-workflow"
-                className="mt-4 scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold">{copy.agentWorkflow}</h3>
-                    <p className="mt-1 text-xs text-[var(--cursor-fg-muted)]">{copy.agentWorkflowHint}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {result.completeness.novelty.mcp_tools_used.map((tool) => (
-                      <span
-                        key={tool}
-                        className="rounded-full border border-[var(--cursor-accent)]/25 bg-[var(--cursor-accent-dim)] px-2 py-0.5 font-mono text-[10px] text-[var(--cursor-accent)]"
-                      >
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--cursor-fg-subtle)]">
-                    {copy.whyAgentOnly}
-                  </p>
-                  <p className="mt-2 text-sm leading-6">
-                    {locale === "zh"
-                      ? result.completeness.novelty.why_agent_only_zh
-                      : result.completeness.novelty.why_agent_only_en}
-                  </p>
-                  <ul className="mt-3 space-y-1 text-xs text-[var(--cursor-fg-muted)]">
-                    {(locale === "zh"
-                      ? result.completeness.novelty.vs_traditional_screener_zh
-                      : result.completeness.novelty.vs_traditional_screener_en
-                    ).map((item) => (
-                      <li key={item}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                <ol className="mt-4 space-y-2">
-                  {result.completeness.novelty.agent_workflow.map((step, index) => (
-                    <li
-                      key={step.id}
-                      className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="text-[10px] font-mono text-[var(--cursor-fg-subtle)]">
-                            {copy.workflowStep} {String(index + 1).padStart(2, "0")}
-                          </p>
-                          <p className="mt-0.5 text-sm font-semibold">
-                            {locale === "zh" ? step.agent_zh : step.agent_en}
-                          </p>
-                          <p className="mt-1 font-mono text-[10px] text-[var(--cursor-accent)]">
-                            {step.skill}
-                          </p>
-                        </div>
-                        <span
-                          className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
-                            step.status === "complete"
-                              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-600"
-                              : step.status === "partial"
-                                ? "border-amber-400/30 bg-amber-400/10 text-amber-700"
-                                : "border-zinc-400/30 bg-zinc-100 text-zinc-600"
-                          }`}
-                        >
-                          {step.status === "complete"
-                            ? copy.stageComplete
-                            : step.status === "partial"
-                              ? copy.stagePartial
-                              : copy.stageSkipped}
-                        </span>
-                      </div>
-                      <p className="mt-2 text-xs leading-5 text-[var(--cursor-fg-muted)]">
-                        {locale === "zh" ? step.detail_zh : step.detail_en}
-                      </p>
-                      {step.tools_used.length > 0 ? (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {step.tools_used.map((tool) => (
-                            <span
-                              key={`${step.id}-${tool}`}
-                              className="rounded border border-[var(--cursor-border)] px-1.5 py-0.5 font-mono text-[9px] text-[var(--cursor-fg-subtle)]"
-                            >
-                              {tool}
-                            </span>
-                          ))}
-                        </div>
-                      ) : null}
-                      {step.fetched_at ? (
-                        <p className="mt-2 text-[10px] text-[var(--cursor-fg-subtle)]">
-                          {copy.fetchedAt}: {step.fetched_at}
-                          {step.source_url ? (
-                            <>
-                              {" · "}
-                              <a
-                                href={step.source_url}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[var(--cursor-accent)] underline"
-                              >
-                                MCP
-                              </a>
-                            </>
-                          ) : null}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
-                </ol>
-
-                <div className="mt-4 grid gap-3 lg:grid-cols-2">
-                  <div className="rounded-lg border border-[var(--cursor-border)] p-3">
-                    <p className="text-xs font-semibold">{copy.hardConstraints}</p>
-                    <ul className="mt-2 space-y-2">
-                      {result.completeness.novelty.hard_constraints.map((rule) => (
-                        <li key={rule.id} className="text-xs">
-                          <p className="font-medium">
-                            {locale === "zh" ? rule.label_zh : rule.label_en}
-                          </p>
-                          <p className="mt-0.5 text-[var(--cursor-fg-muted)]">
-                            {locale === "zh" ? rule.enforced_zh : rule.enforced_en}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="rounded-lg border border-[var(--cursor-border)] p-3">
-                    <p className="text-xs font-semibold">{copy.rebalanceAgent}</p>
-                    <p className="mt-1 font-mono text-[10px] text-[var(--cursor-fg-subtle)]">
-                      {result.completeness.novelty.rebalance_agent.agent_id}
-                    </p>
-                    <p className="mt-2 text-xs leading-5 text-[var(--cursor-fg-muted)]">
-                      {locale === "zh"
-                        ? result.completeness.novelty.rebalance_agent.policy_zh
-                        : result.completeness.novelty.rebalance_agent.policy_en}
-                    </p>
-                    <ul className="mt-2 space-y-1 text-xs text-[var(--cursor-fg-muted)]">
-                      {(locale === "zh"
-                        ? result.completeness.novelty.rebalance_agent.triggers_zh
-                        : result.completeness.novelty.rebalance_agent.triggers_en
-                      ).map((trigger) => (
-                        <li key={trigger}>• {trigger}</li>
-                      ))}
-                    </ul>
-                    <p className="mt-3 text-xs font-medium">
-                      {locale === "zh"
-                        ? result.completeness.novelty.rebalance_agent.next_action_zh
-                        : result.completeness.novelty.rebalance_agent.next_action_en}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <p className="text-xs font-semibold">{copy.growthRoadmap}</p>
-                  <div className="mt-3 grid gap-3 lg:grid-cols-3">
-                    {result.completeness.novelty.growth_roadmap.map((phase) => (
-                      <div
-                        key={phase.phase}
-                        className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-3"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-semibold">
-                            Phase {phase.phase}
-                          </p>
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                              phase.status === "live"
-                                ? "bg-emerald-400/10 text-emerald-700"
-                                : phase.status === "partial"
-                                  ? "bg-amber-400/10 text-amber-700"
-                                  : "bg-zinc-200 text-zinc-600"
-                            }`}
-                          >
-                            {phase.status === "live"
-                              ? copy.phaseLive
-                              : phase.status === "partial"
-                                ? copy.phasePartial
-                                : copy.phasePlanned}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs font-medium">
-                          {locale === "zh" ? phase.title_zh : phase.title_en}
-                        </p>
-                        <ul className="mt-2 space-y-1 text-[11px] leading-5 text-[var(--cursor-fg-muted)]">
-                          {(locale === "zh" ? phase.items_zh : phase.items_en).map((item) => (
-                            <li key={item}>• {item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {result.completeness.github_repo_url ? (
-                  <p className="mt-4 text-xs text-[var(--cursor-fg-muted)]">
-                    GitHub:{" "}
-                    <a
-                      href={result.completeness.github_repo_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[var(--cursor-accent)] underline"
-                    >
-                      {result.completeness.github_repo_url}
-                    </a>
-                  </p>
-                ) : null}
-              </section>
-
-              <section className="mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold text-white">{copy.judgeSelfAssessment}</h3>
-                    <p className="mt-1 text-xs text-zinc-500">{copy.judgeSelfAssessmentHint}</p>
-                  </div>
-                  <a
-                    href={result.completeness.public_demo_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-1 text-xs font-semibold text-sky-300"
-                  >
-                    {copy.publicDemo}
-                  </a>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-zinc-300">
-                  {locale === "zh"
-                    ? result.completeness.honest_summary_zh
-                    : result.completeness.honest_summary_en}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {result.completeness.end_to_end_stages.map((pipeStage) => (
-                    <span
-                      key={pipeStage.id}
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold ${
-                        pipeStage.status === "complete"
-                          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                          : pipeStage.status === "partial"
-                            ? "border-amber-400/30 bg-amber-400/10 text-amber-300"
-                            : "border-zinc-600 bg-zinc-800 text-zinc-400"
-                      }`}
-                    >
-                      {locale === "zh" ? pipeStage.label_zh : pipeStage.label_en}
-                    </span>
-                  ))}
-                </div>
-                <div className="mt-4 grid gap-3 lg:grid-cols-2">
-                  {result.completeness.judge_self_assessment.map((row) => (
-                    <div
-                      key={row.id}
-                      className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4"
-                    >
-                      <p className="text-sm font-semibold text-white">
-                        {locale === "zh" ? row.title_zh : row.title_en}
-                      </p>
-                      <p className="mt-1 text-xs text-violet-300">
-                        {locale === "zh" ? row.rating_zh : row.rating_en}
-                      </p>
-                      <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                        {copy.achieved}
-                      </p>
-                      <ul className="mt-1 space-y-1 text-xs leading-5 text-zinc-400">
-                        {(locale === "zh" ? row.achieved_zh : row.achieved_en).map((item) => (
-                          <li key={item}>- {item}</li>
-                        ))}
-                      </ul>
-                      <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
-                        {copy.gaps}
-                      </p>
-                      <ul className="mt-1 space-y-1 text-xs leading-5 text-zinc-500">
-                        {(locale === "zh" ? row.gaps_zh : row.gaps_en).map((item) => (
-                          <li key={item}>- {item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <EquityTradabilityPanel result={result} locale={locale} />
             </section>
 
-            <section id="industry-map" className="scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
+            <EquityTradabilityPanel result={result} locale={locale} />
+
+            <details
+              id="industry-map"
+              open={industryMapOpen}
+              onToggle={(event) => setIndustryMapOpen(event.currentTarget.open)}
+              className="section-collapsible scroll-mt-4"
+            >
+              <summary className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-[var(--cursor-fg)]">
                     {terminalLabels.industryMapTitle}
                   </h2>
-                  <p className="mt-1 max-w-3xl text-xs leading-5 text-zinc-400">
+                  <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--cursor-fg-muted)]">
                     {terminalLabels.industryMapSubtitle}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-right text-xs">
+                <span className="rounded-full border border-[var(--cursor-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--cursor-fg-muted)]">
+                  {industryMapOpen
+                    ? locale === "zh"
+                      ? "点击收起"
+                      : "Click to collapse"
+                    : locale === "zh"
+                      ? "点击展开"
+                      : "Click to expand"}
+                </span>
+              </summary>
+              <div className="mt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-2 text-right text-xs sm:ml-auto sm:max-w-xs">
                   <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] px-3 py-2">
                     <p className="text-zinc-500">{terminalLabels.publicCompanies}</p>
                     <p className="mt-1 text-base font-semibold text-white">
@@ -1890,9 +1612,8 @@ export default function HomePage() {
                     </p>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-4 grid gap-3 lg:grid-cols-3">
+              <div className="grid gap-3 lg:grid-cols-3">
                 {result.industry_map.layers.map((layer) => (
                   <div
                     key={layer.stage}
@@ -2043,15 +1764,20 @@ export default function HomePage() {
                   </tbody>
                 </table>
               </div>
-            </section>
+              </div>
+            </details>
 
-            <section className="rounded-lg border border-violet-400/25 bg-[var(--cursor-panel)] p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
+            <details
+              open={thesisAuditOpen}
+              onToggle={(event) => setThesisAuditOpen(event.currentTarget.open)}
+              className="section-collapsible scroll-mt-4"
+            >
+              <summary className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-[var(--cursor-fg)]">
                     {terminalLabels.auditTitle}
                   </h2>
-                  <p className="mt-1 max-w-3xl text-xs leading-5 text-zinc-400">
+                  <p className="mt-1 max-w-3xl text-xs leading-5 text-[var(--cursor-fg-muted)]">
                     {terminalLabels.auditSubtitle}
                   </p>
                 </div>
@@ -2062,9 +1788,9 @@ export default function HomePage() {
                     ? result.thesis_audit.verdict_label_zh
                     : result.thesis_audit.verdict_label_en}
                 </span>
-              </div>
-
-              <div className="mt-4 grid gap-3 lg:grid-cols-4">
+              </summary>
+              <div className="mt-4 space-y-4 rounded-lg border border-violet-400/25 bg-[var(--cursor-panel)] p-4">
+              <div className="grid gap-3 lg:grid-cols-4">
                 <div className="rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-sidebar)] p-4">
                   <p className="text-xs font-semibold text-zinc-500">
                     {terminalLabels.auditScore}
@@ -2112,6 +1838,40 @@ export default function HomePage() {
                       : result.thesis_audit.project_role_en}
                   </p>
                 </div>
+              </div>
+
+              <div
+                className={`mt-4 rounded-lg border p-4 ${
+                  result.thesis_audit.gics_alignment.aligned
+                    ? "border-emerald-400/30 bg-emerald-950/20"
+                    : result.thesis_audit.gics_alignment.alignment_level === "unknown"
+                      ? "border-zinc-600/30 bg-[var(--cursor-sidebar)]"
+                      : "border-amber-400/30 bg-amber-950/20"
+                }`}
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-zinc-400">{copy.gicsAlignmentTitle}</p>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      result.thesis_audit.gics_alignment.aligned
+                        ? "bg-emerald-500/20 text-emerald-300"
+                        : result.thesis_audit.gics_alignment.alignment_level === "unknown"
+                          ? "bg-zinc-500/20 text-zinc-300"
+                          : "bg-amber-500/20 text-amber-300"
+                    }`}
+                  >
+                    {result.thesis_audit.gics_alignment.aligned
+                      ? copy.gicsAligned
+                      : result.thesis_audit.gics_alignment.alignment_level === "unknown"
+                        ? copy.gicsAlignmentUnknown
+                        : copy.gicsMisaligned}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-zinc-300">
+                  {locale === "zh"
+                    ? result.thesis_audit.gics_alignment.detail_zh
+                    : result.thesis_audit.gics_alignment.detail_en}
+                </p>
               </div>
 
               <div className="mt-4 grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
@@ -2264,7 +2024,8 @@ export default function HomePage() {
                   </ul>
                 </div>
               </div>
-            </section>
+              </div>
+            </details>
 
             <div className="terminal-result-hero rounded-lg p-4 text-white">
               <p className="text-xs font-bold uppercase tracking-widest opacity-80">
@@ -2314,16 +2075,22 @@ export default function HomePage() {
               id="professional-analysis"
               open={evidenceOpen}
               onToggle={(event) => setEvidenceOpen(event.currentTarget.open)}
-              className="scroll-mt-4 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-4"
+              className="section-collapsible scroll-mt-4"
             >
               <summary className="cursor-pointer list-none">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-semibold text-white">{terminalLabels.advancedTitle}</h2>
-                    <p className="mt-1 text-xs text-zinc-400">{terminalLabels.advancedHint}</p>
+                    <h2 className="text-lg font-semibold text-[var(--cursor-fg)]">{terminalLabels.advancedTitle}</h2>
+                    <p className="mt-1 text-xs text-[var(--cursor-fg-muted)]">{terminalLabels.advancedHint}</p>
                   </div>
-                  <span className="rounded-full border border-[var(--cursor-border-strong)] px-3 py-1 text-xs font-semibold text-zinc-300">
-                    {locale === "zh" ? "点击展开" : "Click to expand"}
+                  <span className="rounded-full border border-[var(--cursor-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--cursor-fg-muted)]">
+                    {evidenceOpen
+                      ? locale === "zh"
+                        ? "点击收起"
+                        : "Click to collapse"
+                      : locale === "zh"
+                        ? "点击展开"
+                        : "Click to expand"}
                   </span>
                 </div>
               </summary>
@@ -2556,6 +2323,8 @@ export default function HomePage() {
                 </p>
               </section>
             </div>
+
+            <GicsResearchPanel result={baseResult} locale={locale} />
 
             <section className="rounded-xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/40">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -3764,11 +3533,76 @@ export default function HomePage() {
             </div>
               </div>
             </details>
+
+            <details
+              id="agent-workflow"
+              open={agentWorkflowOpen}
+              onToggle={(event) => setAgentWorkflowOpen(event.currentTarget.open)}
+              className="section-collapsible scroll-mt-4"
+            >
+              <summary className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--cursor-fg)]">{copy.agentWorkflow}</h2>
+                  <p className="mt-1 text-xs text-[var(--cursor-fg-muted)]">{copy.agentWorkflowHint}</p>
+                </div>
+                <span className="rounded-full border border-[var(--cursor-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--cursor-fg-muted)]">
+                  {agentWorkflowOpen
+                    ? locale === "zh"
+                      ? "点击收起"
+                      : "Click to collapse"
+                    : locale === "zh"
+                      ? "点击展开"
+                      : "Click to expand"}
+                </span>
+              </summary>
+              <AgentWorkflowPanel result={baseResult} locale={locale} copy={copy} />
+            </details>
           </div>
         ) : null}
           </div>
         </main>
       </div>
+
+      <nav className="mobile-dock" aria-label={locale === "zh" ? "移动端导航" : "Mobile navigation"}>
+        {(
+          [
+            ["scanner", terminalLabels.researchDesk, "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"],
+            ["decision-overview", terminalLabels.portfolio, "M3 3v18h18M7 16l4-4 4 4 5-6"],
+            ["industry-map", terminalLabels.chain, "M4 6h16M4 12h16M4 18h10"],
+            ["professional-analysis", terminalLabels.evidence, "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"],
+            ["agent-workflow", locale === "zh" ? "Agent" : "Agent", "M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 16.8 5.7 21l2.3-7-6-4.6h7.6L12 2z"],
+          ] as const
+        ).map(([sectionId, label, iconPath]) => (
+          <button
+            key={sectionId}
+            type="button"
+            onClick={() =>
+              scrollToSection(sectionId, {
+                openEvidence: sectionId === "professional-analysis",
+                openIndustryMap: sectionId === "industry-map",
+                openAgentWorkflow: sectionId === "agent-workflow",
+              })
+            }
+            className={`mobile-dock-btn ${activeSection === sectionId ? "active" : ""}`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d={iconPath} />
+            </svg>
+            <span className="truncate">{label}</span>
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setShowBitgetSetup(true)}
+          className="mobile-dock-btn"
+          title={terminalLabels.connectBitget}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <path d="M12 2v20M5 8h14M5 16h14" />
+          </svg>
+          <span className="truncate">Bitget</span>
+        </button>
+      </nav>
 
       <footer className="cursor-statusbar shrink-0">
         <span className="cursor-statusbar-item">{terminalLabels.publicDataConnected}</span>

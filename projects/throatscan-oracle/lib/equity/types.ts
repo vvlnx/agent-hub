@@ -82,6 +82,8 @@ export interface BitgetDiscoveryEntry {
   ticker: string;
   name?: string;
   sector_hint?: string;
+  gics_code?: string;
+  discovery_via?: "sector_hint" | "gics_prefix";
   execution_tier: ExecutionTier;
   in_curated_universe: boolean;
 }
@@ -103,4 +105,6 @@ export interface BitgetDiscoveryResult {
   entries: BitgetDiscoveryEntry[];
   summary_en: string;
   summary_zh: string;
+  gics_code_prefix?: string;
+  gics_peers_scanned?: number;
 }

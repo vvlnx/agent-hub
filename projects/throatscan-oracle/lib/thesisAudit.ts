@@ -6,6 +6,24 @@ import type { IndustryMap, IndustryMapCompany, IndustryMapStage } from "./indust
 import type { IndustryProfile } from "./mockData";
 import type { MarketResearch } from "./marketResearch";
 import { clampScore, type Company } from "./types";
+import { getCatalogEntry, industryGroupsAlign, sectorsAlign } from "./gics/staticCatalog";
+import { formatGicsPath } from "./gics/types";
+
+export type ThesisAuditGicsAlignmentLevel = "sector" | "industry_group" | "mismatch" | "unknown";
+
+export interface ThesisAuditGicsAlignment {
+  aligned: boolean;
+  alignment_level: ThesisAuditGicsAlignmentLevel;
+  query_gics_code?: string;
+  query_sector_en: string;
+  query_sector_zh: string;
+  primary_ticker: string;
+  primary_gics_code?: string;
+  primary_sector_en?: string;
+  primary_sector_zh?: string;
+  detail_en: string;
+  detail_zh: string;
+}
 
 export type ThesisAuditVerdict = "SUPPORTIVE" | "NEUTRAL" | "CHALLENGE";
 export type ThesisAuditEvidenceGrade = "STRONG" | "MEDIUM" | "WEAK";
@@ -65,6 +83,7 @@ export interface ThesisAudit {
   next_checks_zh: string[];
   limitations_en: string[];
   limitations_zh: string[];
+  gics_alignment: ThesisAuditGicsAlignment;
   generated_at: string;
 }
 
@@ -290,6 +309,80 @@ function buildStructuredNextChecks(
   ];
 }
 
+function buildGicsAlignment(
+  profile: IndustryProfile,
+  companies: Company[],
+): ThesisAuditGicsAlignment {
+  const primaryTicker = profile.primary_bottleneck_ticker;
+  const queryGics = profile.interpretation.gics;
+  const querySectorEn = queryGics?.classification.sector ?? "Unknown";
+  const querySectorZh = queryGics?.classification.sector_zh ?? querySectorEn;
+  const queryCode =
+    queryGics?.gics_code ??
+    (queryGics?.gics_code_prefix ? `${queryGics.gics_code_prefix.padEnd(8, "0")}` : undefined);
+
+  const primaryCompany = companies.find((company) => company.ticker === primaryTicker);
+  const catalog = getCatalogEntry(primaryTicker);
+  const primaryCode = catalog?.gics_code;
+
+  const primarySectorEn =
+    primaryCompany?.gics?.sector ?? catalog?.classification.sector;
+  const primarySectorZh =
+    primaryCompany?.gics?.sector_zh ??
+    catalog?.classification.sector_zh ??
+    primarySectorEn;
+
+  if (!queryGics || !primaryCode) {
+    return {
+      aligned: false,
+      alignment_level: "unknown",
+      query_gics_code: queryCode,
+      query_sector_en: querySectorEn,
+      query_sector_zh: querySectorZh,
+      primary_ticker: primaryTicker,
+      primary_gics_code: primaryCode,
+      primary_sector_en: primarySectorEn,
+      primary_sector_zh: primarySectorZh,
+      detail_en: "GICS alignment could not be verified — missing query mapping or primary ticker classification.",
+      detail_zh: "无法完成 GICS 对齐校验——缺少查询映射或主瓶颈 ticker 分类。",
+    };
+  }
+
+  const industryGroupMatch = industryGroupsAlign(queryCode, primaryCode);
+  const sectorMatch = sectorsAlign(queryCode, primaryCode);
+  const aligned = industryGroupMatch || sectorMatch;
+  const alignment_level: ThesisAuditGicsAlignmentLevel = industryGroupMatch
+    ? "industry_group"
+    : sectorMatch
+      ? "sector"
+      : "mismatch";
+
+  const queryPath = formatGicsPath(queryGics.classification, "en");
+  const primaryPath = primaryCompany?.gics
+    ? formatGicsPath(primaryCompany.gics, "en")
+    : catalog
+      ? formatGicsPath(catalog.classification, "en")
+      : primarySectorEn ?? primaryTicker;
+
+  return {
+    aligned,
+    alignment_level,
+    query_gics_code: queryCode,
+    query_sector_en: querySectorEn,
+    query_sector_zh: querySectorZh,
+    primary_ticker: primaryTicker,
+    primary_gics_code: primaryCode,
+    primary_sector_en: primarySectorEn,
+    primary_sector_zh: primarySectorZh,
+    detail_en: aligned
+      ? `Query GICS path (${queryPath}) aligns with primary bottleneck ${primaryTicker} (${primaryPath}) at ${alignment_level.replace("_", " ")} level.`
+      : `Query GICS path (${queryPath}) does not align with primary bottleneck ${primaryTicker} (${primaryPath}) — review sector proxy risk.`,
+    detail_zh: aligned
+      ? `查询 GICS 路径（${queryPath}）与主瓶颈 ${primaryTicker}（${primaryPath}）在${alignment_level === "industry_group" ? "行业组" : "板块"}层面一致。`
+      : `查询 GICS 路径（${queryPath}）与主瓶颈 ${primaryTicker}（${primaryPath}）不一致——需审查行业代理风险。`,
+  };
+}
+
 export function buildThesisAudit({
   profile,
   companies,
@@ -332,15 +425,18 @@ export function buildThesisAudit({
   const researchVerified =
     marketResearch.news.status === "verified" || marketResearch.news.status === "partial" ? 6 : -6;
   const score = clampScore((topLayer?.score ?? 50) * 0.55 + averageEvidence * 0.35 + bitgetVerified + researchVerified);
-  const grade = evidenceGrade(score);
+  const gics_alignment = buildGicsAlignment(profile, companies);
+  const gicsPenalty = gics_alignment.alignment_level === "mismatch" ? -6 : gics_alignment.aligned ? 4 : 0;
+  const adjustedScore = clampScore(score + gicsPenalty);
+  const grade = evidenceGrade(adjustedScore);
   const primaryTicker = profile.primary_bottleneck_ticker;
   const primaryReview = reviews.find((review) => review.ticker === primaryTicker);
   const verdict: ThesisAuditVerdict =
     grade === "WEAK"
       ? "NEUTRAL"
-      : primaryReview?.signal === "SUPPORTS" || score >= 72
+      : primaryReview?.signal === "SUPPORTS" || adjustedScore >= 72
         ? "SUPPORTIVE"
-        : score < 48
+        : adjustedScore < 48
           ? "CHALLENGE"
           : "NEUTRAL";
   const labels = verdictLabel(verdict);
@@ -363,7 +459,7 @@ export function buildThesisAudit({
     verdict,
     verdict_label_en: labels.en,
     verdict_label_zh: labels.zh,
-    score: round(score),
+    score: round(adjustedScore),
     evidence_grade: grade,
     summary_en: `The thesis audit ranks ${topLayer?.label_en ?? "the mapped value chain"} first and ${labels.en.toLowerCase()} with evidence grade ${grade}.`,
     summary_zh: `论证复核优先关注${topLayer?.label_zh ?? "已映射产业链"}，结论为「${labels.zh}」，证据等级为${evidenceGradeZh(grade)}。`,
@@ -389,6 +485,7 @@ export function buildThesisAudit({
       "一手证据链接（SEC、IR、监管机构）是人工核查入口——系统尚未自动抓取或解析公告。",
       "方法论评分仍需要人工阅读链接文件中的产能、订单与客户验证信息。",
     ],
+    gics_alignment,
     generated_at: new Date().toISOString(),
   };
 }

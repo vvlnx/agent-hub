@@ -11,7 +11,7 @@ import type { GroundingMode } from "./rulesModeGrounding";
 import type { UniverseCoverage } from "./universeCoverage";
 import type { CompletenessPack } from "./completeness/types";
 import type { BitgetDiscoveryResult } from "./equity/types";
-import type { GicsQueryMapping } from "./gics";
+import type { GicsQueryMapping, GicsResearch } from "./gics/client";
 
 export interface ChainNode {
   name: string;
@@ -99,6 +99,7 @@ export interface AnalysisResult {
   completeness: CompletenessPack;
   backtest: BacktestValidation;
   bitget_discovery: BitgetDiscoveryResult;
+  gics_research?: GicsResearch;
   meta?: {
     llm_enabled: boolean;
     llm_configured: boolean;

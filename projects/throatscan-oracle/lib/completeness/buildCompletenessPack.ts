@@ -146,11 +146,13 @@ function buildJudgeSelfAssessment(
         "Supply-chain bottleneck thesis with alternative hypothesis and thesis audit.",
         "Universe coverage banner shows full/partial/out-of-scope honestly.",
         "Primary-source SEC/IR links in thesis audit.",
+        "GICS industry alignment check + Bitget peer discovery via GICS prefix.",
       ],
       achieved_zh: [
         "供应链瓶颈 thesis，含替代假设与论证复核。",
         "覆盖度横幅诚实展示 full/partial/out-of-scope。",
         "论证复核含 SEC/IR 一手证据入口。",
+        "GICS 行业对齐校验 + 按 GICS 前缀发现 Bitget 同业。",
       ],
       gaps_en: [
         "Fixed curated research universe (~253 companies); niche queries may be proxy-only.",
@@ -269,6 +271,7 @@ export async function buildCompletenessPack({
   backtest,
   universeCoverage,
   discoveryCandidateCount,
+  gicsResearch,
 }: {
   profile: IndustryProfile;
   companies: Company[];
@@ -277,6 +280,7 @@ export async function buildCompletenessPack({
   backtest: BacktestValidation;
   universeCoverage: UniverseCoverage;
   discoveryCandidateCount?: number;
+  gicsResearch?: import("../gics/researchTypes").GicsResearch;
 }): Promise<CompletenessPack> {
   const tradability_guide = await buildTradabilityGuide(profile, companies, eventIntelligence);
   const paperStatus = await getPaperTradingStatus();
@@ -289,6 +293,7 @@ export async function buildCompletenessPack({
     paperDemoConfigured: paperStatus.demo_configured,
     publicPaperEnabled: paperStatus.mode === "local_paper" || paperStatus.mode === "bitget_demo",
     discoveryCandidateCount,
+    gicsResearch,
   });
   const end_to_end_stages = buildEndToEndStages(
     marketResearch,

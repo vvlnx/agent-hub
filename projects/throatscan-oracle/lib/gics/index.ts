@@ -4,6 +4,7 @@ export { getTickerGics, getTickerGicsSource, TICKER_GICS, TICKER_GICS_COUNT } fr
 export { enrichCompaniesWithGics } from "./enrich";
 export {
   fetchRemoteGicsBatch,
+  gicsApiBase,
   isGicsApiConfigured,
   probeGicsApiHealth,
 } from "./remoteClient";
@@ -13,4 +14,25 @@ export {
   GICS_SP500_EXPORTED_AT,
   GICS_SP500_SOURCE_MODE,
 } from "./sp500Map";
-export { resolveGicsFromQuery } from "./themeMap";
+export { resolveGicsFromQuery, resolveGicsFromQueryAsync } from "./queryResolver";
+export type { ResolvedGicsQuery, GicsQuerySource } from "./queryResolver";
+export {
+  discoverBitgetCandidatesByGicsPrefix,
+  mergeDiscoveryResults,
+} from "./gicsDiscovery";
+export type { GicsDiscoveryResult } from "./gicsDiscovery";
+export { buildGicsResearch } from "./research";
+export type {
+  GicsResearch,
+  GicsCompanyReport,
+  GicsWorkflowPlan,
+  GicsOrgRole,
+} from "./researchTypes";
+export {
+  getCatalogEntry,
+  listCompaniesByGicsPrefix,
+  searchGicsByQuery,
+  GICS_CATALOG_TICKER_COUNT,
+  industryGroupsAlign,
+  sectorsAlign,
+} from "./staticCatalog";

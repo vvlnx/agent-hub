@@ -1,5 +1,5 @@
 import { runReasoningEngine } from "./reasoning/engine";
-import { resolveGicsFromQuery } from "./gics";
+import { resolveGicsFromQueryAsync, type ResolvedGicsQuery } from "./gics";
 import type {
   ChainNode,
   CompanySeed,
@@ -19,7 +19,10 @@ function layerToArchetype(layer: ReasoningResult["bottleneck"]["primary_layer"])
   return map[layer] ?? "general";
 }
 
-function reasoningToInterpretation(result: ReasoningResult): IndustryInterpretation {
+function reasoningToInterpretation(
+  result: ReasoningResult,
+  gics: ResolvedGicsQuery,
+): IndustryInterpretation {
   return {
     user_input: result.intent.raw_input,
     display_label: result.intent.display_label,
@@ -36,7 +39,7 @@ function reasoningToInterpretation(result: ReasoningResult): IndustryInterpretat
     research_queries: result.intent.research_queries,
     web_search_used: result.intent.web_search_used,
     grounding_mode: result.intent.grounding_mode,
-    gics: resolveGicsFromQuery(result.intent.raw_input),
+    gics,
   };
 }
 
@@ -70,7 +73,8 @@ function adaptCompaniesForIndustry(
 
 export async function buildIndustryProfile(input: string): Promise<IndustryProfile> {
   const reasoning = await runReasoningEngine(input);
-  const interpretation = reasoningToInterpretation(reasoning);
+  const gics = await resolveGicsFromQueryAsync(reasoning.intent.raw_input);
+  const interpretation = reasoningToInterpretation(reasoning, gics);
   const companies = adaptCompaniesForIndustry(
     reasoning.selected_companies,
     reasoning.intent.display_label,

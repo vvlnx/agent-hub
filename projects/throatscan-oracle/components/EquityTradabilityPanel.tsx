@@ -125,6 +125,9 @@ export function EquityTradabilityPanel({
               >
                 {entry.ticker}
                 <span className="ml-1 text-violet-600/80">T{entry.execution_tier}</span>
+                {entry.discovery_via === "gics_prefix" ? (
+                  <span className="ml-1 text-[10px] text-violet-500">GICS</span>
+                ) : null}
               </li>
             ))}
           </ul>

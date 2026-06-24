@@ -9,6 +9,11 @@ import { scoreCompaniesFromReasoning } from "./scoring";
 import { attachBitgetEquityEvidence } from "./bitgetStocks";
 import { discoverBitgetListedCandidates } from "./equity";
 import { enrichCompaniesWithGics } from "./gics/enrich";
+import {
+  buildGicsResearch,
+  discoverBitgetCandidatesByGicsPrefix,
+  mergeDiscoveryResults,
+} from "./gics";
 import { fetchMarketResearch } from "./marketResearch";
 import { buildEventIntelligence } from "./eventIntelligence";
 import { buildIndustryMap } from "./industryMap";
@@ -86,11 +91,31 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     eventIntelligence: eventResult.intelligence,
     backtest,
   });
-  const bitget_discovery = await discoverBitgetListedCandidates({
-    curatedTickers: companiesWithEventEvidence.map((company) => company.ticker),
+  const curatedTickers = companiesWithEventEvidence.map((company) => company.ticker);
+  const hintDiscovery = await discoverBitgetListedCandidates({
+    curatedTickers,
     sectorTags: profile.interpretation.sector_tags,
     keywords: reasoning.intent.sector_signals,
     limit: 12,
+  });
+  const gicsPrefix =
+    profile.interpretation.gics?.gics_code_prefix ??
+    profile.interpretation.gics?.gics_code?.slice(0, 6) ??
+    "45";
+  const gicsDiscovery = await discoverBitgetCandidatesByGicsPrefix({
+    gicsCodePrefix: gicsPrefix,
+    curatedTickers,
+    limit: 12,
+  });
+  const bitget_discovery = mergeDiscoveryResults(hintDiscovery, gicsDiscovery, 16);
+  const focusTickers = [
+    profile.primary_bottleneck_ticker,
+    ...eventResult.intelligence.simulated_decision.selected_tickers,
+  ].filter((ticker, index, all) => all.indexOf(ticker) === index);
+  const gics_research = await buildGicsResearch({
+    industryQuery: industry,
+    companies: companiesWithEventEvidence,
+    focusTickers: focusTickers.slice(0, 3),
   });
   const completeness = await buildCompletenessPack({
     profile,
@@ -100,6 +125,7 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     backtest,
     universeCoverage: reasoning.universe_coverage,
     discoveryCandidateCount: bitget_discovery.discovery_count,
+    gicsResearch: gics_research,
   });
 
   return {
@@ -128,6 +154,7 @@ export async function analyzeIndustry(industry: string): Promise<AnalysisResult>
     completeness,
     backtest,
     bitget_discovery,
+    gics_research,
     analyzedAt: new Date().toISOString(),
   };
 }

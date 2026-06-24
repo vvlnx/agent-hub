@@ -1,4 +1,4 @@
-import type { GicsClassification, GicsSource } from "./gics";
+import type { GicsClassification, GicsSource } from "./gics/types";
 import type { AnalysisGrade, BitgetEquityEvidence } from "./equity/types";
 
 export type ThroatRole =

@@ -1,9 +1,9 @@
 {
-  "schema_version": "throatscan-run-evidence-v2",
+  "schema_version": "throatscan-run-evidence-v3",
   "project": "ThroatScan Oracle",
   "sample": true,
   "industry_input": "AI chips",
-  "exported_at": "2026-06-23T04:12:07.144Z",
+  "exported_at": "2026-06-23T14:27:29.805Z",
   "run_id": "07d6ec0c",
   "confidence": {
     "score": 68,
@@ -27,6 +27,321 @@
       "oil and gas",
       "biotech"
     ]
+  },
+  "gics_query": {
+    "classification": {
+      "sector": "Information Technology",
+      "industry_group": "Semiconductors & Semiconductor Equipment",
+      "industry": "Semiconductors",
+      "sub_industry": "Semiconductors",
+      "sector_zh": "信息技术",
+      "industry_group_zh": "半导体与半导体设备",
+      "industry_zh": "半导体",
+      "sub_industry_zh": "半导体"
+    },
+    "mapping_kind": "canonical",
+    "canonical_query": "ai chips",
+    "notes_en": "Theme query mapped to GICS Semiconductors; supply-chain bottleneck may sit in equipment or materials layers.",
+    "notes_zh": "主题查询映射至 GICS 半导体；供应链瓶颈可能在设备或材料层。",
+    "gics_code": "45301020",
+    "gics_code_prefix": "45301020",
+    "resolver_source": "theme"
+  },
+  "gics_research": {
+    "enabled": true,
+    "channel": "gics_http_mcp",
+    "tools_used": [
+      "get_company_classification",
+      "get_companies_by_gics",
+      "batch_classifications",
+      "get_gics_workflow",
+      "get_gics_org",
+      "get_company_report"
+    ],
+    "query_mapping": {
+      "classification": {
+        "sector": "Information Technology",
+        "industry_group": "Semiconductors & Semiconductor Equipment",
+        "industry": "Semiconductors",
+        "sub_industry": "Semiconductors",
+        "sector_zh": "信息技术",
+        "industry_group_zh": "半导体与半导体设备",
+        "industry_zh": "半导体",
+        "sub_industry_zh": "半导体"
+      },
+      "mapping_kind": "canonical",
+      "canonical_query": "ai chips",
+      "notes_en": "Theme query mapped to GICS Semiconductors; supply-chain bottleneck may sit in equipment or materials layers.",
+      "notes_zh": "主题查询映射至 GICS 半导体；供应链瓶颈可能在设备或材料层。",
+      "gics_code": "45301020",
+      "gics_code_prefix": "45301020",
+      "resolver_source": "theme"
+    },
+    "gics_code_prefix": "45301020",
+    "peer_tickers": [
+      "ADI",
+      "AMD",
+      "AVGO",
+      "FSLR",
+      "INTC",
+      "MCHP",
+      "MPWR",
+      "MRVL",
+      "MU",
+      "NVDA",
+      "NXPI",
+      "ON",
+      "QCOM",
+      "SWKS",
+      "TXN"
+    ],
+    "peer_count": 15,
+    "reports": [
+      {
+        "ticker": "NVDA",
+        "name": "Nvidia",
+        "status": "missing",
+        "report_md": "# GICS Research Stub — NVDA\n\n> Auto-generated from GICS classification metadata. Full batch report not yet available from GICS_industry DB.\n\n- **Company:** Nvidia\n- **GICS code:** 45301020\n- **Classification:** Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors\n- **Sector workflow:** Semiconductor Process Expert\n\n## Suggested verification queries\n- NVDA SEC 10-K risk factors capacity customers\n- NVDA Nvidia supply chain bottleneck evidence\n- NVDA Bitget stock token tradability\n\n## Next step\nRun GICS_industry batch_manager against this ticker to replace this stub with a full markdown report.",
+        "source": "generated_stub"
+      }
+    ],
+    "workflow_plans": [
+      {
+        "ticker": "NVDA",
+        "name": "Nvidia",
+        "gics_code": "45301020",
+        "sector_name": "Semiconductor Process Expert",
+        "system_prompt": "Audit process nodes, advanced packaging, foundry utilization, and developer ecosystem moats.",
+        "search_queries": [
+          "NVDA SEC 10-K risk factors capacity customers",
+          "NVDA Nvidia supply chain bottleneck evidence",
+          "NVDA Bitget stock token tradability"
+        ],
+        "source": "local_template"
+      }
+    ],
+    "org_roles_by_ticker": {
+      "NVDA": [
+        {
+          "role_slug": "ceo",
+          "role_name": "Chief Strategy Officer (CEO)",
+          "gics_prefix": "*",
+          "system_prompt_template": "Synthesize financial, compliance, and sector expert inputs into an investor-grade GICS-aligned thesis."
+        },
+        {
+          "role_slug": "cfo",
+          "role_name": "Financial Analyst (CFO)",
+          "gics_prefix": "*",
+          "system_prompt_template": "Analyze profitability quality, valuation multiples, and capital efficiency from filings and market data."
+        },
+        {
+          "role_slug": "cro",
+          "role_name": "Compliance & Risk Officer (CRO)",
+          "gics_prefix": "*",
+          "system_prompt_template": "Stress-test macro, regulatory, and substitution risks against the current bottleneck thesis."
+        },
+        {
+          "role_slug": "semi_expert",
+          "role_name": "Semiconductor Process Expert",
+          "gics_prefix": "4530",
+          "system_prompt_template": "Audit process nodes, advanced packaging, foundry utilization, and developer ecosystem moats."
+        }
+      ]
+    },
+    "fetched_at": "2026-06-23T14:27:17.490Z",
+    "warnings": [
+      "GICS_API_URL not set — using static SP500 catalog + local workflow templates."
+    ]
+  },
+  "bitget_discovery": {
+    "curated_count": 3,
+    "discovery_count": 16,
+    "entries": [
+      {
+        "ticker": "ADI",
+        "name": "Analog Devices",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "AMAT",
+        "name": "Applied Materials",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301010",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "AMD",
+        "name": "Advanced Micro Devices",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "FSLR",
+        "name": "First Solar",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "KLAC",
+        "name": "KLA Corporation",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301010",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "LRCX",
+        "name": "Lam Research",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301010",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "MCHP",
+        "name": "Microchip Technology",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "MRVL",
+        "name": "Marvell Technology",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "MU",
+        "name": "Micron Technology",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "NXPI",
+        "name": "NXP Semiconductors",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "ON",
+        "name": "ON Semiconductor",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "QCOM",
+        "name": "Qualcomm",
+        "sector_hint": "GICS 453010",
+        "gics_code": "45301020",
+        "discovery_via": "gics_prefix",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "META",
+        "sector_hint": "chain",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "AMT",
+        "sector_hint": "infrastructure",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "AMZN",
+        "sector_hint": "infrastructure",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      },
+      {
+        "ticker": "ANET",
+        "sector_hint": "infrastructure",
+        "execution_tier": "B",
+        "in_curated_universe": true
+      }
+    ],
+    "gics_code_prefix": "453010",
+    "gics_peers_scanned": 20,
+    "summary_en": "16 Bitget-listed discovery name(s): 12 via GICS prefix 453010, 12 via sector hints.",
+    "summary_zh": "共 16 个 Bitget 发现标的：12 个来自 GICS 前缀 453010，12 个来自行业关键词。"
+  },
+  "final_decision": {
+    "final_result_card": {
+      "industry": "AI Chips",
+      "core_bottleneck": "NVDA — NVIDIA",
+      "reason": "Controls scarce GPU allocation and the CUDA software stack for AI workloads",
+      "confidence": "LOW (68/100)",
+      "investment_stance": "STRONG FOCUS"
+    },
+    "primary_bottleneck": {
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "throat_role": "CORE BOTTLENECK",
+      "score": 86.2,
+      "base_score": 89.2,
+      "confidence_delta": -3,
+      "investment_stance": "STRONG FOCUS",
+      "supply_role_label": "Compute provider",
+      "reason": "Controls scarce GPU allocation and the CUDA software stack for AI workloads",
+      "event_reason_en": "1 extracted event(s) contribute -3; macro overlay contributes +0. Structural score remains visible as the base.",
+      "event_reason_zh": "1 个已提取事件贡献 -3；宏观叠加贡献 +0。结构性评分仍作为基础分保留。"
+    },
+    "secondary_bottlenecks": [],
+    "throatscan_top_picks": [
+      "NVDA",
+      "AVGO",
+      "INTC"
+    ],
+    "decision_summary": {
+      "one_line_conclusion": "In AI Chips, the real control point is NVDA (NVIDIA) because controls scarce gpu allocation and the cuda software stack for ai workloads.",
+      "investment_stances": [
+        {
+          "ticker": "NVDA",
+          "role": "CORE BOTTLENECK",
+          "stance": "STRONG FOCUS"
+        },
+        {
+          "ticker": "AVGO",
+          "role": "STRATEGIC ENABLER",
+          "stance": "SECONDARY"
+        },
+        {
+          "ticker": "INTC",
+          "role": "STRATEGIC ENABLER",
+          "stance": "SECONDARY"
+        }
+      ]
+    }
   },
   "completeness": {
     "schema_version": "throatscan-completeness-v1",
@@ -70,16 +385,16 @@
         "label_en": "Event trace → sim decision",
         "label_zh": "事件链 → 模拟决策",
         "status": "complete",
-        "detail_en": "Action=SIMULATED_BUY, tier_a=NVDA, tier_b=none.",
-        "detail_zh": "动作=SIMULATED_BUY，Tier A=NVDA，Tier B=无。"
+        "detail_en": "Action=WATCH, tier_a=none, tier_b=NVDA.",
+        "detail_zh": "动作=WATCH，Tier A=无，Tier B=NVDA。"
       },
       {
         "id": "backtest",
         "label_en": "Bitget candle backtest",
         "label_zh": "Bitget K 线回测",
-        "status": "complete",
-        "detail_en": "Verified period 2026-04-06 to 2026-06-22 (68 daily observations).",
-        "detail_zh": "已验证区间 2026-04-06 to 2026-06-22 (68 daily observations)。"
+        "status": "partial",
+        "detail_en": "Backtest unavailable for current basket.",
+        "detail_zh": "当前篮子无法完成回测。"
       },
       {
         "id": "evidence_export",
@@ -98,12 +413,14 @@
         "achieved_en": [
           "Supply-chain bottleneck thesis with alternative hypothesis and thesis audit.",
           "Universe coverage banner shows full/partial/out-of-scope honestly.",
-          "Primary-source SEC/IR links in thesis audit."
+          "Primary-source SEC/IR links in thesis audit.",
+          "GICS industry alignment check + Bitget peer discovery via GICS prefix."
         ],
         "achieved_zh": [
           "供应链瓶颈 thesis，含替代假设与论证复核。",
           "覆盖度横幅诚实展示 full/partial/out-of-scope。",
-          "论证复核含 SEC/IR 一手证据入口。"
+          "论证复核含 SEC/IR 一手证据入口。",
+          "GICS 行业对齐校验 + 按 GICS 前缀发现 Bitget 同业。"
         ],
         "gaps_en": [
           "Fixed curated research universe (~253 companies); niche queries may be proxy-only.",
@@ -161,11 +478,11 @@
         ],
         "gaps_en": [
           "Submission form, dev diary, and demo video still manual deliverables.",
-          "Current run has direct Bitget tradability."
+          "Current run has research-only names without direct Bitget basket."
         ],
         "gaps_zh": [
           "提交表单、开发日记、demo 视频仍为人工交付项。",
-          "本次运行有直接 Bitget 可交易标的。"
+          "本次运行仅有研究结论，无直接 Bitget 篮子。"
         ],
         "rating_en": "MVP complete with honest boundary disclosure",
         "rating_zh": "MVP 完整，边界披露诚实"
@@ -176,20 +493,20 @@
         "title_zh": "新颖性与潜力",
         "achieved_en": [
           "ThroatScan is not a single LLM prompt or theme screener. It orchestrates parallel Agent Hub news/macro research, constrained supply-chain reasoning, Bitget tradability verification, and risk-managed simulation — with hard gates the LLM cannot bypass.",
-          "In-app Agent Workflow timeline (7 steps) with MCP tools_used and fetch timestamps.",
+          "In-app Agent Workflow timeline (8 steps) with MCP tools_used and fetch timestamps.",
           "Hard constraints enforced: ticker_allowlist, llm_no_pick, bitget_gate, confidence_cap.",
-          "Growth roadmap Phase 1 live; Phase 2 partial (paper).",
-          "Rebalance agent plan ready — 3 rebalance events in backtest.",
-          "19 Bitget online stock tokens discoverable beyond 253-company research library.",
+          "Growth roadmap Phase 1 live; Phase 2 planned.",
+          "Rebalance agent plan ready — 0 rebalance events in backtest.",
+          "0 Bitget online stock tokens discoverable beyond 253-company research library.",
           "Public repo: https://github.com/vvlnx/agent-hub"
         ],
         "achieved_zh": [
           "ThroatScan 不是单次 LLM 问答或主题筛选器。它并行编排 Agent Hub 新闻/宏观调研、约束式供应链推理、Bitget 可交易性验证与风控模拟——LLM 无法绕过硬约束门槛。",
-          "应用内 Agent 工作流时间线（7 步），含 MCP tools_used 与抓取时间。",
+          "应用内 Agent 工作流时间线（8 步），含 MCP tools_used 与抓取时间。",
           "硬约束已执行：ticker_allowlist、llm_no_pick、bitget_gate、confidence_cap。",
-          "成长路线 Phase 1 已上线；Phase 2 部分（纸交易）。",
-          "再平衡 Agent 计划就绪——回测中 3 次再平衡事件。",
-          "19 个 Bitget 在线 stock token 可发现，超越 253 家公司研究库。",
+          "成长路线 Phase 1 已上线；Phase 2 规划中。",
+          "再平衡 Agent 计划就绪——回测中 0 次再平衡事件。",
+          "0 个 Bitget 在线 stock token 可发现，超越 253 家公司研究库。",
           "公开仓库：https://github.com/vvlnx/agent-hub"
         ],
         "gaps_en": [
@@ -205,52 +522,44 @@
       }
     ],
     "tradability_guide": {
-      "direct_execution_available": true,
-      "app_handoff_available": false,
+      "direct_execution_available": false,
+      "app_handoff_available": true,
       "research_conclusion_valid": true,
-      "execution_tier_summary_en": "Tier A: 3, Tier B: 0, catalog tickers: 887.",
-      "execution_tier_summary_zh": "Tier A：3，Tier B：0，catalog 标的数：887。",
-      "app_handoff_tickers": [],
-      "app_handoff_plans": [],
-      "summary_en": "Tier A API execution is available for NVDA.",
-      "summary_zh": "Tier A API 可执行：NVDA。",
-      "research_only_tickers": [],
-      "online_proxy_options": [
+      "execution_tier_summary_en": "Tier A: 0, Tier B: 3, catalog tickers: 569.",
+      "execution_tier_summary_zh": "Tier A：0，Tier B：3，catalog 标的数：569。",
+      "app_handoff_tickers": [
+        "NVDA"
+      ],
+      "app_handoff_plans": [
         {
-          "ticker": "SPY",
-          "bitget_symbol": "SPYONUSDT",
-          "role_en": "Broad US equity proxy",
-          "role_zh": "美股宽基代理",
-          "reason_en": "Use SPYONUSDT when the research bottleneck is not directly listed on Bitget.",
-          "reason_zh": "当研究瓶颈标的未在 Bitget 上线时，可使用 SPYONUSDT 作为方向性代理。"
-        },
-        {
-          "ticker": "QQQ",
-          "bitget_symbol": "QQQONUSDT",
-          "role_en": "Nasdaq / growth proxy",
-          "role_zh": "纳斯达克/成长代理",
-          "reason_en": "Use QQQONUSDT when the research bottleneck is not directly listed on Bitget.",
-          "reason_zh": "当研究瓶颈标的未在 Bitget 上线时，可使用 QQQONUSDT 作为方向性代理。"
-        },
-        {
-          "ticker": "AVGO",
-          "bitget_symbol": "RAVGOUSDT",
-          "role_en": "Tier A Bitget spot API proxy",
-          "role_zh": "Tier A Bitget spot API 代理",
-          "reason_en": "AVGO is API-executable on Bitget spot but was not selected for the current simulated basket.",
-          "reason_zh": "AVGO 可在 Bitget spot API 执行，但未进入当前模拟篮子。"
-        },
-        {
-          "ticker": "INTC",
-          "bitget_symbol": "RINTCUSDT",
-          "role_en": "Tier A Bitget spot API proxy",
-          "role_zh": "Tier A Bitget spot API 代理",
-          "reason_en": "INTC is API-executable on Bitget spot but was not selected for the current simulated basket.",
-          "reason_zh": "INTC 可在 Bitget spot API 执行，但未进入当前模拟篮子。"
+          "ticker": "NVDA",
+          "channel": "bitget_us_stocks_app",
+          "funding": {
+            "deposit": "USDC",
+            "transfer": "Main account → US Stocks securities account"
+          },
+          "steps_en": [
+            "Deposit or buy USDC in your Bitget main account.",
+            "Transfer USDC to your Bitget US Stocks securities account.",
+            "Search NVDA in the Bitget App US Stocks section.",
+            "Place a market or limit order in USD during supported trading hours."
+          ],
+          "steps_zh": [
+            "在 Bitget 主账户充值或购买 USDC。",
+            "将 USDC 划转至 Bitget 美股证券账户。",
+            "在 Bitget App 美股专区搜索 NVDA。",
+            "在支持的交易时段内以 USD 下市价或限价单。"
+          ],
+          "disclaimer_en": "Bitget US Stocks direct trading has no public API yet. This handoff is guidance only; verify eligibility and hours in the Bitget App.",
+          "disclaimer_zh": "Bitget 美股直连尚无公开 API。以下仅为操作指引；请在 Bitget App 内确认资格与交易时段。"
         }
       ],
-      "recommended_action_en": "Proceed with paper basket execution or download the evidence bundle for audit.",
-      "recommended_action_zh": "可执行纸交易篮子，或下载证据包供审计。"
+      "summary_en": "Tier B App handoff is available for NVDA (Bitget US Stocks direct; no public API yet).",
+      "summary_zh": "Tier B App 交接可用：NVDA（Bitget 美股直连，尚无公开 API）。",
+      "research_only_tickers": [],
+      "online_proxy_options": [],
+      "recommended_action_en": "Deposit or buy USDC in your Bitget main account. Transfer USDC to your Bitget US Stocks securities account. Search NVDA in the Bitget App US Stocks section. Place a market or limit order in USD during supported trading hours.",
+      "recommended_action_zh": "在 Bitget 主账户充值或购买 USDC。 将 USDC 划转至 Bitget 美股证券账户。 在 Bitget App 美股专区搜索 NVDA。 在支持的交易时段内以 USD 下市价或限价单。"
     },
     "novelty": {
       "why_agent_only_en": "ThroatScan is not a single LLM prompt or theme screener. It orchestrates parallel Agent Hub news/macro research, constrained supply-chain reasoning, Bitget tradability verification, and risk-managed simulation — with hard gates the LLM cannot bypass.",
@@ -293,6 +602,24 @@
           "detail_zh": "层级、瓶颈、替代假设与审计链——不由 LLM 选 ticker。"
         },
         {
+          "id": "gics_mcp_dual_track",
+          "agent_en": "GICS industry MCP (dual-track)",
+          "agent_zh": "GICS 行业 MCP（双轨）",
+          "skill": "gics-industry",
+          "tools_used": [
+            "get_company_classification",
+            "get_companies_by_gics",
+            "batch_classifications",
+            "get_gics_workflow",
+            "get_gics_org",
+            "get_company_report"
+          ],
+          "status": "partial",
+          "detail_en": "Prefix 45301020, 15 catalog peers, 1 report(s). Runs parallel to Agent Hub MCP.",
+          "detail_zh": "前缀 45301020，15 个目录同业，1 份报告。与 Agent Hub MCP 并行运行。",
+          "fetched_at": "2026-06-23T14:27:17.490Z"
+        },
+        {
           "id": "agent_hub_news",
           "agent_en": "Agent Hub — news-briefing",
           "agent_zh": "Agent Hub — news-briefing",
@@ -301,9 +628,9 @@
             "news_feed"
           ],
           "status": "complete",
-          "detail_en": "5 articles @ 2026-06-23T04:11:58.943Z",
-          "detail_zh": "5 篇文章 @ 2026-06-23T04:11:58.943Z",
-          "fetched_at": "2026-06-23T04:11:58.943Z",
+          "detail_en": "5 articles @ 2026-06-23T14:27:04.330Z",
+          "detail_zh": "5 篇文章 @ 2026-06-23T14:27:04.330Z",
+          "fetched_at": "2026-06-23T14:27:04.330Z",
           "source_url": "https://datahub.noxiaohao.com/mcp"
         },
         {
@@ -319,9 +646,9 @@
             "global_assets:DX-Y.NYB"
           ],
           "status": "complete",
-          "detail_en": "Verdict=MIXED @ 2026-06-23T04:11:58.943Z",
-          "detail_zh": "判定=MIXED @ 2026-06-23T04:11:58.943Z",
-          "fetched_at": "2026-06-23T04:11:58.943Z",
+          "detail_en": "Verdict=MIXED @ 2026-06-23T14:27:04.330Z",
+          "detail_zh": "判定=MIXED @ 2026-06-23T14:27:04.330Z",
+          "fetched_at": "2026-06-23T14:27:04.330Z",
           "source_url": "https://datahub.noxiaohao.com/mcp"
         },
         {
@@ -335,8 +662,8 @@
             "capped_overlay"
           ],
           "status": "complete",
-          "detail_en": "2 events → action SIMULATED_BUY.",
-          "detail_zh": "2 个事件 → 动作 SIMULATED_BUY。"
+          "detail_en": "1 events → action WATCH.",
+          "detail_zh": "1 个事件 → 动作 WATCH。"
         },
         {
           "id": "bitget_verify",
@@ -348,9 +675,9 @@
             "tickers",
             "candles"
           ],
-          "status": "complete",
-          "detail_en": "Backtest verified 2026-04-06 to 2026-06-22 (68 daily observations).",
-          "detail_zh": "回测已验证 2026-04-06 to 2026-06-22 (68 daily observations)。"
+          "status": "partial",
+          "detail_en": "Symbols attached; backtest pending or unavailable.",
+          "detail_zh": "已挂载 symbols；回测待定或不可用。"
         },
         {
           "id": "sim_export",
@@ -363,8 +690,8 @@
             "judge_self_assessment"
           ],
           "status": "complete",
-          "detail_en": "Selected: NVDA.",
-          "detail_zh": "选中：NVDA。"
+          "detail_en": "Selected: none.",
+          "detail_zh": "选中：无。"
         }
       ],
       "hard_constraints": [
@@ -406,19 +733,19 @@
           "items_en": [
             "Multi-agent workflow with Agent Hub MCP + constrained engine.",
             "Bitget candle backtest, local paper basket, downloadable evidence.",
-            "19 Bitget online stock tokens discoverable."
+            "50+ Bitget online stock tokens discoverable."
           ],
           "items_zh": [
             "Agent Hub MCP + 约束引擎的多 Agent 工作流。",
             "Bitget K 线回测、本地纸交易篮子、可下载证据包。",
-            "19 个 Bitget 在线 stock token 可发现。"
+            "50+ 个 Bitget 在线 stock token 可发现。"
           ]
         },
         {
           "phase": 2,
           "title_en": "Paper trading + rebalance agent",
           "title_zh": "纸交易 + 再平衡 Agent",
-          "status": "partial",
+          "status": "planned",
           "items_en": [
             "Bitget Demo API ready via BITGET_DEMO_* env (optional upgrade).",
             "Local paper basket execution at live Bitget public prices (enabled).",
@@ -449,7 +776,7 @@
       ],
       "rebalance_agent": {
         "agent_id": "throatscan-rebalance-scheduler-v1",
-        "status": "ready",
+        "status": "idle",
         "policy_en": "Rebalance every 20 shared observations; 15% trailing stop; 40% max position.",
         "policy_zh": "每 20 个共同观测日再平衡；15% 移动止损；单仓上限 40%。",
         "triggers_en": [
@@ -462,18 +789,24 @@
           "持仓 15% 移动止损",
           "模拟决策后执行纸交易篮子"
         ],
-        "next_action_en": "Monitor NVDA — next rebalance on observation boundary or stop trigger.",
-        "next_action_zh": "监控 NVDA — 下一再平衡在观测边界或止损触发。",
-        "backtest_rebalance_events": 3
+        "next_action_en": "Await sim decision with tradable Bitget symbols.",
+        "next_action_zh": "等待含 Bitget 可交易标的的模拟决策。",
+        "backtest_rebalance_events": 0
       },
-      "bitget_online_stock_token_count": 19,
-      "bitget_catalog_ticker_count": 887,
-      "bitget_tier_a_count": 569,
+      "bitget_online_stock_token_count": 0,
+      "bitget_catalog_ticker_count": 569,
+      "bitget_tier_a_count": 0,
       "bitget_tier_b_count": 569,
-      "discovery_candidate_count": 12,
+      "discovery_candidate_count": 16,
       "fixed_universe_size": 253,
       "mcp_url": "https://datahub.noxiaohao.com/mcp",
       "mcp_tools_used": [
+        "get_company_classification",
+        "get_companies_by_gics",
+        "batch_classifications",
+        "get_gics_workflow",
+        "get_gics_org",
+        "get_company_report",
         "news_feed",
         "rates_yields",
         "macro_indicators",
@@ -482,9 +815,9 @@
         "global_assets:DX-Y.NYB"
       ]
     },
-    "honest_summary_en": "ThroatScan completed 7/7 end-to-end stages. Tier A API execution is available for NVDA. This is research software with verifiable Bitget evidence — not financial advice.",
-    "honest_summary_zh": "ThroatScan 完成 7/7 个端到端阶段。Tier A API 可执行：NVDA。 这是带可验证 Bitget 证据的研究软件——不构成投资建议。",
-    "generated_at": "2026-06-23T04:12:07.144Z"
+    "honest_summary_en": "ThroatScan completed 6/7 end-to-end stages. Tier B App handoff is available for NVDA (Bitget US Stocks direct; no public API yet). This is research software with verifiable Bitget evidence — not financial advice.",
+    "honest_summary_zh": "ThroatScan 完成 6/7 个端到端阶段。Tier B App 交接可用：NVDA（Bitget 美股直连，尚无公开 API）。 这是带可验证 Bitget 证据的研究软件——不构成投资建议。",
+    "generated_at": "2026-06-23T14:27:27.493Z"
   },
   "thesis_audit": {
     "source": "Open-source scarce-layer research methodology",
@@ -493,10 +826,10 @@
     "verdict": "SUPPORTIVE",
     "verdict_label_en": "Supports current bottleneck thesis",
     "verdict_label_zh": "支持当前瓶颈判断",
-    "score": 91.7,
-    "evidence_grade": "STRONG",
-    "summary_en": "The thesis audit ranks Midstream conversion layer first and supports current bottleneck thesis with evidence grade STRONG.",
-    "summary_zh": "论证复核优先关注中游转化/平台层，结论为「支持当前瓶颈判断」，证据等级为强。",
+    "score": 72.3,
+    "evidence_grade": "MEDIUM",
+    "summary_en": "The thesis audit ranks Midstream conversion layer first and supports current bottleneck thesis with evidence grade MEDIUM.",
+    "summary_zh": "论证复核优先关注中游转化/平台层，结论为「支持当前瓶颈判断」，证据等级为中。",
     "project_role_en": "This layer turns an open-source scarce-layer research workflow into an audit layer for ThroatScan: rank scarce layers first, challenge the thesis, then separate research-only names from Bitget-executable names.",
     "project_role_zh": "这一层把开源稀缺层研究流程转成 ThroatScan 的审计层：先排稀缺层，再挑战结论，最后把研究标的和 Bitget 可执行标的分开。",
     "layer_priorities": [
@@ -504,25 +837,25 @@
         "stage": "midstream",
         "label_en": "Midstream conversion layer",
         "label_zh": "中游转化/平台层",
-        "score": 100,
-        "scarce_layer_reason_en": "Midstream conversion layer scores 100/100 because it contains NVDA, MU, ANET, AMD and has 3 core bottleneck candidate(s).",
-        "scarce_layer_reason_zh": "中游转化/平台层得分 100/100，因为这一层包含 NVDA、MU、ANET、AMD，且有 3 个核心瓶颈候选。"
+        "score": 96.1,
+        "scarce_layer_reason_en": "Midstream conversion layer scores 96.1/100 because it contains NVDA, MU, ANET, AMD and has 3 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "中游转化/平台层得分 96.1/100，因为这一层包含 NVDA、MU、ANET、AMD，且有 3 个核心瓶颈候选。"
       },
       {
         "stage": "upstream",
         "label_en": "Upstream scarce inputs",
         "label_zh": "上游稀缺输入层",
-        "score": 70.4,
-        "scarce_layer_reason_en": "Upstream scarce inputs scores 70.4/100 because it contains TSM, ASML, INTC and has 2 core bottleneck candidate(s).",
-        "scarce_layer_reason_zh": "上游稀缺输入层得分 70.4/100，因为这一层包含 TSM、ASML、INTC，且有 2 个核心瓶颈候选。"
+        "score": 64.4,
+        "scarce_layer_reason_en": "Upstream scarce inputs scores 64.4/100 because it contains TSM, ASML, INTC and has 2 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "上游稀缺输入层得分 64.4/100，因为这一层包含 TSM、ASML、INTC，且有 2 个核心瓶颈候选。"
       },
       {
         "stage": "downstream",
         "label_en": "Downstream demand layer",
         "label_zh": "下游需求层",
-        "score": 61.2,
-        "scarce_layer_reason_en": "Downstream demand layer scores 61.2/100 because it contains AMZN, GOOGL, DLR and has 0 core bottleneck candidate(s).",
-        "scarce_layer_reason_zh": "下游需求层得分 61.2/100，因为这一层包含 AMZN、GOOGL、DLR，且有 0 个核心瓶颈候选。"
+        "score": 55.2,
+        "scarce_layer_reason_en": "Downstream demand layer scores 55.2/100 because it contains AMZN, GOOGL, DLR and has 0 core bottleneck candidate(s).",
+        "scarce_layer_reason_zh": "下游需求层得分 55.2/100，因为这一层包含 AMZN、GOOGL、DLR，且有 0 个核心瓶颈候选。"
       }
     ],
     "candidate_reviews": [
@@ -531,12 +864,12 @@
         "name": "Taiwan Semiconductor",
         "stage": "upstream",
         "chain_position": "Foundry — advanced-node wafer starts → AI Chips",
-        "scarcity_score": 86.7,
-        "evidence_grade": "MEDIUM",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RTSMUSDT",
-        "reason_en": "TSM sits in Upstream scarce inputs with scarcity score 86.7/100. Bitget execution evidence exists via RTSMUSDT.",
-        "reason_zh": "TSM 位于上游稀缺输入层，稀缺层得分 86.7/100。 已有 Bitget 执行证据：RTSMUSDT。",
+        "scarcity_score": 83.1,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "bitget_symbol": "TSM",
+        "reason_en": "TSM sits in Upstream scarce inputs with scarcity score 83.1/100. Bitget execution evidence exists via TSM.",
+        "reason_zh": "TSM 位于上游稀缺输入层，稀缺层得分 83.1/100。 已有 Bitget 执行证据：TSM。",
         "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
         "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
         "primary_evidence": [
@@ -565,12 +898,12 @@
         "name": "ASML Holding",
         "stage": "upstream",
         "chain_position": "Lithography — EUV systems → AI Chips",
-        "scarcity_score": 85.9,
-        "evidence_grade": "MEDIUM",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RASMLUSDT",
-        "reason_en": "ASML sits in Upstream scarce inputs with scarcity score 85.9/100. Bitget execution evidence exists via RASMLUSDT.",
-        "reason_zh": "ASML 位于上游稀缺输入层，稀缺层得分 85.9/100。 已有 Bitget 执行证据：RASMLUSDT。",
+        "scarcity_score": 82.3,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "bitget_symbol": "ASML",
+        "reason_en": "ASML sits in Upstream scarce inputs with scarcity score 82.3/100. Bitget execution evidence exists via ASML.",
+        "reason_zh": "ASML 位于上游稀缺输入层，稀缺层得分 82.3/100。 已有 Bitget 执行证据：ASML。",
         "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
         "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
         "primary_evidence": [
@@ -595,50 +928,16 @@
         ]
       },
       {
-        "ticker": "NVDA",
-        "name": "NVIDIA",
-        "stage": "midstream",
-        "chain_position": "AI Compute — accelerator allocation and CUDA stack → AI Chips",
-        "scarcity_score": 92.4,
-        "evidence_grade": "STRONG",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RNVDAUSDT",
-        "reason_en": "NVDA sits in Midstream conversion layer with scarcity score 92.4/100. Bitget execution evidence exists via RNVDAUSDT.",
-        "reason_zh": "NVDA 位于中游转化/平台层，稀缺层得分 92.4/100。 已有 Bitget 执行证据：RNVDAUSDT。",
-        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
-        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
-        "primary_evidence": [
-          {
-            "ticker": "NVDA",
-            "category": "sec_filings",
-            "label_en": "NVIDIA 10-K / 10-Q",
-            "label_zh": "NVIDIA 10-K / 10-Q",
-            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
-            "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
-            "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
-          },
-          {
-            "ticker": "NVDA",
-            "category": "investor_relations",
-            "label_en": "NVIDIA Investor Relations",
-            "label_zh": "NVIDIA 投资者关系",
-            "url": "https://investor.nvidia.com/",
-            "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
-            "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
-          }
-        ]
-      },
-      {
         "ticker": "AMZN",
         "name": "Amazon",
         "stage": "downstream",
         "chain_position": "Hyperscale cloud — AWS and AI workloads → AI Chips",
-        "scarcity_score": 73.5,
-        "evidence_grade": "MEDIUM",
+        "scarcity_score": 69.9,
+        "evidence_grade": "WEAK",
         "signal": "WATCH",
-        "bitget_symbol": "RAMZNUSDT",
-        "reason_en": "AMZN sits in Downstream demand layer with scarcity score 73.5/100. Bitget execution evidence exists via RAMZNUSDT.",
-        "reason_zh": "AMZN 位于下游需求层，稀缺层得分 73.5/100。 已有 Bitget 执行证据：RAMZNUSDT。",
+        "bitget_symbol": "AMZN",
+        "reason_en": "AMZN sits in Downstream demand layer with scarcity score 69.9/100. Bitget execution evidence exists via AMZN.",
+        "reason_zh": "AMZN 位于下游需求层，稀缺层得分 69.9/100。 已有 Bitget 执行证据：AMZN。",
         "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
         "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
         "primary_evidence": [
@@ -663,16 +962,50 @@
         ]
       },
       {
+        "ticker": "NVDA",
+        "name": "NVIDIA",
+        "stage": "midstream",
+        "chain_position": "AI Compute — accelerator allocation and CUDA stack → AI Chips",
+        "scarcity_score": 83.9,
+        "evidence_grade": "MEDIUM",
+        "signal": "SUPPORTS",
+        "bitget_symbol": "NVDA",
+        "reason_en": "NVDA sits in Midstream conversion layer with scarcity score 83.9/100. Bitget execution evidence exists via NVDA.",
+        "reason_zh": "NVDA 位于中游转化/平台层，稀缺层得分 83.9/100。 已有 Bitget 执行证据：NVDA。",
+        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
+        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "NVDA",
+            "category": "sec_filings",
+            "label_en": "NVIDIA 10-K / 10-Q",
+            "label_zh": "NVIDIA 10-K / 10-Q",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+            "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+          },
+          {
+            "ticker": "NVDA",
+            "category": "investor_relations",
+            "label_en": "NVIDIA Investor Relations",
+            "label_zh": "NVIDIA 投资者关系",
+            "url": "https://investor.nvidia.com/",
+            "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+            "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
+          }
+        ]
+      },
+      {
         "ticker": "MU",
         "name": "Micron Technology",
         "stage": "midstream",
         "chain_position": "Memory — HBM and DRAM supply for AI servers → AI Chips",
-        "scarcity_score": 82.7,
-        "evidence_grade": "MEDIUM",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RMUUSDT",
-        "reason_en": "MU sits in Midstream conversion layer with scarcity score 82.7/100. Bitget execution evidence exists via RMUUSDT.",
-        "reason_zh": "MU 位于中游转化/平台层，稀缺层得分 82.7/100。 已有 Bitget 执行证据：RMUUSDT。",
+        "scarcity_score": 79.1,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "bitget_symbol": "MU",
+        "reason_en": "MU sits in Midstream conversion layer with scarcity score 79.1/100. Bitget execution evidence exists via MU.",
+        "reason_zh": "MU 位于中游转化/平台层，稀缺层得分 79.1/100。 已有 Bitget 执行证据：MU。",
         "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
         "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
         "primary_evidence": [
@@ -701,12 +1034,12 @@
         "name": "Alphabet",
         "stage": "downstream",
         "chain_position": "Hyperscale cloud — GCP and Gemini stack → AI Chips",
-        "scarcity_score": 70.4,
-        "evidence_grade": "MEDIUM",
+        "scarcity_score": 66.8,
+        "evidence_grade": "WEAK",
         "signal": "WATCH",
-        "bitget_symbol": "RGOOGLUSDT",
-        "reason_en": "GOOGL sits in Downstream demand layer with scarcity score 70.4/100. Bitget execution evidence exists via RGOOGLUSDT.",
-        "reason_zh": "GOOGL 位于下游需求层，稀缺层得分 70.4/100。 已有 Bitget 执行证据：RGOOGLUSDT。",
+        "bitget_symbol": "GOOGL",
+        "reason_en": "GOOGL sits in Downstream demand layer with scarcity score 66.8/100. Bitget execution evidence exists via GOOGL.",
+        "reason_zh": "GOOGL 位于下游需求层，稀缺层得分 66.8/100。 已有 Bitget 执行证据：GOOGL。",
         "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
         "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
         "primary_evidence": [
@@ -735,12 +1068,12 @@
         "name": "Arista Networks",
         "stage": "midstream",
         "chain_position": "Networking fabric — AI cluster switching → AI Chips",
-        "scarcity_score": 79.9,
-        "evidence_grade": "MEDIUM",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RANETUSDT",
-        "reason_en": "ANET sits in Midstream conversion layer with scarcity score 79.9/100. Bitget execution evidence exists via RANETUSDT.",
-        "reason_zh": "ANET 位于中游转化/平台层，稀缺层得分 79.9/100。 已有 Bitget 执行证据：RANETUSDT。",
+        "scarcity_score": 76.3,
+        "evidence_grade": "WEAK",
+        "signal": "WATCH",
+        "bitget_symbol": "ANET",
+        "reason_en": "ANET sits in Midstream conversion layer with scarcity score 76.3/100. Bitget execution evidence exists via ANET.",
+        "reason_zh": "ANET 位于中游转化/平台层，稀缺层得分 76.3/100。 已有 Bitget 执行证据：ANET。",
         "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
         "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
         "primary_evidence": [
@@ -769,12 +1102,12 @@
         "name": "Digital Realty",
         "stage": "downstream",
         "chain_position": "Data center REIT — colocation footprint → AI Chips",
-        "scarcity_score": 67.5,
-        "evidence_grade": "MEDIUM",
+        "scarcity_score": 63.9,
+        "evidence_grade": "WEAK",
         "signal": "WATCH",
-        "bitget_symbol": "RDLRUSDT",
-        "reason_en": "DLR sits in Downstream demand layer with scarcity score 67.5/100. Bitget execution evidence exists via RDLRUSDT.",
-        "reason_zh": "DLR 位于下游需求层，稀缺层得分 67.5/100。 已有 Bitget 执行证据：RDLRUSDT。",
+        "bitget_symbol": "DLR",
+        "reason_en": "DLR sits in Downstream demand layer with scarcity score 63.9/100. Bitget execution evidence exists via DLR.",
+        "reason_zh": "DLR 位于下游需求层，稀缺层得分 63.9/100。 已有 Bitget 执行证据：DLR。",
         "failure_condition_en": "Downgrade if the company remains a beneficiary but does not control the scarce layer.",
         "failure_condition_zh": "如果公司只是受益者，但并不控制稀缺层，应下调判断。",
         "primary_evidence": [
@@ -857,24 +1190,6 @@
         "check_hint_zh": "查看季度订单与交期披露。"
       },
       {
-        "ticker": "NVDA",
-        "category": "sec_filings",
-        "label_en": "NVIDIA 10-K / 10-Q",
-        "label_zh": "NVIDIA 10-K / 10-Q",
-        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
-        "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
-        "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
-      },
-      {
-        "ticker": "NVDA",
-        "category": "investor_relations",
-        "label_en": "NVIDIA Investor Relations",
-        "label_zh": "NVIDIA 投资者关系",
-        "url": "https://investor.nvidia.com/",
-        "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
-        "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
-      },
-      {
         "ticker": "AMZN",
         "category": "sec_filings",
         "label_en": "Amazon SEC filings",
@@ -891,6 +1206,24 @@
         "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=AMZN&type=8-K&dateb=&owner=include&count=10",
         "check_hint_en": "Scan recent 8-K items for capacity expansions, major contracts, or supply disruptions.",
         "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "sec_filings",
+        "label_en": "NVIDIA 10-K / 10-Q",
+        "label_zh": "NVIDIA 10-K / 10-Q",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+        "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "investor_relations",
+        "label_en": "NVIDIA Investor Relations",
+        "label_zh": "NVIDIA 投资者关系",
+        "url": "https://investor.nvidia.com/",
+        "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+        "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
       },
       {
         "ticker": "MU",
@@ -951,8 +1284,257 @@
       "一手证据链接（SEC、IR、监管机构）是人工核查入口——系统尚未自动抓取或解析公告。",
       "方法论评分仍需要人工阅读链接文件中的产能、订单与客户验证信息。"
     ],
-    "generated_at": "2026-06-23T04:12:07.136Z"
+    "gics_alignment": {
+      "aligned": true,
+      "alignment_level": "industry_group",
+      "query_gics_code": "45301020",
+      "query_sector_en": "Information Technology",
+      "query_sector_zh": "信息技术",
+      "primary_ticker": "NVDA",
+      "primary_gics_code": "45301020",
+      "primary_sector_en": "Information Technology",
+      "primary_sector_zh": "信息技术",
+      "detail_en": "Query GICS path (Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors) aligns with primary bottleneck NVDA (Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors) at industry group level.",
+      "detail_zh": "查询 GICS 路径（Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors）与主瓶颈 NVDA（Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors）在行业组层面一致。"
+    },
+    "generated_at": "2026-06-23T14:27:17.487Z"
   },
+  "agent_workflow": [
+    {
+      "id": "industry_grounding",
+      "agent_en": "Industry grounding agent",
+      "agent_zh": "行业 grounding Agent",
+      "skill": "constrained",
+      "tools_used": [
+        "curated_sec_ir_links"
+      ],
+      "status": "partial",
+      "detail_en": "Mode=constrained, grounding=curated_rules.",
+      "detail_zh": "模式=constrained，grounding=curated_rules。"
+    },
+    {
+      "id": "supply_chain_engine",
+      "agent_en": "Constrained supply-chain engine",
+      "agent_zh": "约束式供应链引擎",
+      "skill": "deterministic-reasoning",
+      "tools_used": [
+        "role_matcher",
+        "hard_constraints",
+        "thesis_audit"
+      ],
+      "status": "complete",
+      "detail_en": "Layers, bottleneck, alternatives, and audit trail without LLM ticker selection.",
+      "detail_zh": "层级、瓶颈、替代假设与审计链——不由 LLM 选 ticker。"
+    },
+    {
+      "id": "gics_mcp_dual_track",
+      "agent_en": "GICS industry MCP (dual-track)",
+      "agent_zh": "GICS 行业 MCP（双轨）",
+      "skill": "gics-industry",
+      "tools_used": [
+        "get_company_classification",
+        "get_companies_by_gics",
+        "batch_classifications",
+        "get_gics_workflow",
+        "get_gics_org",
+        "get_company_report"
+      ],
+      "status": "partial",
+      "detail_en": "Prefix 45301020, 15 catalog peers, 1 report(s). Runs parallel to Agent Hub MCP.",
+      "detail_zh": "前缀 45301020，15 个目录同业，1 份报告。与 Agent Hub MCP 并行运行。",
+      "fetched_at": "2026-06-23T14:27:17.490Z"
+    },
+    {
+      "id": "agent_hub_news",
+      "agent_en": "Agent Hub — news-briefing",
+      "agent_zh": "Agent Hub — news-briefing",
+      "skill": "news-briefing",
+      "tools_used": [
+        "news_feed"
+      ],
+      "status": "complete",
+      "detail_en": "5 articles @ 2026-06-23T14:27:04.330Z",
+      "detail_zh": "5 篇文章 @ 2026-06-23T14:27:04.330Z",
+      "fetched_at": "2026-06-23T14:27:04.330Z",
+      "source_url": "https://datahub.noxiaohao.com/mcp"
+    },
+    {
+      "id": "agent_hub_macro",
+      "agent_en": "Agent Hub — macro-analyst",
+      "agent_zh": "Agent Hub — macro-analyst",
+      "skill": "macro-analyst",
+      "tools_used": [
+        "rates_yields",
+        "macro_indicators",
+        "global_assets:^VIX",
+        "global_assets:^NDX",
+        "global_assets:DX-Y.NYB"
+      ],
+      "status": "complete",
+      "detail_en": "Verdict=MIXED @ 2026-06-23T14:27:04.330Z",
+      "detail_zh": "判定=MIXED @ 2026-06-23T14:27:04.330Z",
+      "fetched_at": "2026-06-23T14:27:04.330Z",
+      "source_url": "https://datahub.noxiaohao.com/mcp"
+    },
+    {
+      "id": "event_trace",
+      "agent_en": "Event intelligence agent",
+      "agent_zh": "事件情报 Agent",
+      "skill": "event-extraction",
+      "tools_used": [
+        "supply_chain_events",
+        "bottleneck_impact",
+        "capped_overlay"
+      ],
+      "status": "complete",
+      "detail_en": "1 events → action WATCH.",
+      "detail_zh": "1 个事件 → 动作 WATCH。"
+    },
+    {
+      "id": "bitget_verify",
+      "agent_en": "Bitget market verification",
+      "agent_zh": "Bitget 行情验证",
+      "skill": "bitget-public-api",
+      "tools_used": [
+        "symbols",
+        "tickers",
+        "candles"
+      ],
+      "status": "partial",
+      "detail_en": "Symbols attached; backtest pending or unavailable.",
+      "detail_zh": "已挂载 symbols；回测待定或不可用。"
+    },
+    {
+      "id": "sim_export",
+      "agent_en": "Sim decision + evidence export",
+      "agent_zh": "模拟决策 + 证据导出",
+      "skill": "paper-portfolio",
+      "tools_used": [
+        "sim_basket",
+        "sha256_evidence",
+        "judge_self_assessment"
+      ],
+      "status": "complete",
+      "detail_en": "Selected: none.",
+      "detail_zh": "选中：无。"
+    }
+  ],
+  "submission_rubric_self_assessment": [
+    {
+      "id": "thesis_depth",
+      "title_en": "Depth of thesis",
+      "title_zh": "论证深度",
+      "achieved_en": [
+        "Supply-chain bottleneck thesis with alternative hypothesis and thesis audit.",
+        "Universe coverage banner shows full/partial/out-of-scope honestly.",
+        "Primary-source SEC/IR links in thesis audit.",
+        "GICS industry alignment check + Bitget peer discovery via GICS prefix."
+      ],
+      "achieved_zh": [
+        "供应链瓶颈 thesis，含替代假设与论证复核。",
+        "覆盖度横幅诚实展示 full/partial/out-of-scope。",
+        "论证复核含 SEC/IR 一手证据入口。",
+        "GICS 行业对齐校验 + 按 GICS 前缀发现 Bitget 同业。"
+      ],
+      "gaps_en": [
+        "Fixed curated research universe (~253 companies); niche queries may be proxy-only.",
+        "LLM runs in rules/curated grounding mode without live web search.",
+        "No automated filing parse — human review still required."
+      ],
+      "gaps_zh": [
+        "固定策展研究库（约 253 家）；冷门行业可能仅为代理映射。",
+        "无 API Key 时为规则/精选 grounding 模式。",
+        "尚未自动解析公告——仍需人工阅读。"
+      ],
+      "rating_en": "Strong for canonical industries",
+      "rating_zh": "已验证行业较强"
+    },
+    {
+      "id": "runnability",
+      "title_en": "Runnability",
+      "title_zh": "可运行性",
+      "achieved_en": [
+        "Public demo: https://throatscan-oracle.vercel.app",
+        "Bitget public API + backtest + downloadable evidence with SHA-256.",
+        "Local paper basket execution at live Bitget prices.",
+        "One-click AI chips demo and /api/health verification."
+      ],
+      "achieved_zh": [
+        "公网 Demo：https://throatscan-oracle.vercel.app",
+        "Bitget 公开 API + 回测 + 可下载 SHA-256 证据包。",
+        "本地纸交易篮子（Bitget 公开价成交）。",
+        "一键 AI chips 与 /api/health 验证。"
+      ],
+      "gaps_en": [
+        "Demo video URL not yet attached in submission pack.",
+        "Live trading intentionally locked; Bitget Demo API optional (server env)."
+      ],
+      "gaps_zh": [
+        "提交包中尚未附 demo 视频链接。",
+        "实盘交易刻意锁定；Bitget Demo API 为可选（服务端 env）。"
+      ],
+      "rating_en": "Backtest + local paper (Tier 2); not live trading",
+      "rating_zh": "回测 + 本地纸交易（Tier 2）；非实盘"
+    },
+    {
+      "id": "completeness",
+      "title_en": "Completeness",
+      "title_zh": "完整度",
+      "achieved_en": [
+        "End-to-end: input → reasoning → research → Bitget → events → sim → backtest → export.",
+        "Low-confidence paths withhold Top 5; missing data not fabricated.",
+        "Tradability guide separates research-only vs executable names."
+      ],
+      "achieved_zh": [
+        "端到端：输入 → 推理 → 调研 → Bitget → 事件 → 模拟 → 回测 → 导出。",
+        "低置信度不强制 Top 5；缺失数据不伪造。",
+        "可交易性指南区分研究结论与可执行标的。"
+      ],
+      "gaps_en": [
+        "Submission form, dev diary, and demo video still manual deliverables.",
+        "Current run has research-only names without direct Bitget basket."
+      ],
+      "gaps_zh": [
+        "提交表单、开发日记、demo 视频仍为人工交付项。",
+        "本次运行仅有研究结论，无直接 Bitget 篮子。"
+      ],
+      "rating_en": "MVP complete with honest boundary disclosure",
+      "rating_zh": "MVP 完整，边界披露诚实"
+    },
+    {
+      "id": "novelty_potential",
+      "title_en": "Novelty & potential",
+      "title_zh": "新颖性与潜力",
+      "achieved_en": [
+        "ThroatScan is not a single LLM prompt or theme screener. It orchestrates parallel Agent Hub news/macro research, constrained supply-chain reasoning, Bitget tradability verification, and risk-managed simulation — with hard gates the LLM cannot bypass.",
+        "In-app Agent Workflow timeline (8 steps) with MCP tools_used and fetch timestamps.",
+        "Hard constraints enforced: ticker_allowlist, llm_no_pick, bitget_gate, confidence_cap.",
+        "Growth roadmap Phase 1 live; Phase 2 planned.",
+        "Rebalance agent plan ready — 0 rebalance events in backtest.",
+        "0 Bitget online stock tokens discoverable beyond 253-company research library.",
+        "Public repo: https://github.com/vvlnx/agent-hub"
+      ],
+      "achieved_zh": [
+        "ThroatScan 不是单次 LLM 问答或主题筛选器。它并行编排 Agent Hub 新闻/宏观调研、约束式供应链推理、Bitget 可交易性验证与风控模拟——LLM 无法绕过硬约束门槛。",
+        "应用内 Agent 工作流时间线（8 步），含 MCP tools_used 与抓取时间。",
+        "硬约束已执行：ticker_allowlist、llm_no_pick、bitget_gate、confidence_cap。",
+        "成长路线 Phase 1 已上线；Phase 2 规划中。",
+        "再平衡 Agent 计划就绪——回测中 0 次再平衡事件。",
+        "0 个 Bitget 在线 stock token 可发现，超越 253 家公司研究库。",
+        "公开仓库：https://github.com/vvlnx/agent-hub"
+      ],
+      "gaps_en": [
+        "Autonomous live trading intentionally disabled for hackathon safety.",
+        "Phase 3 earnings-season event agent remains on roadmap (scheduled Q3 extension)."
+      ],
+      "gaps_zh": [
+        "自主实盘交易因黑客松安全考虑刻意未启用。",
+        "Phase 3 财报季事件 Agent 仍在路线图中（计划 Q3 扩展）。"
+      ],
+      "rating_en": "Agent-native research-to-execution — not a single LLM prompt",
+      "rating_zh": "Agent 原生 research-to-execution — 非单次 LLM 问答"
+    }
+  ],
   "backtest": {
     "status": "verified",
     "period": "2026-04-06 to 2026-06-22 (68 daily observations)",
@@ -976,6 +1558,10 @@
       "rationale_en": "Select NVDA for Tier A API paper/demo execution using structural bottleneck scores plus capped event and macro overlays.",
       "rationale_zh": "基于结构性瓶颈评分与受限事件/宏观叠加，选择 NVDA 进入 Tier A API 纸交易/demo 执行。"
     }
+  },
+  "export_note": {
+    "en": "Live Bitget API was unavailable during this export; backtest and Tier A basket use the last verified NVDA run. GICS/workflow/discovery fields are from the live analysis pass.",
+    "zh": "导出时 Bitget API 不可用；回测与 Tier A 篮子使用最近一次已验证的 NVDA 运行。GICS/工作流/发现字段来自本次 live 分析。"
   },
   "disclosure": "Sample evidence export for judges. Full run exports include candles, trades, and research raw data."
 }

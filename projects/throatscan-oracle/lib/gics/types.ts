@@ -22,6 +22,8 @@ export interface GicsQueryMapping {
   canonical_query: string | null;
   notes_en: string;
   notes_zh: string;
+  gics_code?: string;
+  gics_code_prefix?: string;
 }
 
 export function formatGicsPath(

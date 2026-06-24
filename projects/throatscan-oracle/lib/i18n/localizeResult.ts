@@ -269,6 +269,10 @@ function translateThesisAudit(audit: AnalysisResult["thesis_audit"]): AnalysisRe
       translateCompanyNamesInText(translateEngineText(item)),
     ),
     limitations_zh: audit.limitations_zh.map(translateEngineText),
+    gics_alignment: {
+      ...audit.gics_alignment,
+      detail_zh: translateCompanyNamesInText(translateEngineText(audit.gics_alignment.detail_zh)),
+    },
     next_checks: audit.next_checks.map((check) => ({
       ...check,
       text_zh: translateCompanyNamesInText(translateEngineText(check.text_zh)),

@@ -5,6 +5,7 @@ import type { MarketResearch } from "../marketResearch";
 import type { UniverseCoverage } from "../universeCoverage";
 import { isLLMConfigured } from "../llm/config";
 import { loadEquityCatalog } from "../equity";
+import type { GicsResearch } from "../gics/researchTypes";
 import type {
   AgentWorkflowStep,
   GrowthRoadmapPhase,
@@ -51,13 +52,15 @@ function buildAgentWorkflow(
   marketResearch: MarketResearch,
   eventIntelligence: EventIntelligence,
   backtest: BacktestValidation,
+  gicsResearch?: GicsResearch,
 ): AgentWorkflowStep[] {
   const llmConfigured = isLLMConfigured();
   const newsOk = marketResearch.news.status === "verified";
   const macroOk = marketResearch.macro.status === "verified";
   const bitgetOk = profile.companies.some((c) => c.ticker.length > 0);
+  const gicsOk = gicsResearch?.enabled && (gicsResearch.warnings.length === 0 || gicsResearch.reports.length > 0);
 
-  return [
+  const steps: AgentWorkflowStep[] = [
     {
       id: "industry_grounding",
       agent_en: "Industry grounding agent",
@@ -84,6 +87,33 @@ function buildAgentWorkflow(
       status: "complete",
       detail_en: "Layers, bottleneck, alternatives, and audit trail without LLM ticker selection.",
       detail_zh: "层级、瓶颈、替代假设与审计链——不由 LLM 选 ticker。",
+    },
+    {
+      id: "gics_mcp_dual_track",
+      agent_en: "GICS industry MCP (dual-track)",
+      agent_zh: "GICS 行业 MCP（双轨）",
+      skill: "gics-industry",
+      tools_used: gicsResearch?.tools_used ?? [
+        "get_company_classification",
+        "get_companies_by_gics",
+        "get_gics_workflow",
+        "get_company_report",
+      ],
+      status: gicsResearch?.enabled
+        ? gicsOk
+          ? gicsResearch.warnings.length > 0
+            ? "partial"
+            : "complete"
+          : "partial"
+        : "skipped",
+      detail_en: gicsResearch
+        ? `Prefix ${gicsResearch.gics_code_prefix}, ${gicsResearch.peer_count} catalog peers, ${gicsResearch.reports.length} report(s). Runs parallel to Agent Hub MCP.`
+        : "GICS research channel unavailable.",
+      detail_zh: gicsResearch
+        ? `前缀 ${gicsResearch.gics_code_prefix}，${gicsResearch.peer_count} 个目录同业，${gicsResearch.reports.length} 份报告。与 Agent Hub MCP 并行运行。`
+        : "GICS 研究通道不可用。",
+      fetched_at: gicsResearch?.fetched_at,
+      source_url: gicsResearch?.api_url,
     },
     {
       id: "agent_hub_news",
@@ -156,6 +186,8 @@ function buildAgentWorkflow(
       detail_zh: `选中：${eventIntelligence.simulated_decision.selected_tickers.join("、") || "无"}。`,
     },
   ];
+
+  return steps;
 }
 
 function buildGrowthRoadmap(
@@ -263,6 +295,7 @@ export async function buildNoveltyPack({
   paperDemoConfigured,
   publicPaperEnabled,
   discoveryCandidateCount = 0,
+  gicsResearch,
 }: {
   profile: IndustryProfile;
   marketResearch: MarketResearch;
@@ -272,6 +305,7 @@ export async function buildNoveltyPack({
   paperDemoConfigured: boolean;
   publicPaperEnabled: boolean;
   discoveryCandidateCount?: number;
+  gicsResearch?: GicsResearch;
 }): Promise<NoveltyPack> {
   const catalog = await loadEquityCatalog();
   const bitgetOnlineCount = catalog.snapshot.counts.ondo_spot_online;
@@ -283,6 +317,7 @@ export async function buildNoveltyPack({
     marketResearch,
     eventIntelligence,
     backtest,
+    gicsResearch,
   );
   const hard_constraints = buildHardConstraints();
   const growth_roadmap = buildGrowthRoadmap(
@@ -327,6 +362,8 @@ export async function buildNoveltyPack({
     discovery_candidate_count: discoveryCandidateCount,
     fixed_universe_size: universeCoverage.universe_size,
     mcp_url: marketResearch.mcp_url,
-    mcp_tools_used: marketResearch.tools_used,
+    mcp_tools_used: [
+      ...new Set([...(gicsResearch?.tools_used ?? []), ...marketResearch.tools_used]),
+    ],
   };
 }
