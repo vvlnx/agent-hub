@@ -1,6 +1,7 @@
 import { getCachedBitgetTickers } from "../bitgetCache";
-import { ondoSymbolForTicker } from "../equity";
+import { ondoSymbolForTicker, resolveTradability } from "../equity";
 import { bitgetPrivateRequest, loadBitgetDemoCredentials } from "../bitgetPrivate";
+import { appendPaperOrders, countPaperOrders, listRecentPaperOrders as readRecentOrders } from "./store";
 import type {
   PaperBasketRequest,
   PaperBasketResult,
@@ -10,27 +11,33 @@ import type {
 
 interface TickerRow {
   symbol: string;
-  lastPr: string;
+  lastPrice?: string;
+  lastPr?: string;
 }
 
-const LOCAL_ORDERS: PaperOrder[] = [];
-const MAX_LOCAL_ORDERS = 200;
 const DEFAULT_QUOTE_SIZE = 25;
 
-function trimLocalOrders(): void {
-  if (LOCAL_ORDERS.length > MAX_LOCAL_ORDERS) {
-    LOCAL_ORDERS.splice(0, LOCAL_ORDERS.length - MAX_LOCAL_ORDERS);
+async function resolvePaperSymbol(ticker: string): Promise<string> {
+  try {
+    const resolution = await resolveTradability(ticker);
+    return (
+      resolution.execution_instrument?.symbol ??
+      resolution.primary?.symbol ??
+      ondoSymbolForTicker(ticker)
+    );
+  } catch {
+    return ondoSymbolForTicker(ticker);
   }
-}
-
-function tickerToSpotSymbol(ticker: string): string {
-  return ondoSymbolForTicker(ticker);
 }
 
 async function publicMarketLive(): Promise<boolean> {
   try {
     const tickers = await getCachedBitgetTickers<TickerRow[]>();
-    return tickers.some((row) => row.symbol.endsWith("ONUSDT") || row.symbol.startsWith("r"));
+    return tickers.some(
+      (row) =>
+        row.symbol.endsWith("ONUSDT") ||
+        (row.symbol.startsWith("R") && row.symbol.endsWith("USDT")),
+    );
   } catch {
     return false;
   }
@@ -65,6 +72,7 @@ export async function getPaperTradingStatus(): Promise<PaperTradingStatus> {
     : publicLive
       ? "local_paper"
       : "backtest_only";
+  const recent_orders_count = await countPaperOrders();
 
   return {
     mode,
@@ -72,7 +80,7 @@ export async function getPaperTradingStatus(): Promise<PaperTradingStatus> {
     demo_configured: demoConfigured,
     public_market_live: publicLive,
     balance_usdt: balance,
-    recent_orders_count: LOCAL_ORDERS.length,
+    recent_orders_count,
     last_checked_at: new Date().toISOString(),
     message_en: demoConfigured
       ? "Bitget Demo Trading API is configured. Paper orders can route to the demo account with paptrading=1."
@@ -139,14 +147,17 @@ export async function submitPaperBasket(
     tickersData = [];
   }
   const priceBySymbol = new Map(
-    tickersData.map((row) => [row.symbol.toUpperCase(), Number(row.lastPr)]),
+    tickersData.map((row) => [
+      row.symbol.toUpperCase(),
+      Number(row.lastPrice ?? row.lastPr),
+    ]),
   );
 
   const orders: PaperOrder[] = [];
 
   for (const ticker of tickers) {
-    const symbol = tickerToSpotSymbol(ticker);
-    const referencePrice = priceBySymbol.get(symbol);
+    const symbol = await resolvePaperSymbol(ticker);
+    const referencePrice = priceBySymbol.get(symbol.toUpperCase());
     const baseOrder: PaperOrder = {
       order_id: `${input.run_id}-${symbol}-${Date.now()}`,
       run_id: input.run_id,
@@ -181,11 +192,9 @@ export async function submitPaperBasket(
     } else {
       orders.push(baseOrder);
     }
-
-    LOCAL_ORDERS.push(orders[orders.length - 1]!);
   }
 
-  trimLocalOrders();
+  await appendPaperOrders(orders);
 
   const demoCount = orders.filter((order) => order.venue === "bitget_demo").length;
   const localCount = orders.filter((order) => order.venue === "local_paper" && order.status === "filled_local").length;
@@ -205,6 +214,6 @@ export async function submitPaperBasket(
   };
 }
 
-export function listRecentPaperOrders(limit = 20): PaperOrder[] {
-  return LOCAL_ORDERS.slice(-limit).reverse();
+export async function listRecentPaperOrders(limit = 20): Promise<PaperOrder[]> {
+  return readRecentOrders(limit);
 }

@@ -1,4 +1,4 @@
-import { loadEquityCatalog, normalizeTicker } from "../equity/catalog";
+import { getListedPeersForGicsPrefix, loadEquityCatalog, normalizeTicker } from "../equity/catalog";
 import { analysisGradeForTicker } from "../equity/resolver";
 import type { BitgetDiscoveryEntry, BitgetDiscoveryResult } from "../equity/types";
 import { listCompaniesByGicsPrefix } from "./staticCatalog";
@@ -17,41 +17,24 @@ export async function discoverBitgetCandidatesByGicsPrefix(input: {
   const limit = input.limit ?? 16;
   const prefix = input.gicsCodePrefix.replace(/\D/g, "").slice(0, 6);
   const curated = new Set(input.curatedTickers.map(normalizeTicker));
-  const peers = listCompaniesByGicsPrefix(prefix, 400);
-  const { by_ticker } = await loadEquityCatalog();
+
+  await loadEquityCatalog();
+  const indexedPeers = getListedPeersForGicsPrefix(prefix, 400);
+  const catalogPeerCount = listCompaniesByGicsPrefix(prefix, 400).length;
 
   const entries: BitgetDiscoveryEntry[] = [];
 
-  for (const peer of peers) {
-    const ticker = normalizeTicker(peer.ticker);
-    if (curated.has(ticker)) continue;
-
-    const instruments = by_ticker.get(ticker);
-    if (!instruments?.length) continue;
-
-    const hasListing = instruments.some(
-      (instrument) =>
-        instrument.product_line === "us_stocks_direct" ||
-        (instrument.status === "online" && instrument.listed),
-    );
-    if (!hasListing) continue;
-
-    const tier = instruments.some((instrument) => instrument.tradability === "executable_now")
-      ? "A"
-      : instruments.some((instrument) => instrument.product_line === "us_stocks_direct")
-        ? "B"
-        : "C";
-
-    if (tier === "C") continue;
+  for (const peer of indexedPeers) {
+    if (curated.has(peer.ticker)) continue;
 
     entries.push({
-      ticker,
+      ticker: peer.ticker,
       name: peer.company_name,
       sector_hint: `GICS ${prefix}`,
       gics_code: peer.gics_code,
       discovery_via: "gics_prefix",
-      execution_tier: tier,
-      in_curated_universe: analysisGradeForTicker(ticker) === "deep",
+      execution_tier: peer.execution_tier,
+      in_curated_universe: analysisGradeForTicker(peer.ticker) === "deep",
     });
   }
 
@@ -69,10 +52,10 @@ export async function discoverBitgetCandidatesByGicsPrefix(input: {
     discovery_count: limited.length,
     entries: limited,
     gics_code_prefix: prefix,
-    gics_peers_scanned: peers.length,
+    gics_peers_scanned: catalogPeerCount,
     discovery_source: "gics_prefix",
-    summary_en: `${limited.length} Bitget-listed peer(s) found under GICS prefix ${prefix} (${peers.length} catalog peers scanned, beyond ${curated.size} curated names).`,
-    summary_zh: `在 GICS 前缀 ${prefix} 下发现 ${limited.length} 个 Bitget 已覆盖同业标的（扫描 ${peers.length} 个目录同业，策展库 ${curated.size} 家）。`,
+    summary_en: `${limited.length} Bitget-listed peer(s) found under GICS prefix ${prefix} (${indexedPeers.length} indexed listable peers, ${catalogPeerCount} catalog peers).`,
+    summary_zh: `在 GICS 前缀 ${prefix} 下发现 ${limited.length} 个 Bitget 已覆盖同业标的（索引 ${indexedPeers.length} 个可交易同业，目录 ${catalogPeerCount} 家）。`,
   };
 }
 

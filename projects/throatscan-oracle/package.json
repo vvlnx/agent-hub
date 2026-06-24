@@ -13,6 +13,7 @@
     "verify:bitget": "tsx scripts/verify-bitget.mjs",
     "verify:gics": "tsx scripts/verify-gics.mjs",
     "sync:gics-sp500": "node scripts/sync-gics-sp500.mjs",
+    "sync:bitget-app-universe": "node scripts/sync-bitget-app-universe.mjs",
     "export:sample-evidence": "tsx scripts/export-sample-evidence.mjs",
     "deploy:vercel": "vercel deploy --prod --yes"
   },

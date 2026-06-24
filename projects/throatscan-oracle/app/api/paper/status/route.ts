@@ -5,9 +5,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const status = await getPaperTradingStatus();
+  const [status, recent_orders] = await Promise.all([
+    getPaperTradingStatus(),
+    listRecentPaperOrders(10),
+  ]);
   return NextResponse.json({
     ...status,
-    recent_orders: listRecentPaperOrders(10),
+    recent_orders,
   });
 }

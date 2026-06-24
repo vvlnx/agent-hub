@@ -1,3 +1,4 @@
+import { request, EnvHttpProxyAgent, ProxyAgent } from "undici";
 import type { Company } from "./types";
 import {
   buildEquityEvidence,
@@ -37,10 +38,27 @@ export interface BitgetCandle {
 }
 
 export const BITGET_STOCK_API_ENDPOINTS = {
-  symbols: "/api/v2/spot/public/symbols",
-  tickers: "/api/v2/spot/market/tickers",
+  instruments: "/api/v3/market/instruments?category=SPOT",
+  tickers: "/api/v3/market/tickers?category=SPOT",
   candles: "/api/v2/spot/market/candles",
 } as const;
+
+const BITGET_API_BASE_URL = "https://api.bitget.com";
+const CANDLE_CACHE_TTL_MS = 5 * 60 * 1000;
+const REQUEST_TIMEOUT_MS = 12_000;
+
+const configuredProxy =
+  process.env.HTTPS_PROXY ||
+  process.env.https_proxy ||
+  process.env.ALL_PROXY ||
+  process.env.all_proxy;
+const CANDLE_DISPATCHER = configuredProxy ? new ProxyAgent(configuredProxy) : new EnvHttpProxyAgent();
+
+const candleCache = new Map<string, { expires_at: number; data: BitgetCandle[] }>();
+
+export function clearBitgetCandleCache(): void {
+  candleCache.clear();
+}
 
 function errorMessage(error: unknown): string {
   if (error instanceof Error) {
@@ -95,15 +113,12 @@ export async function fetchBitgetDailyCandles(
   symbol: string,
   limit = 180,
 ): Promise<BitgetCandle[]> {
-  const { request, EnvHttpProxyAgent, ProxyAgent } = await import("undici");
-  const BITGET_API_BASE_URL = "https://api.bitget.com";
-  const REQUEST_TIMEOUT_MS = 12_000;
-  const configuredProxy =
-    process.env.HTTPS_PROXY ||
-    process.env.https_proxy ||
-    process.env.ALL_PROXY ||
-    process.env.all_proxy;
-  const dispatcher = configuredProxy ? new ProxyAgent(configuredProxy) : new EnvHttpProxyAgent();
+  const cacheKey = `${symbol.toUpperCase()}:${limit}`;
+  const now = Date.now();
+  const cached = candleCache.get(cacheKey);
+  if (cached && cached.expires_at > now) {
+    return cached.data;
+  }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -114,7 +129,7 @@ export async function fetchBitgetDailyCandles(
       {
         headers: { Accept: "application/json" },
         signal: controller.signal,
-        dispatcher,
+        dispatcher: CANDLE_DISPATCHER,
       },
     );
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -125,7 +140,7 @@ export async function fetchBitgetDailyCandles(
       throw new Error(`Bitget request failed: ${body.code} ${body.msg}`);
     }
 
-    return body.data
+    const candles = body.data
       .map((row) => ({
         timestamp: Number(row[0]),
         date: new Date(Number(row[0])).toISOString().slice(0, 10),
@@ -143,6 +158,9 @@ export async function fetchBitgetDailyCandles(
           row.close > 0,
       )
       .sort((a, b) => a.timestamp - b.timestamp);
+
+    candleCache.set(cacheKey, { data: candles, expires_at: now + CANDLE_CACHE_TTL_MS });
+    return candles;
   } finally {
     clearTimeout(timeout);
   }

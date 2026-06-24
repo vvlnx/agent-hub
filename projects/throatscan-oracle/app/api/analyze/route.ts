@@ -1,4 +1,5 @@
-import { analyzeIndustry } from "@/lib/agent";
+import { runAnalyzePipeline } from "@/lib/analyzePipeline";
+import { slimAnalysisForClient } from "@/lib/analyzeResponse";
 import { getLLMConfig, isLLMConfigured } from "@/lib/llm/config";
 import { NextResponse } from "next/server";
 
@@ -21,10 +22,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await analyzeIndustry(industry);
+    const result = await runAnalyzePipeline(industry);
     const llmConfig = getLLMConfig();
     return NextResponse.json({
-      ...result,
+      ...slimAnalysisForClient(result),
       meta: {
         llm_enabled: result.interpretation.inference_mode === "constrained_llm",
         llm_configured: isLLMConfigured(),

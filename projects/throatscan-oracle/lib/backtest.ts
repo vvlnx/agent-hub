@@ -73,10 +73,16 @@ export interface BacktestEvidence {
   holdings: Array<{
     symbol: string;
     candles: BitgetCandle[];
+    candle_count?: number;
+    period_start?: string;
+    period_end?: string;
   }>;
   benchmark: {
     symbol: string;
     candles: BitgetCandle[];
+    candle_count?: number;
+    period_start?: string;
+    period_end?: string;
   };
 }
 
@@ -456,7 +462,7 @@ function unavailableBacktest(warnings: string[]): BacktestValidation {
       disclosure:
         "Current evidence selects today's candidate basket; historical Bitget candles validate the basket without back-propagating current news.",
     },
-    api_calls: [BITGET_STOCK_API_ENDPOINTS.symbols, BITGET_STOCK_API_ENDPOINTS.candles],
+    api_calls: [BITGET_STOCK_API_ENDPOINTS.instruments, BITGET_STOCK_API_ENDPOINTS.candles],
     warnings,
     generated_at: new Date().toISOString(),
   };
@@ -607,7 +613,7 @@ export async function runBacktestValidation(topCompanies: Company[]): Promise<Ba
     evidence,
     selection_context,
     api_calls: [
-      BITGET_STOCK_API_ENDPOINTS.symbols,
+      BITGET_STOCK_API_ENDPOINTS.instruments,
       BITGET_STOCK_API_ENDPOINTS.tickers,
       BITGET_STOCK_API_ENDPOINTS.candles,
     ],

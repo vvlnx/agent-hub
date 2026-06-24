@@ -1,20 +1,33 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import type { AnalysisResult } from "@/lib/mockData";
+import type { GicsResearch } from "@/lib/gics/client";
 import type { Locale } from "@/lib/i18n/types";
 import { t } from "@/lib/i18n";
 
-export function GicsResearchPanel({
-  result,
+function buildFocusTickers(result: AnalysisResult): string[] {
+  return [
+    result.interpretation.primary_bottleneck_ticker,
+    ...result.event_intelligence.simulated_decision.selected_tickers,
+  ]
+    .filter((ticker): ticker is string => Boolean(ticker))
+    .filter((ticker, index, all) => all.indexOf(ticker) === index)
+    .slice(0, 3);
+}
+
+function GicsResearchContent({
+  research,
   locale,
 }: {
-  result: AnalysisResult;
+  research: GicsResearch;
   locale: Locale;
 }) {
   const copy = t(locale);
-  const research = result.gics_research;
-  if (!research?.enabled) return null;
+  if (!research.enabled) return null;
 
   return (
-    <section className="rounded-xl border border-indigo-200 bg-indigo-50/80 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+    <>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold text-indigo-950 dark:text-indigo-100">
@@ -154,6 +167,92 @@ export function GicsResearchPanel({
           );
         })}
       </div>
+    </>
+  );
+}
+
+export function GicsResearchPanel({
+  result,
+  locale,
+}: {
+  result: AnalysisResult;
+  locale: Locale;
+}) {
+  const copy = t(locale);
+  const focusTickers = useMemo(() => buildFocusTickers(result), [result]);
+  const [research, setResearch] = useState<GicsResearch | undefined>(result.gics_research);
+  const [loading, setLoading] = useState(!result.gics_research);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (result.gics_research) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const response = await fetch("/api/gics-research", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            industryQuery: result.interpretation.user_input || result.industry,
+            focusTickers,
+            companies: result.companies,
+          }),
+        });
+        const payload = (await response.json()) as GicsResearch & { error?: string };
+        if (!response.ok) {
+          throw new Error(payload.error ?? "GICS research failed");
+        }
+        if (!cancelled) {
+          setResearch(payload);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "GICS research failed");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [result.interpretation.user_input, result.industry, result.gics_research, focusTickers, result.companies]);
+
+  if (loading) {
+    return (
+      <section className="rounded-xl border border-indigo-200 bg-indigo-50/80 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+        <p className="text-sm font-semibold text-indigo-950 dark:text-indigo-100">
+          {copy.gicsResearchTitle}
+        </p>
+        <p className="mt-2 text-xs text-indigo-900/80 dark:text-indigo-200/80">
+          {locale === "zh" ? "正在加载 GICS 调研…" : "Loading GICS research…"}
+        </p>
+      </section>
+    );
+  }
+
+  if (error || !research?.enabled) {
+    if (!error) return null;
+    return (
+      <section className="rounded-xl border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+        <p className="text-sm font-semibold text-amber-950 dark:text-amber-100">
+          {copy.gicsResearchTitle}
+        </p>
+        <p className="mt-2 text-xs text-amber-900/80 dark:text-amber-200/80">{error}</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-xl border border-indigo-200 bg-indigo-50/80 p-4 dark:border-indigo-900 dark:bg-indigo-950/30">
+      <GicsResearchContent research={research} locale={locale} />
     </section>
   );
 }

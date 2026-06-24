@@ -2,11 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { AnalysisResult } from "@/lib/mockData";
+import type { AnalysisProgressEvent } from "@/lib/analyzePipeline";
+import { consumeAnalyzeStream } from "@/lib/analyzeStreamClient";
 import type { PaperOrder, PaperTradingStatus } from "@/lib/paperTrading/types";
 import { EquityCurveChart } from "@/components/EquityCurveChart";
 import { EquityTierBadge } from "@/components/EquityTierBadge";
 import { EquityTradabilityPanel } from "@/components/EquityTradabilityPanel";
 import { GicsResearchPanel } from "@/components/GicsResearchPanel";
+import { BitgetConnectionSidebar, ExecutionConsolePanel } from "@/components/BitgetTerminalPanels";
 import { AgentWorkflowPanel } from "@/components/AgentWorkflowPanel";
 import {
   formatBacktestMeta,
@@ -371,6 +374,7 @@ export default function HomePage() {
   const [industry, setIndustry] = useState("AI chips");
   const [baseResult, setBaseResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [analysisPhase, setAnalysisPhase] = useState<AnalysisProgressEvent | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showBitgetSetup, setShowBitgetSetup] = useState(false);
   const [paperStatus, setPaperStatus] = useState<PaperTradingStatus | null>(null);
@@ -435,20 +439,21 @@ export default function HomePage() {
   }
 
   useEffect(() => {
-    void fetch("/api/warmup", { cache: "no-store" }).catch(() => undefined);
-
     let cancelled = false;
     void (async () => {
       try {
-        const response = await fetch("/api/paper/status", { cache: "no-store" });
+        const response = await fetch("/api/warmup", { cache: "no-store" });
         if (!response.ok || cancelled) return;
-        const payload = (await response.json()) as PaperTradingStatus & {
+        const payload = (await response.json()) as {
+          paper_status?: PaperTradingStatus;
           recent_orders?: PaperOrder[];
         };
-        setPaperStatus(payload);
+        if (payload.paper_status) {
+          setPaperStatus(payload.paper_status);
+        }
         setRecentPaperOrders(payload.recent_orders ?? []);
       } catch {
-        /* ignore transient status failures */
+        /* ignore transient warmup failures */
       }
     })();
 
@@ -505,6 +510,7 @@ export default function HomePage() {
     analyzeAbortRef.current = controller;
 
     setLoading(true);
+    setAnalysisPhase(null);
     setScannerExpanded(true);
     setError(null);
     setPaperMessage(null);
@@ -513,17 +519,15 @@ export default function HomePage() {
     setThesisAuditOpen(false);
     setAgentWorkflowOpen(false);
     try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ industry: query }),
+      const streamPayload = await consumeAnalyzeStream(query, {
         signal: controller.signal,
+        onProgress: (event) => setAnalysisPhase(event),
       });
+      const payload = {
+        ...streamPayload.result,
+        meta: streamPayload.meta ?? streamPayload.result.meta,
+      };
 
-      const payload = (await response.json()) as AnalysisResult & { error?: string };
-      if (!response.ok) {
-        throw new Error(payload.error ?? copy.analysisFailed);
-      }
       if (
         !payload.final_decision ||
         !payload.reasoning_intelligence ||
@@ -550,6 +554,7 @@ export default function HomePage() {
         analyzeAbortRef.current = null;
       }
       setLoading(false);
+      setAnalysisPhase(null);
     }
   }
 
@@ -597,8 +602,22 @@ export default function HomePage() {
     }
   }
 
-  function handleDownloadEvidence() {
+  async function handleDownloadEvidence() {
     if (!baseResult) return;
+
+    let backtestForExport = baseResult.backtest;
+    try {
+      const response = await fetch("/api/evidence/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ backtest: baseResult.backtest }),
+      });
+      if (response.ok) {
+        backtestForExport = (await response.json()) as typeof baseResult.backtest;
+      }
+    } catch {
+      /* fall back to summary-only backtest payload */
+    }
 
     const payload = {
       schema_version: "throatscan-run-evidence-v2",
@@ -647,7 +666,7 @@ export default function HomePage() {
         rebalance_agent: baseResult.completeness.novelty.rebalance_agent,
       },
       thesis_audit: baseResult.thesis_audit,
-      backtest: baseResult.backtest,
+      backtest: backtestForExport,
       disclosure:
         "Simulation evidence generated from Bitget public market data. Research software, not financial advice.",
     };
@@ -963,7 +982,7 @@ export default function HomePage() {
   const researchTopPicks = result?.final_decision.traditional_vs_throatscan.throatscan.top_picks ?? [];
   const secondaryBottleneckTickers =
     result?.final_decision.secondary_bottlenecks.map((company) => company.ticker) ?? [];
-  const gicsDiscoveryCount = result?.bitget_discovery.discovery_count ?? 0;
+  const bitgetDiscoveryCount = result?.bitget_discovery.discovery_count ?? 0;
   const gicsDiscoverySample =
     result?.bitget_discovery.entries.slice(0, 8).map((entry) => entry.ticker) ?? [];
   const evidenceReady =
@@ -1042,55 +1061,13 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <div className="sidebar-connection mx-1.5 mt-4 p-3">
-            <div className="flex items-center justify-between">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--cursor-fg-muted)]">Bitget</p>
-              <span className="rounded bg-[var(--cursor-accent-dim)] px-1.5 py-0.5 text-[9px] font-semibold uppercase text-[var(--cursor-accent)]">
-                {terminalLabels.paperMode}
-              </span>
-            </div>
-            <div className="mt-3 space-y-2 text-xs">
-              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
-                <span>{terminalLabels.publicMarket}</span>
-                <span className="terminal-green">LIVE</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
-                <span>{terminalLabels.tradingApi}</span>
-                <span className={paperStatus?.demo_configured ? "terminal-green" : paperStatus?.mode === "local_paper" ? "terminal-amber" : "text-[var(--cursor-fg-subtle)]"}>
-                  {paperStatus?.demo_configured ? "DEMO" : paperStatus?.mode === "local_paper" ? "PAPER" : "OFF"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3 text-[var(--cursor-fg-muted)]">
-                <span>{terminalLabels.accountBalance}</span>
-                <span className="font-mono text-[var(--cursor-fg)]">
-                  {paperStatus?.balance_usdt !== undefined
-                    ? `${paperStatus.balance_usdt.toFixed(2)} USDT`
-                    : paperStatus?.mode === "local_paper"
-                      ? locale === "zh"
-                        ? "本地纸交易"
-                        : "Local paper"
-                      : "-- USDT"}
-                </span>
-              </div>
-            </div>
-            <button type="button" onClick={() => setShowBitgetSetup(true)} className="cursor-btn-ghost mt-3 w-full px-2 py-1.5 text-xs">
-              {terminalLabels.configureConnection}
-            </button>
-            {recentPaperOrders.length > 0 ? (
-              <div className="mt-3 border-t border-[var(--cursor-border)] pt-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--cursor-fg-subtle)]">
-                  {terminalLabels.paperOrders}
-                </p>
-                <ul className="mt-2 space-y-1 text-[10px] text-[var(--cursor-fg-muted)]">
-                  {recentPaperOrders.slice(0, 3).map((order) => (
-                    <li key={order.order_id} className="font-mono">
-                      {order.symbol} · {order.venue} · {order.status}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </div>
+          <BitgetConnectionSidebar
+            locale={locale}
+            paperStatus={paperStatus}
+            recentPaperOrders={recentPaperOrders}
+            onConfigure={() => setShowBitgetSetup(true)}
+            terminalLabels={terminalLabels}
+          />
         </aside>
 
         <main ref={mainScrollRef} className="cursor-editor flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto scroll-smooth">
@@ -1207,12 +1184,19 @@ export default function HomePage() {
                         {terminalLabels.loadingPipeline}
                       </p>
                       <p className="mt-1 text-sm text-[var(--cursor-fg-muted)]">
-                        {locale === "zh"
-                          ? "多阶段分析进行中，通常需要数十秒…"
-                          : "Multi-stage analysis in progress, typically tens of seconds…"}
+                        {analysisPhase
+                          ? locale === "zh"
+                            ? analysisPhase.label_zh
+                            : analysisPhase.label_en
+                          : locale === "zh"
+                            ? "多阶段分析进行中，通常需要数十秒…"
+                            : "Multi-stage analysis in progress, typically tens of seconds…"}
                       </p>
-                      <div className="loading-indeterminate mt-3 h-1 overflow-hidden rounded bg-[var(--cursor-selection)]">
-                        <div className="loading-indeterminate-bar h-full" />
+                      <div className="mt-3 h-1 overflow-hidden rounded bg-[var(--cursor-selection)]">
+                        <div
+                          className="h-full rounded bg-emerald-400 transition-all duration-500"
+                          style={{ width: `${analysisPhase?.progress_pct ?? 8}%` }}
+                        />
                       </div>
                       <button
                         type="button"
@@ -1268,83 +1252,16 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <aside className="execution-card rounded-xl border border-[var(--cursor-border-strong)] bg-[var(--cursor-sidebar)] p-4 sm:p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-white">{terminalLabels.executionConsole}</p>
-                      <p className="mt-1 text-xs leading-5 text-zinc-500">{terminalLabels.executionHint}</p>
-                    </div>
-                    <span className="relative mt-1 flex h-2 w-2 shrink-0">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                    </span>
-                  </div>
-                  <div className="mt-5 space-y-1 rounded-lg border border-[var(--cursor-border)] bg-[var(--cursor-panel)] p-1">
-                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
-                      <span className="text-zinc-500">{terminalLabels.publicMarket}</span>
-                      <span className="font-mono font-semibold text-emerald-300">LIVE</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
-                      <span className="text-zinc-500">{terminalLabels.tradingApi}</span>
-                      <span
-                        className={`font-mono font-semibold ${
-                          paperStatus?.demo_configured
-                            ? "text-emerald-300"
-                            : paperStatus?.mode === "local_paper"
-                              ? "text-amber-300"
-                              : "text-zinc-600"
-                        }`}
-                      >
-                        {paperStatus?.demo_configured
-                          ? "DEMO LIVE"
-                          : paperStatus?.mode === "local_paper"
-                            ? "PAPER LIVE"
-                            : "OFFLINE"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
-                      <span className="text-zinc-500">{terminalLabels.accountBalance}</span>
-                      <span className="font-mono text-zinc-300">
-                        {paperStatus?.balance_usdt !== undefined
-                          ? `${paperStatus.balance_usdt.toFixed(2)} USDT`
-                          : paperStatus?.mode === "local_paper"
-                            ? locale === "zh"
-                              ? "本地纸交易"
-                              : "Local paper"
-                            : "-- USDT"}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-md px-3 py-2.5 text-xs">
-                      <span className="text-zinc-500">{terminalLabels.runnabilityLevel}</span>
-                      <span className="font-mono text-sky-300">
-                        {paperStatus?.runnability_level === "bitget_demo"
-                          ? terminalLabels.runnabilityBitgetDemo
-                          : paperStatus?.runnability_level === "local_paper"
-                            ? terminalLabels.runnabilityLocalPaper
-                            : terminalLabels.runnabilityBacktest}
-                      </span>
-                    </div>
-                  </div>
-                  {result && selectedTradeTickers.length > 0 ? (
-                    <button
-                      type="button"
-                      onClick={() => void handlePaperExecute()}
-                      disabled={paperSubmitting}
-                      className="mt-4 w-full rounded-lg bg-emerald-400 px-3 py-2.5 text-xs font-bold text-[#03130d] transition hover:brightness-110 disabled:opacity-60"
-                    >
-                      {paperSubmitting
-                        ? terminalLabels.executingPaper
-                        : terminalLabels.executePaperBasket}
-                    </button>
-                  ) : null}
-                  <button type="button" onClick={() => setShowBitgetSetup(true)} className="mt-3 w-full rounded-lg border border-emerald-400/35 bg-emerald-400/10 px-3 py-2.5 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-400/15">
-                    {terminalLabels.configureConnection}
-                  </button>
-                  {paperMessage ? (
-                    <p className="mt-3 text-xs leading-5 text-emerald-200/90">{paperMessage}</p>
-                  ) : null}
-                  <p className="mt-3 text-center text-[10px] leading-4 text-zinc-600">{terminalLabels.permissionValue}</p>
-                </aside>
+                <ExecutionConsolePanel
+                  locale={locale}
+                  paperStatus={paperStatus}
+                  paperMessage={paperMessage}
+                  paperSubmitting={paperSubmitting}
+                  showExecute={Boolean(result && selectedTradeTickers.length > 0)}
+                  onConfigure={() => setShowBitgetSetup(true)}
+                  onExecute={() => void handlePaperExecute()}
+                  terminalLabels={terminalLabels}
+                />
               </div>
             </div>
 
@@ -1520,9 +1437,9 @@ export default function HomePage() {
                       {copy.tierBAppHandoff}: {appHandoffTickers.join(", ")}
                     </p>
                   ) : null}
-                  {gicsDiscoveryCount > 0 ? (
+                  {bitgetDiscoveryCount > 0 ? (
                     <p className="mt-2 text-xs text-violet-400">
-                      {copy.gicsDiscovery}: {gicsDiscoveryCount}
+                      {copy.gicsDiscovery}: {bitgetDiscoveryCount}
                       {gicsDiscoverySample.length > 0 ? ` (${gicsDiscoverySample.join(", ")})` : ""}
                     </p>
                   ) : null}
@@ -2337,7 +2254,11 @@ export default function HomePage() {
               </section>
             </div>
 
-            <GicsResearchPanel result={baseResult} locale={locale} />
+            <GicsResearchPanel
+              key={baseResult.structured_report.run_id}
+              result={baseResult}
+              locale={locale}
+            />
 
             <section className="rounded-xl border border-orange-200 bg-orange-50 p-4 dark:border-orange-900 dark:bg-orange-950/40">
               <div className="flex flex-wrap items-start justify-between gap-3">

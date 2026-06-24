@@ -33,60 +33,70 @@ export async function buildGicsResearch(input: {
       : input.companies.slice(0, 3).map((company) => company.ticker)
   ).slice(0, 3);
 
-  const workflow_plans = [];
-  const reports: GicsCompanyReport[] = [];
-  const org_roles_by_ticker: GicsResearch["org_roles_by_ticker"] = {};
+  const focusResults = await Promise.all(
+    focus.map(async (ticker) => {
+      const catalog = getCatalogEntry(ticker);
+      const company = input.companies.find((row) => row.ticker === ticker);
+      const gicsCode = catalog?.gics_code;
+      const name = catalog?.company_name ?? company?.name;
 
-  for (const ticker of focus) {
-    const catalog = getCatalogEntry(ticker);
-    const company = input.companies.find((row) => row.ticker === ticker);
-    const gicsCode = catalog?.gics_code;
-    const name = catalog?.company_name ?? company?.name;
+      let workflow = await fetchRemoteGicsWorkflow(ticker);
+      const tickerWarnings: string[] = [];
+      if (!workflow) {
+        workflow = buildLocalWorkflowPlan(ticker, name, gicsCode);
+        tickerWarnings.push(
+          `Workflow for ${ticker} served from local GICS template (remote DB unavailable).`,
+        );
+      }
 
-    let workflow = await fetchRemoteGicsWorkflow(ticker);
-    if (!workflow) {
-      workflow = buildLocalWorkflowPlan(ticker, name, gicsCode);
-      warnings.push(`Workflow for ${ticker} served from local GICS template (remote DB unavailable).`);
-    }
-    workflow_plans.push(workflow);
+      let org = await fetchRemoteGicsOrg(ticker);
+      if (!org?.length) {
+        org = getOrgRolesForGicsCode(gicsCode);
+      }
 
-    let org = await fetchRemoteGicsOrg(ticker);
-    if (!org?.length) {
-      org = getOrgRolesForGicsCode(gicsCode);
-    }
-    org_roles_by_ticker[ticker] = org;
-
-    const remoteReport = await fetchRemoteCompanyReport(ticker);
-    if (remoteReport?.report_md) {
-      reports.push({
-        ticker,
-        name,
-        status: "available",
-        report_md: remoteReport.report_md,
-        updated_at: remoteReport.updated_at,
-        source: "remote",
-      });
-    } else {
-      const classificationPath = company?.gics
-        ? formatGicsPath(company.gics, "en")
-        : catalog
-          ? formatGicsPath(catalog.classification, "en")
-          : undefined;
-      reports.push({
-        ticker,
-        name,
-        status: "missing",
-        report_md: buildStubReportMarkdown({
+      const remoteReport = await fetchRemoteCompanyReport(ticker);
+      let report: GicsCompanyReport;
+      if (remoteReport?.report_md) {
+        report = {
           ticker,
           name,
-          gicsCode,
-          classificationPath,
-          workflow,
-        }),
-        source: "generated_stub",
-      });
-    }
+          status: "available",
+          report_md: remoteReport.report_md,
+          updated_at: remoteReport.updated_at,
+          source: "remote",
+        };
+      } else {
+        const classificationPath = company?.gics
+          ? formatGicsPath(company.gics, "en")
+          : catalog
+            ? formatGicsPath(catalog.classification, "en")
+            : undefined;
+        report = {
+          ticker,
+          name,
+          status: "missing",
+          report_md: buildStubReportMarkdown({
+            ticker,
+            name,
+            gicsCode,
+            classificationPath,
+            workflow,
+          }),
+          source: "generated_stub",
+        };
+      }
+
+      return { workflow, org, report, warnings: tickerWarnings };
+    }),
+  );
+
+  const workflow_plans = focusResults.map((row) => row.workflow);
+  const reports = focusResults.map((row) => row.report);
+  const org_roles_by_ticker: GicsResearch["org_roles_by_ticker"] = {};
+  for (let index = 0; index < focus.length; index += 1) {
+    org_roles_by_ticker[focus[index]!] = focusResults[index]!.org;
   }
+  warnings.push(...focusResults.flatMap((row) => row.warnings));
 
   const tools_used = [
     "get_company_classification",

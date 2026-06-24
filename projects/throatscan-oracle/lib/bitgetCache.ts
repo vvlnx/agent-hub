@@ -45,7 +45,7 @@ export async function getCachedBitgetSymbols<T>(): Promise<T> {
   if (symbolsCache && symbolsCache.expires_at > now) {
     return symbolsCache.data as T;
   }
-  const data = await bitgetPublicGet<T>("/api/v2/spot/public/symbols");
+  const data = await bitgetPublicGet<T>("/api/v3/market/instruments?category=SPOT");
   symbolsCache = { data, expires_at: now + CACHE_TTL_MS };
   return data;
 }
@@ -55,7 +55,7 @@ export async function getCachedBitgetTickers<T>(): Promise<T> {
   if (tickersCache && tickersCache.expires_at > now) {
     return tickersCache.data as T;
   }
-  const data = await bitgetPublicGet<T>("/api/v2/spot/market/tickers");
+  const data = await bitgetPublicGet<T>("/api/v3/market/tickers?category=SPOT");
   tickersCache = { data, expires_at: now + CACHE_TTL_MS };
   return data;
 }
