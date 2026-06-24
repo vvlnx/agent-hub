@@ -40,9 +40,9 @@ No credentials are required for the public evidence path:
 
 | Purpose | Bitget endpoint |
 | --- | --- |
-| Tradable stock-token universe | `/api/v2/spot/public/symbols` |
-| Live price and liquidity evidence | `/api/v2/spot/market/tickers` |
-| Verifiable historical candles | `/api/v2/spot/market/candles` |
+| Tradable stock-token universe | `GET /api/v3/market/instruments?category=SPOT` (`symbolType=stock`) |
+| Live price and liquidity evidence | `GET /api/v3/market/tickers?category=SPOT` |
+| Verifiable historical candles | `GET /api/v2/spot/market/candles` |
 
 The application will preserve the endpoint, symbol, fetch time, candle range,
 and raw-data checksum in every generated backtest report.
@@ -57,7 +57,7 @@ and raw-data checksum in every generated backtest report.
 
 ### Stage 2: Bitget-tradable universe
 
-- Resolve company tickers to live Bitget symbols such as `NVDAONUSDT`.
+- Resolve company tickers to live Bitget symbols such as `RNVDAUSDT` (rToken spot).
 - Exclude unavailable instruments from the actionable portfolio.
 - Display current Bitget price, volume, spread, and symbol status.
 

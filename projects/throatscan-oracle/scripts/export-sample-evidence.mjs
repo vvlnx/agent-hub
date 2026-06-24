@@ -58,6 +58,8 @@ try {
     );
   }
 
+  const nvda = result.companies.find((company) => company.ticker === "NVDA");
+
   const payload = {
     schema_version: "throatscan-run-evidence-v3",
     project: "ThroatScan Oracle",
@@ -65,6 +67,15 @@ try {
     industry_input: industry,
     exported_at: new Date().toISOString(),
     run_id: result.structured_report.run_id,
+    bitget_primary_evidence: nvda
+      ? {
+          ticker: nvda.ticker,
+          bitget_symbol: nvda.bitget_market?.symbol,
+          execution_tier: nvda.bitget_equity?.execution_tier,
+          status: nvda.bitget_market?.status,
+          last_price: nvda.bitget_market?.last_price,
+        }
+      : undefined,
     confidence: {
       score: result.confidence,
       level: result.confidence_level,

@@ -62,7 +62,11 @@ if (onlySeed.length > 0) {
 
 if (write) {
   const nextSeed = {
+    source: "bitget_v3_instruments_sync",
     as_of: new Date().toISOString().slice(0, 10),
+    product: "us_stocks_direct",
+    note_en: "Tier B App catalog synced from Bitget v3 SPOT instruments (symbolType=stock, status=online).",
+    note_zh: "Tier B App catalog 已与 Bitget v3 SPOT instruments 同步（symbolType=stock，status=online）。",
     tickers: liveStockTickers,
   };
   writeFileSync(seedPath, `${JSON.stringify(nextSeed, null, 2)}\n`);

@@ -49,12 +49,13 @@ checks a 15% trailing stop, and rebalances every 20 shared trading observations.
 The project uses Bitget public market endpoints as the source of truth for
 tokenized-stock availability and market evidence:
 
-- `GET /api/v2/spot/public/symbols`
-- `GET /api/v2/spot/market/tickers`
-- `GET /api/v2/spot/market/candles`
+- `GET /api/v3/market/instruments?category=SPOT` — official stock-token universe (`symbolType=stock`)
+- `GET /api/v3/market/tickers?category=SPOT` — live price and liquidity
+- `GET /api/v2/spot/market/candles` — verifiable daily history
 
-Examples currently returned by Bitget include `NVDAONUSDT`, `AAPLONUSDT`,
-`MSFTONUSDT`, `AMZNONUSDT`, `SPYONUSDT`, and `QQQONUSDT`.
+Examples currently returned by Bitget include `RNVDAUSDT`, `RAAPLUSDT`,
+`RMSFTUSDT`, `RAMZNUSDT`, and benchmark `BTCUSDT` / `SPY`-linked tokens when online.
+Policy prefers **rToken** spot symbols (e.g. `RNVDAUSDT`) over legacy Ondo-style names when both exist.
 
 ## Agent Hub Research Path
 
@@ -169,8 +170,9 @@ to the deterministic engine.
 - Four-dimension judge self-assessment + tradability guide: complete
 - Sample evidence JSON for offline review: complete
 - Public deployment URL (Vercel): https://throatscan-oracle.vercel.app
-- Public GitHub repository: pending
-- Demo video: pending
-- Development diary / submission form: pending
+- Public GitHub repository: https://github.com/vvlnx/agent-hub (`projects/throatscan-oracle`, commit on `main`)
+- Demo video script: [docs/SUBMISSION.md](docs/SUBMISSION.md) — record and paste URL into submission form
+- Development diary: [docs/DEVELOPMENT_DIARY.md](docs/DEVELOPMENT_DIARY.md)
+- Submission pack: [docs/SUBMISSION.md](docs/SUBMISSION.md)
 
 This project is research software and does not provide financial advice.

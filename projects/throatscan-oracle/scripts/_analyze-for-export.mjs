@@ -1,6 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { analyzeIndustry } from "../lib/agent.ts";
 import { clearBitgetPublicCache, warmBitgetPublicCache } from "../lib/bitgetCache.ts";
+import { buildGicsResearch } from "../lib/gics/research.ts";
 
 const industry = process.argv[2] ?? "AI chips";
 const outPath = process.argv[3];
@@ -23,6 +24,20 @@ for (let attempt = 1; attempt <= 3; attempt += 1) {
   if (verified) break;
   console.warn(`Analyze attempt ${attempt}/3: backtest=${result.backtest.status}, tier_a=none`);
 }
+
+const focusTickers = [
+  result.interpretation.primary_bottleneck_ticker,
+  ...result.event_intelligence.simulated_decision.selected_tickers,
+]
+  .filter(Boolean)
+  .filter((ticker, index, all) => all.indexOf(ticker) === index)
+  .slice(0, 3);
+
+result.gics_research = await buildGicsResearch({
+  industryQuery: industry,
+  companies: result.companies,
+  focusTickers,
+});
 
 writeFileSync(outPath, JSON.stringify(result));
 console.log(

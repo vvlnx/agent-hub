@@ -55,6 +55,7 @@ after each run, plus the same data inside exported evidence JSON under
 ### 0:25-1:10 - Reasoning
 
 - Enter `AI chips` and run the analysis.
+- Show the **SSE pipeline progress bar** (reasoning → Bitget → backtest → discovery).
 - Show the core bottleneck, low-confidence warning, alternative hypothesis, and
   why unrelated or weaker candidates were excluded.
 - Show the Agent Hub news evidence and macro regime card.
@@ -64,10 +65,10 @@ after each run, plus the same data inside exported evidence JSON under
 
 ### 1:10-1:45 - Bitget Integration
 
-- Show `NVDAONUSDT` online status, live Bitget price/liquidity fields, and
+- Show **`RNVDAUSDT` Tier A** online status, live Bitget price/liquidity fields, and
   non-listed candidate labels.
-- Explain that `/spot/public/symbols`, `/spot/market/tickers`, and
-  `/spot/market/candles` are used as evidence sources.
+- Explain that official v3 `/api/v3/market/instruments?category=SPOT` (filters
+  `symbolType=stock`), v3 tickers, and v2 daily candles are used as evidence sources.
 
 ### 1:45-2:35 - Simulation and Risk Loop
 
@@ -90,13 +91,23 @@ after each run, plus the same data inside exported evidence JSON under
 ## Submission Checklist
 
 - [x] Public demo URL — https://throatscan-oracle.vercel.app
-- [ ] Public GitHub repository
+- [x] Public GitHub repository — https://github.com/vvlnx/agent-hub (subdir `projects/throatscan-oracle`)
 - [x] Project description under 200 words
 - [x] Reproducible Bitget usage evidence
 - [x] Verifiable backtest and simulated trade records
 - [x] Three-minute demo script
 - [x] In-app four-dimension judge self-assessment
 - [x] Sample evidence JSON (`/sample-evidence-ai-chips.json`)
-- [ ] Demo video URL, no longer than three minutes
-- [ ] Development diary and project-introduction post
+- [ ] Demo video URL, no longer than three minutes — **record using script above; paste URL in form**
+- [x] Development diary — [DEVELOPMENT_DIARY.md](./DEVELOPMENT_DIARY.md)
 - [ ] Final submission form completed between June 15 and June 25, 2026
+
+## Copy-Paste for Submission Form
+
+| Field | Value |
+| --- | --- |
+| Demo URL | https://throatscan-oracle.vercel.app |
+| Health | https://throatscan-oracle.vercel.app/api/health |
+| GitHub | https://github.com/vvlnx/agent-hub/tree/main/projects/throatscan-oracle |
+| Sample evidence | https://throatscan-oracle.vercel.app/sample-evidence-ai-chips.json |
+| Monorepo path | `projects/throatscan-oracle` |

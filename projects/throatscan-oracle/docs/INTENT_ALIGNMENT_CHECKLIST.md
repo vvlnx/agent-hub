@@ -171,7 +171,7 @@
 |------|------|------------|
 | 1 | 输入 **AI chips** | P1 瓶颈推理 |
 | 2 | 展开 **Agent Workflow** + 审计轨迹 | P3、非单 prompt |
-| 3 | 指 **NVDAONUSDT** Tier A + 回测 | P2 Bitget 数据 |
+| 3 | 指 **RNVDAUSDT** Tier A + 回测 | P2 Bitget 数据 |
 | 4 | 下载 **evidence JSON**，指 hash 与 API 字段 | P3 可验证 |
 | 5 | 打开 **Completeness / Thesis audit** | P5 诚实边界 |
 | 6 | （可选）输入 **医疗服务** 或 **银行金融** | 扩展覆盖，强调 Deep vs Discovery 分工 |
