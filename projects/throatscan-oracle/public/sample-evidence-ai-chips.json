@@ -3,14 +3,14 @@
   "project": "ThroatScan Oracle",
   "sample": true,
   "industry_input": "AI chips",
-  "exported_at": "2026-06-24T15:34:52.889Z",
+  "exported_at": "2026-06-25T07:37:27.716Z",
   "run_id": "07d6ec0c",
   "bitget_primary_evidence": {
     "ticker": "NVDA",
     "bitget_symbol": "RNVDAUSDT",
     "execution_tier": "A",
     "status": "online",
-    "last_price": 200.78
+    "last_price": 200.66
   },
   "confidence": {
     "score": 68,
@@ -155,7 +155,7 @@
         }
       ]
     },
-    "fetched_at": "2026-06-24T15:34:52.866Z",
+    "fetched_at": "2026-06-25T07:37:27.697Z",
     "warnings": [
       "GICS_API_URL not set — using static SP500 catalog + local workflow templates."
     ]
@@ -314,14 +314,14 @@
       "ticker": "NVDA",
       "name": "NVIDIA",
       "throat_role": "CORE BOTTLENECK",
-      "score": 91.2,
+      "score": 89.2,
       "base_score": 89.2,
-      "confidence_delta": 2,
+      "confidence_delta": 0,
       "investment_stance": "STRONG FOCUS",
       "supply_role_label": "Compute provider",
       "reason": "Controls scarce GPU allocation and the CUDA software stack for AI workloads",
-      "event_reason_en": "1 extracted event(s) contribute +2; macro overlay contributes +0. Structural score remains visible as the base.",
-      "event_reason_zh": "1 个已提取事件贡献 +2；宏观叠加贡献 +0。结构性评分仍作为基础分保留。"
+      "event_reason_en": "No matching supply-chain event was extracted; event delta is 0. Macro overlay contributes +0.",
+      "event_reason_zh": "未提取到匹配的供应链事件；事件增量为 0。宏观叠加贡献 +0。"
     },
     "secondary_bottlenecks": [],
     "throatscan_top_picks": [
@@ -400,8 +400,8 @@
         "label_en": "Bitget candle backtest",
         "label_zh": "Bitget K 线回测",
         "status": "complete",
-        "detail_en": "Verified period 2026-04-06 to 2026-06-23 (69 daily observations).",
-        "detail_zh": "已验证区间 2026-04-06 to 2026-06-23 (69 daily observations)。"
+        "detail_en": "Verified period 2026-04-06 to 2026-06-24 (70 daily observations).",
+        "detail_zh": "已验证区间 2026-04-06 to 2026-06-24 (70 daily observations)。"
       },
       {
         "id": "evidence_export",
@@ -624,9 +624,9 @@
             "news_feed"
           ],
           "status": "complete",
-          "detail_en": "3 articles @ 2026-06-24T15:34:39.553Z",
-          "detail_zh": "3 篇文章 @ 2026-06-24T15:34:39.553Z",
-          "fetched_at": "2026-06-24T15:34:39.553Z",
+          "detail_en": "2 articles @ 2026-06-25T07:37:23.794Z",
+          "detail_zh": "2 篇文章 @ 2026-06-25T07:37:23.794Z",
+          "fetched_at": "2026-06-25T07:37:23.794Z",
           "source_url": "https://datahub.noxiaohao.com/mcp"
         },
         {
@@ -642,9 +642,9 @@
             "global_assets:DX-Y.NYB"
           ],
           "status": "complete",
-          "detail_en": "Verdict=MIXED @ 2026-06-24T15:34:39.553Z",
-          "detail_zh": "判定=MIXED @ 2026-06-24T15:34:39.553Z",
-          "fetched_at": "2026-06-24T15:34:39.553Z",
+          "detail_en": "Verdict=MIXED @ 2026-06-25T07:37:23.794Z",
+          "detail_zh": "判定=MIXED @ 2026-06-25T07:37:23.794Z",
+          "fetched_at": "2026-06-25T07:37:23.794Z",
           "source_url": "https://datahub.noxiaohao.com/mcp"
         },
         {
@@ -657,9 +657,9 @@
             "bottleneck_impact",
             "capped_overlay"
           ],
-          "status": "complete",
-          "detail_en": "1 events → action SIMULATED_BUY.",
-          "detail_zh": "1 个事件 → 动作 SIMULATED_BUY。"
+          "status": "partial",
+          "detail_en": "0 events → action SIMULATED_BUY.",
+          "detail_zh": "0 个事件 → 动作 SIMULATED_BUY。"
         },
         {
           "id": "bitget_verify",
@@ -672,8 +672,8 @@
             "candles"
           ],
           "status": "complete",
-          "detail_en": "Backtest verified 2026-04-06 to 2026-06-23 (69 daily observations).",
-          "detail_zh": "回测已验证 2026-04-06 to 2026-06-23 (69 daily observations)。"
+          "detail_en": "Backtest verified 2026-04-06 to 2026-06-24 (70 daily observations).",
+          "detail_zh": "回测已验证 2026-04-06 to 2026-06-24 (70 daily observations)。"
         },
         {
           "id": "sim_export",
@@ -807,7 +807,7 @@
     },
     "honest_summary_en": "ThroatScan completed 7/7 end-to-end stages. Tier A API execution is available for NVDA. This is research software with verifiable Bitget evidence — not financial advice.",
     "honest_summary_zh": "ThroatScan 完成 7/7 个端到端阶段。Tier A API 可执行：NVDA。 这是带可验证 Bitget 证据的研究软件——不构成投资建议。",
-    "generated_at": "2026-06-24T15:34:52.864Z"
+    "generated_at": "2026-06-25T07:37:27.695Z"
   },
   "thesis_audit": {
     "source": "Open-source scarce-layer research methodology",
@@ -884,40 +884,6 @@
         ]
       },
       {
-        "ticker": "NVDA",
-        "name": "NVIDIA",
-        "stage": "midstream",
-        "chain_position": "AI Compute — accelerator allocation and CUDA stack → AI Chips",
-        "scarcity_score": 93.8,
-        "evidence_grade": "STRONG",
-        "signal": "SUPPORTS",
-        "bitget_symbol": "RNVDAUSDT",
-        "reason_en": "NVDA sits in Midstream conversion layer with scarcity score 93.8/100. Bitget execution evidence exists via RNVDAUSDT.",
-        "reason_zh": "NVDA 位于中游转化/平台层，稀缺层得分 93.8/100。 已有 Bitget 执行证据：RNVDAUSDT。",
-        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
-        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
-        "primary_evidence": [
-          {
-            "ticker": "NVDA",
-            "category": "sec_filings",
-            "label_en": "NVIDIA 10-K / 10-Q",
-            "label_zh": "NVIDIA 10-K / 10-Q",
-            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
-            "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
-            "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
-          },
-          {
-            "ticker": "NVDA",
-            "category": "investor_relations",
-            "label_en": "NVIDIA Investor Relations",
-            "label_zh": "NVIDIA 投资者关系",
-            "url": "https://investor.nvidia.com/",
-            "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
-            "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
-          }
-        ]
-      },
-      {
         "ticker": "ASML",
         "name": "ASML Holding",
         "stage": "upstream",
@@ -948,6 +914,40 @@
             "url": "https://www.asml.com/en/investors",
             "check_hint_en": "Check quarterly order book and lead-time disclosures.",
             "check_hint_zh": "查看季度订单与交期披露。"
+          }
+        ]
+      },
+      {
+        "ticker": "NVDA",
+        "name": "NVIDIA",
+        "stage": "midstream",
+        "chain_position": "AI Compute — accelerator allocation and CUDA stack → AI Chips",
+        "scarcity_score": 89.6,
+        "evidence_grade": "STRONG",
+        "signal": "SUPPORTS",
+        "bitget_symbol": "RNVDAUSDT",
+        "reason_en": "NVDA sits in Midstream conversion layer with scarcity score 89.6/100. Bitget execution evidence exists via RNVDAUSDT.",
+        "reason_zh": "NVDA 位于中游转化/平台层，稀缺层得分 89.6/100。 已有 Bitget 执行证据：RNVDAUSDT。",
+        "failure_condition_en": "Downgrade if customers can qualify credible substitutes faster than expected or if capacity expansion removes scarcity.",
+        "failure_condition_zh": "如果客户能更快认证替代方案，或新增产能消除稀缺性，应下调判断。",
+        "primary_evidence": [
+          {
+            "ticker": "NVDA",
+            "category": "sec_filings",
+            "label_en": "NVIDIA 10-K / 10-Q",
+            "label_zh": "NVIDIA 10-K / 10-Q",
+            "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+            "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+            "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+          },
+          {
+            "ticker": "NVDA",
+            "category": "investor_relations",
+            "label_en": "NVIDIA Investor Relations",
+            "label_zh": "NVIDIA 投资者关系",
+            "url": "https://investor.nvidia.com/",
+            "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+            "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
           }
         ]
       },
@@ -1162,24 +1162,6 @@
         "check_hint_zh": "检索近期 8-K 中的产能扩张、重大合同或供应扰动。"
       },
       {
-        "ticker": "NVDA",
-        "category": "sec_filings",
-        "label_en": "NVIDIA 10-K / 10-Q",
-        "label_zh": "NVIDIA 10-K / 10-Q",
-        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
-        "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
-        "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
-      },
-      {
-        "ticker": "NVDA",
-        "category": "investor_relations",
-        "label_en": "NVIDIA Investor Relations",
-        "label_zh": "NVIDIA 投资者关系",
-        "url": "https://investor.nvidia.com/",
-        "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
-        "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
-      },
-      {
         "ticker": "ASML",
         "category": "sec_filings",
         "label_en": "ASML 20-F",
@@ -1196,6 +1178,24 @@
         "url": "https://www.asml.com/en/investors",
         "check_hint_en": "Check quarterly order book and lead-time disclosures.",
         "check_hint_zh": "查看季度订单与交期披露。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "sec_filings",
+        "label_en": "NVIDIA 10-K / 10-Q",
+        "label_zh": "NVIDIA 10-K / 10-Q",
+        "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&search_text=NVDA&type=10-K&dateb=&owner=include&count=10",
+        "check_hint_en": "Review Data Center revenue mix, supply commitments, and customer concentration.",
+        "check_hint_zh": "查看数据中心收入结构、供应承诺与客户集中度。"
+      },
+      {
+        "ticker": "NVDA",
+        "category": "investor_relations",
+        "label_en": "NVIDIA Investor Relations",
+        "label_zh": "NVIDIA 投资者关系",
+        "url": "https://investor.nvidia.com/",
+        "check_hint_en": "Cross-check earnings call commentary on allocation and lead times.",
+        "check_hint_zh": "对照财报电话会中关于分配与交期的表述。"
       },
       {
         "ticker": "AMZN",
@@ -1287,7 +1287,7 @@
       "detail_en": "Query GICS path (Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors) aligns with primary bottleneck NVDA (Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors) at industry group level.",
       "detail_zh": "查询 GICS 路径（Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors）与主瓶颈 NVDA（Information Technology → Semiconductors & Semiconductor Equipment → Semiconductors → Semiconductors）在行业组层面一致。"
     },
-    "generated_at": "2026-06-24T15:34:52.855Z"
+    "generated_at": "2026-06-25T07:37:27.686Z"
   },
   "agent_workflow": [
     {
@@ -1340,9 +1340,9 @@
         "news_feed"
       ],
       "status": "complete",
-      "detail_en": "3 articles @ 2026-06-24T15:34:39.553Z",
-      "detail_zh": "3 篇文章 @ 2026-06-24T15:34:39.553Z",
-      "fetched_at": "2026-06-24T15:34:39.553Z",
+      "detail_en": "2 articles @ 2026-06-25T07:37:23.794Z",
+      "detail_zh": "2 篇文章 @ 2026-06-25T07:37:23.794Z",
+      "fetched_at": "2026-06-25T07:37:23.794Z",
       "source_url": "https://datahub.noxiaohao.com/mcp"
     },
     {
@@ -1358,9 +1358,9 @@
         "global_assets:DX-Y.NYB"
       ],
       "status": "complete",
-      "detail_en": "Verdict=MIXED @ 2026-06-24T15:34:39.553Z",
-      "detail_zh": "判定=MIXED @ 2026-06-24T15:34:39.553Z",
-      "fetched_at": "2026-06-24T15:34:39.553Z",
+      "detail_en": "Verdict=MIXED @ 2026-06-25T07:37:23.794Z",
+      "detail_zh": "判定=MIXED @ 2026-06-25T07:37:23.794Z",
+      "fetched_at": "2026-06-25T07:37:23.794Z",
       "source_url": "https://datahub.noxiaohao.com/mcp"
     },
     {
@@ -1373,9 +1373,9 @@
         "bottleneck_impact",
         "capped_overlay"
       ],
-      "status": "complete",
-      "detail_en": "1 events → action SIMULATED_BUY.",
-      "detail_zh": "1 个事件 → 动作 SIMULATED_BUY。"
+      "status": "partial",
+      "detail_en": "0 events → action SIMULATED_BUY.",
+      "detail_zh": "0 个事件 → 动作 SIMULATED_BUY。"
     },
     {
       "id": "bitget_verify",
@@ -1388,8 +1388,8 @@
         "candles"
       ],
       "status": "complete",
-      "detail_en": "Backtest verified 2026-04-06 to 2026-06-23 (69 daily observations).",
-      "detail_zh": "回测已验证 2026-04-06 to 2026-06-23 (69 daily observations)。"
+      "detail_en": "Backtest verified 2026-04-06 to 2026-06-24 (70 daily observations).",
+      "detail_zh": "回测已验证 2026-04-06 to 2026-06-24 (70 daily observations)。"
     },
     {
       "id": "sim_export",
@@ -1524,16 +1524,94 @@
   ],
   "backtest": {
     "status": "verified",
-    "period": "2026-04-06 to 2026-06-23 (69 daily observations)",
-    "evidence_hash": "2a95c6e76f7cc5baee693df76e0aea3ec5351a0a359b86a758476d9f2d3aed6c",
+    "data_source": "Bitget Public API",
+    "period": "2026-04-06 to 2026-06-24 (70 daily observations)",
+    "benchmark_symbol": "SPYONUSDT",
+    "allocation": "Risk-capped 40% × 1 Bitget stock tokens; remainder held as cash",
+    "rebalance": "Every 20 common observations; 15% trailing stop",
+    "evidence_hash": "a9f7d77f5bd8dab5c2445342276526587a75617a60925d528ca81151b6a9fa2d",
     "metrics": {
-      "total_return_pct": 5.88,
-      "benchmark_return_pct": 13.38,
-      "max_drawdown_pct": 6.28,
-      "volatility_pct": 13.63,
-      "alpha_pct": -35.68,
-      "sharpe_ratio": 1.63
-    }
+      "total_return_pct": 5.84,
+      "benchmark_return_pct": 13.29,
+      "max_drawdown_pct": 6.32,
+      "volatility_pct": 13.53,
+      "alpha_pct": -34.7,
+      "sharpe_ratio": 1.61
+    },
+    "risk_policy": {
+      "max_position_weight_pct": 40,
+      "trailing_stop_loss_pct": 15,
+      "rebalance_interval_observations": 20,
+      "minimum_trade_usdt": 10
+    },
+    "risk_summary": {
+      "initial_cash_weight_pct": 60,
+      "final_cash_weight_pct": 60.99,
+      "rebalance_events": 3,
+      "stop_loss_events": 0,
+      "total_fees_usdt": 4.5757
+    },
+    "trade_log": [
+      {
+        "timestamp": "2026-04-06T00:00:00.000Z",
+        "symbol": "RNVDAUSDT",
+        "side": "BUY",
+        "action": "ENTRY",
+        "quantity": 22.804988,
+        "price": 175.225,
+        "notional_usdt": 3996,
+        "fee_usdt": 3.996,
+        "portfolio_value_after_usdt": 9996,
+        "cash_after_usdt": 6000,
+        "reason": "Current-evidence selection: NVDA adjusted confidence 89.2 (+0); historical validation only; target weight 40%."
+      },
+      {
+        "timestamp": "2026-04-29T00:00:00.000Z",
+        "symbol": "RNVDAUSDT",
+        "side": "SELL",
+        "action": "REBALANCE",
+        "quantity": 1.720316,
+        "price": 200.624,
+        "notional_usdt": 345.14,
+        "fee_usdt": 0.3451,
+        "portfolio_value_after_usdt": 10574.88,
+        "cash_after_usdt": 6344.79,
+        "reason": "Periodic rebalance back to 40% max-risk target."
+      },
+      {
+        "timestamp": "2026-05-22T00:00:00.000Z",
+        "symbol": "RNVDAUSDT",
+        "side": "SELL",
+        "action": "REBALANCE",
+        "quantity": 0.807042,
+        "price": 214.283,
+        "notional_usdt": 172.94,
+        "fee_usdt": 0.1729,
+        "portfolio_value_after_usdt": 10862.71,
+        "cash_after_usdt": 6517.55,
+        "reason": "Periodic rebalance back to 40% max-risk target."
+      },
+      {
+        "timestamp": "2026-06-15T00:00:00.000Z",
+        "symbol": "RNVDAUSDT",
+        "side": "BUY",
+        "action": "REBALANCE",
+        "quantity": 0.294987,
+        "price": 209.205,
+        "notional_usdt": 61.71,
+        "fee_usdt": 0.0617,
+        "portfolio_value_after_usdt": 10759.67,
+        "cash_after_usdt": 6455.78,
+        "reason": "Periodic rebalance back to 40% max-risk target."
+      }
+    ],
+    "validation_summary": "Verifiable Bitget-candle simulation returned 5.84% vs SPYONUSDT 13.29%. Evidence hash: a9f7d77f5bd8.",
+    "api_calls": [
+      "/api/v3/market/instruments?category=SPOT",
+      "/api/v3/market/tickers?category=SPOT",
+      "/api/v2/spot/market/candles"
+    ],
+    "generated_at": "2026-06-25T07:37:27.129Z"
   },
   "event_intelligence": {
     "simulated_decision": {
@@ -1546,5 +1624,5 @@
       "rationale_zh": "基于结构性瓶颈评分与受限事件/宏观叠加，选择 NVDA 进入 Tier A API 纸交易/demo 执行。"
     }
   },
-  "disclosure": "Sample evidence export for judges. Full run exports include candles, trades, and research raw data."
+  "disclosure": "Sample evidence export for judges. Includes verified trade_log with timestamps, symbols, sides, prices, quantities, and post-trade portfolio/cash balances. Full UI exports also include raw candles and research payloads."
 }

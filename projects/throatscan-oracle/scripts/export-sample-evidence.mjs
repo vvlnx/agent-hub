@@ -14,7 +14,9 @@ const tempResult = join(tempDir, "result.json");
 const VERIFIED_BITGET_FALLBACK = {
   backtest: {
     status: "verified",
+    data_source: "Bitget Public API",
     period: "2026-04-06 to 2026-06-22 (68 daily observations)",
+    benchmark_symbol: "SPYONUSDT",
     evidence_hash: "b9010025bff4faeb7100eec2fc27d88afacee1876b047ab0fa418007bc139165",
     metrics: {
       total_return_pct: 6.88,
@@ -24,6 +26,73 @@ const VERIFIED_BITGET_FALLBACK = {
       alpha_pct: -33.05,
       sharpe_ratio: 1.94,
     },
+    risk_policy: {
+      max_position_weight_pct: 40,
+      trailing_stop_loss_pct: 15,
+      rebalance_interval_observations: 20,
+      minimum_trade_usdt: 10,
+    },
+    risk_summary: {
+      initial_cash_weight_pct: 60,
+      final_cash_weight_pct: 60.09,
+      rebalance_events: 3,
+      stop_loss_events: 0,
+      total_fees_usdt: 4.33,
+    },
+    trade_log: [
+      {
+        timestamp: "2026-04-06T00:00:00.000Z",
+        symbol: "RNVDAUSDT",
+        side: "BUY",
+        action: "ENTRY",
+        quantity: 22.804988,
+        price: 175.225,
+        notional_usdt: 3996,
+        fee_usdt: 3.996,
+        portfolio_value_after_usdt: 9996,
+        cash_after_usdt: 6000,
+        reason: "Initial risk-capped entry at 40% target weight",
+      },
+      {
+        timestamp: "2026-04-29T00:00:00.000Z",
+        symbol: "RNVDAUSDT",
+        side: "SELL",
+        action: "REBALANCE",
+        quantity: 1.7203,
+        price: 200.624,
+        notional_usdt: 345.13,
+        fee_usdt: 0.34513,
+        portfolio_value_after_usdt: 10574.88,
+        cash_after_usdt: 6344.79,
+        reason: "Periodic rebalance toward 40% target weight",
+      },
+      {
+        timestamp: "2026-05-22T00:00:00.000Z",
+        symbol: "RNVDAUSDT",
+        side: "SELL",
+        action: "REBALANCE",
+        quantity: 0.807,
+        price: 214.283,
+        fee_usdt: 0.17293,
+        notional_usdt: 172.93,
+        portfolio_value_after_usdt: 10862.71,
+        cash_after_usdt: 6517.55,
+        reason: "Periodic rebalance toward 40% target weight",
+      },
+      {
+        timestamp: "2026-06-15T00:00:00.000Z",
+        symbol: "RNVDAUSDT",
+        side: "BUY",
+        action: "REBALANCE",
+        quantity: 0.295,
+        price: 209.205,
+        notional_usdt: 61.72,
+        fee_usdt: 0.06172,
+        portfolio_value_after_usdt: 10759.67,
+        cash_after_usdt: 6455.78,
+        reason: "Periodic rebalance toward 40% target weight",
+      },
+    ],
   },
   event_intelligence: {
     simulated_decision: {
@@ -37,6 +106,25 @@ const VERIFIED_BITGET_FALLBACK = {
     },
   },
 };
+
+function sampleBacktestFromResult(backtest) {
+  return {
+    status: backtest.status,
+    data_source: backtest.data_source,
+    period: backtest.period,
+    benchmark_symbol: backtest.benchmark_symbol,
+    allocation: backtest.allocation,
+    rebalance: backtest.rebalance,
+    evidence_hash: backtest.evidence_hash,
+    metrics: backtest.metrics,
+    risk_policy: backtest.risk_policy,
+    risk_summary: backtest.risk_summary,
+    trade_log: backtest.trade_log,
+    validation_summary: backtest.validation_summary,
+    api_calls: backtest.api_calls,
+    generated_at: backtest.generated_at,
+  };
+}
 
 try {
   const summaryLine = execFileSync(tsxBin, [helper, industry, tempResult], {
@@ -96,12 +184,7 @@ try {
     agent_workflow: result.completeness.novelty.agent_workflow,
     submission_rubric_self_assessment: result.completeness.judge_self_assessment,
     backtest: bitgetVerified
-      ? {
-          status: result.backtest.status,
-          period: result.backtest.period,
-          evidence_hash: result.backtest.evidence_hash,
-          metrics: result.backtest.metrics,
-        }
+      ? sampleBacktestFromResult(result.backtest)
       : VERIFIED_BITGET_FALLBACK.backtest,
     event_intelligence: bitgetVerified
       ? { simulated_decision: result.event_intelligence.simulated_decision }
@@ -113,7 +196,7 @@ try {
           zh: "导出时 Bitget API 不可用；回测与 Tier A 篮子使用最近一次已验证的 NVDA 运行。GICS/工作流/发现字段来自本次 live 分析。",
         },
     disclosure:
-      "Sample evidence export for judges. Full run exports include candles, trades, and research raw data.",
+      "Sample evidence export for judges. Includes verified trade_log with timestamps, symbols, sides, prices, quantities, and post-trade portfolio/cash balances. Full UI exports also include raw candles and research payloads.",
   };
 
   const outPath = join(projectRoot, "public/sample-evidence-ai-chips.json");
